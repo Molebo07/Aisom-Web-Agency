@@ -2,22 +2,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, BookOpen, Bug, GitBranch, Package, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-
-// Mock data for demo
-const recentCards = [
-  { id: "1", type: "bug" as const, title: "React hydration mismatch on SSR", language: "TypeScript", date: "2h ago", tags: ["react", "ssr"] },
-  { id: "2", type: "adr" as const, title: "Chose PostgreSQL over MongoDB for user data", language: "SQL", date: "1d ago", tags: ["database"] },
-  { id: "3", type: "concept" as const, title: "Event sourcing vs CRUD", language: null, date: "2d ago", tags: ["architecture"] },
-  { id: "4", type: "library" as const, title: "Zod — runtime type validation", language: "TypeScript", date: "3d ago", tags: ["validation"] },
-  { id: "5", type: "bug" as const, title: "CORS error with Supabase edge functions", language: "TypeScript", date: "4d ago", tags: ["supabase", "cors"] },
-  { id: "6", type: "concept" as const, title: "Optimistic updates in React Query", language: "TypeScript", date: "5d ago", tags: ["react-query"] },
-];
-
-const reviewCards = [
-  { id: "r1", type: "concept" as const, title: "Closure vs Scope", ease: 2.1, interval: 3 },
-  { id: "r2", type: "bug" as const, title: "Memory leak with useEffect cleanup", ease: 2.5, interval: 7 },
-  { id: "r3", type: "library" as const, title: "Prisma — gotchas with relations", ease: 1.8, interval: 1 },
-];
+import { useQuery } from "@tanstack/react-query";
+import { fetchCards, fetchCardsDueForReview, type Card } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const typeIcons: Record<string, React.ElementType> = {
   bug: Bug,
@@ -26,13 +14,40 @@ const typeIcons: Record<string, React.ElementType> = {
   library: Package,
 };
 
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
 export default function Dashboard() {
+  const { user } = useAuth();
+
+  const { data: reviewCards = [], isLoading: reviewLoading } = useQuery({
+    queryKey: ["cards-review"],
+    queryFn: fetchCardsDueForReview,
+  });
+
+  const { data: recentCards = [], isLoading: recentLoading } = useQuery({
+    queryKey: ["cards-recent"],
+    queryFn: () => fetchCards(),
+  });
+
+  const totalCards = recentCards.length;
+  const greeting = new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening";
+
   return (
     <div className="p-6 md:p-8 max-w-5xl">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Good morning</h1>
-          <p className="text-sm text-muted-foreground mt-1">3 cards due for review · 47 cards total</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{greeting}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {reviewCards.length} cards due for review · {totalCards} cards total
+          </p>
         </div>
         <Button asChild>
           <Link to="/app/cards/new">
@@ -45,26 +60,36 @@ export default function Dashboard() {
       {/* Daily Brief */}
       <section className="mb-10">
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">Daily Brief</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {reviewCards.map((card) => {
-            const Icon = typeIcons[card.type] || BookOpen;
-            return (
+        {reviewLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
+          </div>
+        ) : reviewCards.length === 0 ? (
+          <div className="aisom-card text-center py-8">
+            <p className="text-muted-foreground text-sm">No cards due for review. Create some cards to get started!</p>
+            <Button variant="outline" size="sm" className="mt-3" asChild>
+              <Link to="/app/cards/new">Create your first card</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {reviewCards.map((card) => (
               <div key={card.id} className="aisom-card cursor-pointer group">
                 <div className="flex items-center gap-2 mb-3">
-                  <Badge variant={card.type}>{card.type.toUpperCase()}</Badge>
-                  <span className="text-[11px] text-muted-foreground">Interval: {card.interval}d</span>
+                  <Badge variant={card.type as any}>{card.type.toUpperCase()}</Badge>
+                  <span className="text-[11px] text-muted-foreground">Interval: {card.review_interval}d</span>
                 </div>
                 <h3 className="font-medium text-foreground text-sm leading-snug mb-2">{card.title}</h3>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-muted-foreground">Ease: {card.ease.toFixed(1)}</span>
+                  <span className="text-[11px] text-muted-foreground">Ease: {(card.review_ease ?? 2.5).toFixed(1)}</span>
                   <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground hover:text-foreground">
                     Review <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Recent Cards */}
@@ -77,14 +102,21 @@ export default function Dashboard() {
             </Link>
           </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {recentCards.map((card) => {
-            const Icon = typeIcons[card.type] || BookOpen;
-            return (
+        {recentLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
+          </div>
+        ) : recentCards.length === 0 ? (
+          <div className="aisom-card text-center py-8">
+            <p className="text-muted-foreground text-sm">No cards yet. Start capturing your knowledge!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {recentCards.slice(0, 6).map((card) => (
               <div key={card.id} className="aisom-card cursor-pointer group">
                 <div className="flex items-center justify-between mb-3">
-                  <Badge variant={card.type}>{card.type.toUpperCase()}</Badge>
-                  <span className="text-[11px] text-muted-foreground">{card.date}</span>
+                  <Badge variant={card.type as any}>{card.type.toUpperCase()}</Badge>
+                  <span className="text-[11px] text-muted-foreground">{timeAgo(card.updated_at)}</span>
                 </div>
                 <h3 className="font-medium text-foreground text-sm leading-snug mb-2 group-hover:text-primary transition-colors">
                   {card.title}
@@ -93,14 +125,14 @@ export default function Dashboard() {
                   {card.language && (
                     <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{card.language}</span>
                   )}
-                  {card.tags.map((tag) => (
+                  {card.tags?.map((tag) => (
                     <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">#{tag}</span>
                   ))}
                 </div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Floating Quick Capture */}
