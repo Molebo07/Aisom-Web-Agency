@@ -2,25 +2,64 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchProfile, updateProfile } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function SettingsPage() {
+  const { signOut, user } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data: profile } = useQuery({ queryKey: ["profile"], queryFn: fetchProfile });
+
+  const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.display_name || "");
+      setUsername(profile.username || "");
+    }
+  }, [profile]);
+
+  const mutation = useMutation({
+    mutationFn: () => updateProfile({ display_name: displayName, username }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      toast.success("Profile updated!");
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
     <div className="p-6 md:p-8 max-w-2xl">
       <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-6">Settings</h1>
 
       <section className="space-y-4 mb-8">
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">Profile</h2>
+        <p className="text-xs text-muted-foreground">{user?.email}</p>
         <div className="space-y-3">
           <div>
             <Label htmlFor="name">Display Name</Label>
-            <Input id="name" placeholder="Your name" className="mt-1.5 max-w-sm" />
+            <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" className="mt-1.5 max-w-sm" />
           </div>
           <div>
             <Label htmlFor="username">Username</Label>
-            <Input id="username" placeholder="@username" className="mt-1.5 max-w-sm" />
+            <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="@username" className="mt-1.5 max-w-sm" />
           </div>
         </div>
-        <Button size="sm">Save</Button>
+        <Button size="sm" onClick={() => mutation.mutate()} disabled={mutation.isPending}>
+          {mutation.isPending ? "Saving..." : "Save"}
+        </Button>
       </section>
 
       <Separator className="my-8" />
@@ -31,7 +70,6 @@ export default function SettingsPage() {
           {[
             ["⌘ K", "Open command palette"],
             ["⌘ N", "New card"],
-            ["⌘ /", "Focus search"],
             ["Esc", "Close sheet / dialog"],
           ].map(([key, desc]) => (
             <div key={key} className="flex items-center justify-between py-1.5">
@@ -44,9 +82,12 @@ export default function SettingsPage() {
 
       <Separator className="my-8" />
 
-      <section>
-        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">Danger Zone</h2>
-        <Button variant="destructive" size="sm">Delete Account</Button>
+      <section className="space-y-4">
+        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">Account</h2>
+        <Button variant="outline" onClick={handleSignOut}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Sign out
+        </Button>
       </section>
     </div>
   );
