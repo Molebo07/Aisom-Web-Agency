@@ -6,6 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Bug, GitBranch, BookOpen, Package, GraduationCap, MessageSquare, FolderKanban } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createCard, type CardType } from "@/lib/api";
+import { toast } from "sonner";
 
 const cardTypes = [
   { value: "bug", label: "Bug", icon: Bug },
@@ -66,12 +69,51 @@ const typeFields: Record<string, { key: string; label: string; type: "input" | "
 export default function NewCard() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [selectedType, setSelectedType] = useState(searchParams.get("type") || "");
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState("");
   const [language, setLanguage] = useState("");
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
 
   const fields = selectedType ? typeFields[selectedType] || [] : [];
+
+  const mutation = useMutation({
+    mutationFn: createCard,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cards"] });
+      queryClient.invalidateQueries({ queryKey: ["cards-recent"] });
+      queryClient.invalidateQueries({ queryKey: ["cards-review"] });
+      toast.success("Card created!");
+      navigate("/app/cards");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message);
+    },
+  });
+
+  const handleSave = () => {
+    if (!title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+    const content: Record<string, any> = {};
+    fields.forEach((f) => {
+      if (fieldValues[f.key]) content[f.key] = fieldValues[f.key];
+    });
+
+    mutation.mutate({
+      type: selectedType as CardType,
+      title,
+      content,
+      tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+      language: language || undefined,
+    });
+  };
+
+  const updateField = (key: string, value: string) => {
+    setFieldValues((prev) => ({ ...prev, [key]: value }));
+  };
 
   return (
     <div className="p-6 md:p-8 max-w-2xl">
@@ -82,7 +124,6 @@ export default function NewCard() {
 
       <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-6">New Card</h1>
 
-      {/* Type selector */}
       {!selectedType && (
         <div>
           <Label className="mb-3 block text-sm font-medium">Choose card type</Label>
@@ -101,14 +142,11 @@ export default function NewCard() {
         </div>
       )}
 
-      {/* Card form */}
       {selectedType && (
         <div className="space-y-5">
           <div className="flex items-center gap-2 mb-2">
             <Badge variant={selectedType as any}>{selectedType.toUpperCase()}</Badge>
-            <button onClick={() => setSelectedType("")} className="text-xs text-muted-foreground hover:text-foreground">
-              Change type
-            </button>
+            <button onClick={() => setSelectedType("")} className="text-xs text-muted-foreground hover:text-foreground">Change type</button>
           </div>
 
           <div>
@@ -131,21 +169,25 @@ export default function NewCard() {
             <div key={field.key}>
               <Label htmlFor={field.key}>{field.label}</Label>
               {field.type === "input" ? (
-                <Input id={field.key} placeholder={field.label} className="mt-1.5" />
+                <Input id={field.key} value={fieldValues[field.key] || ""} onChange={(e) => updateField(field.key, e.target.value)} placeholder={field.label} className="mt-1.5" />
               ) : field.type === "code" ? (
                 <Textarea
                   id={field.key}
+                  value={fieldValues[field.key] || ""}
+                  onChange={(e) => updateField(field.key, e.target.value)}
                   placeholder={`Enter ${field.label.toLowerCase()}...`}
                   className="mt-1.5 font-mono text-sm min-h-[120px] bg-primary text-primary-foreground placeholder:text-primary-foreground/40 border-primary"
                 />
               ) : (
-                <Textarea id={field.key} placeholder={`Enter ${field.label.toLowerCase()}...`} className="mt-1.5 min-h-[100px]" />
+                <Textarea id={field.key} value={fieldValues[field.key] || ""} onChange={(e) => updateField(field.key, e.target.value)} placeholder={`Enter ${field.label.toLowerCase()}...`} className="mt-1.5 min-h-[100px]" />
               )}
             </div>
           ))}
 
           <div className="flex items-center gap-3 pt-4">
-            <Button>Save Card</Button>
+            <Button onClick={handleSave} disabled={mutation.isPending}>
+              {mutation.isPending ? "Saving..." : "Save Card"}
+            </Button>
             <Button variant="outline" onClick={() => navigate(-1)}>Cancel</Button>
           </div>
         </div>
