@@ -14,13 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      card_embeddings: {
+        Row: {
+          card_id: string
+          embedding: string | null
+        }
+        Insert: {
+          card_id: string
+          embedding?: string | null
+        }
+        Update: {
+          card_id?: string
+          embedding?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_embeddings_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: true
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cards: {
+        Row: {
+          content: Json
+          created_at: string | null
+          id: string
+          is_archived: boolean | null
+          language: string | null
+          last_reviewed_at: string | null
+          project_id: string | null
+          review_ease: number | null
+          review_interval: number | null
+          tags: string[] | null
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          language?: string | null
+          last_reviewed_at?: string | null
+          project_id?: string | null
+          review_ease?: number | null
+          review_interval?: number | null
+          tags?: string[] | null
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          language?: string | null
+          last_reviewed_at?: string | null
+          project_id?: string | null
+          review_ease?: number | null
+          review_interval?: number | null
+          tags?: string[] | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cards_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string
+          onboarded: boolean | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id: string
+          onboarded?: boolean | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string
+          onboarded?: boolean | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          repo_url: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          repo_url?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          repo_url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      search_cards: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          card_id: string
+          similarity: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
