@@ -77,6 +77,9 @@ export const updateProfileSchema = z.object({
     .optional(),
   avatar_url: z.string().url().max(500).optional(),
   onboarded: z.boolean().optional(),
+  preferred_languages: z.array(z.string().max(30)).max(20).optional(),
+  primary_role: z.string().max(100).optional(),
+  github_username: z.string().max(100).optional(),
 });
 
 // Search query schema
