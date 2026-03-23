@@ -4,6 +4,8 @@ import { Search as SearchIcon, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Card } from "@/lib/api";
+import { searchQuerySchema } from "@/lib/validation";
+import { toast } from "sonner";
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
