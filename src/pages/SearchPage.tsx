@@ -25,19 +25,35 @@ export default function SearchPage() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
+    const parsed = searchQuerySchema.safeParse({ query });
+    if (!parsed.success) {
+      toast.error(parsed.error.errors[0]?.message || "Invalid search query");
+      return;
+    }
     setSearching(true);
     setSearched(true);
 
     try {
       const { data, error } = await supabase.functions.invoke("ai-cards", {
-        body: { action: "search", query },
+        body: { action: "search", query: parsed.data.query },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check for rate limit / payment errors
+        const msg = typeof error === "object" && "message" in error ? (error as any).message : String(error);
+        if (msg.includes("429") || msg.includes("rate limit")) {
+          toast.error("Rate limit exceeded. Please wait a moment and try again.");
+        } else if (msg.includes("402")) {
+          toast.error("AI usage limit reached. Please add credits.");
+        } else {
+          throw error;
+        }
+        return;
+      }
       setResults(data?.results || []);
     } catch (err) {
       console.error("Search error:", err);
+      toast.error("Search failed. Please try again.");
       setResults([]);
     } finally {
       setSearching(false);
