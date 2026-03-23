@@ -14,6 +14,17 @@ const mockOnAuthStateChange = vi.fn((callback: any) => {
   return { data: { subscription: { unsubscribe: vi.fn() } } };
 });
 const mockFrom = vi.fn();
+
+// Mock useAuth to return not loading, no session
+vi.mock("@/hooks/useAuth", () => ({
+  useAuth: vi.fn().mockReturnValue({
+    session: null,
+    user: null,
+    loading: false,
+    signOut: vi.fn(),
+  }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
 const mockGetUser = vi.fn().mockResolvedValue({ data: { user: null } });
 
 vi.mock("@/integrations/supabase/client", () => ({
