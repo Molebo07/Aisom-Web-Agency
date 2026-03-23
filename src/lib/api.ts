@@ -1,5 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
+import {
+  createCardSchema,
+  updateCardSchema,
+  createProjectSchema,
+  updateProfileSchema,
+  sanitizeCardContent,
+} from "@/lib/validation";
 
 export type CardType = "bug" | "adr" | "concept" | "library" | "learning" | "interview" | "project";
 
@@ -42,7 +49,9 @@ export async function fetchCards(filters?: { type?: string; search?: string }) {
     query = query.eq("type", filters.type);
   }
   if (filters?.search) {
-    query = query.ilike("title", `%${filters.search}%`);
+    // Sanitize search input
+    const sanitizedSearch = filters.search.replace(/<[^>]*>/g, "").trim().slice(0, 200);
+    query = query.ilike("title", `%${sanitizedSearch}%`);
   }
 
   const { data, error } = await query;
@@ -71,6 +80,12 @@ export async function createCard(card: {
   language?: string;
   project_id?: string;
 }) {
+  // Validate input with Zod
+  const validated = createCardSchema.parse(card);
+
+  // Sanitize content
+  const sanitizedContent = sanitizeCardContent(validated.content as Record<string, unknown>);
+
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
@@ -78,12 +93,12 @@ export async function createCard(card: {
     .from("cards")
     .insert({
       user_id: user.id,
-      type: card.type,
-      title: card.title,
-      content: card.content as Json,
-      tags: card.tags,
-      language: card.language || null,
-      project_id: card.project_id || null,
+      type: validated.type,
+      title: validated.title,
+      content: sanitizedContent as Json,
+      tags: validated.tags,
+      language: validated.language || null,
+      project_id: validated.project_id || null,
     })
     .select()
     .single();
@@ -93,12 +108,17 @@ export async function createCard(card: {
 }
 
 export async function updateCard(id: string, updates: Partial<Pick<Card, "title" | "content" | "tags" | "language" | "project_id" | "is_archived" | "last_reviewed_at" | "review_interval" | "review_ease">>) {
+  // Validate
+  const validated = updateCardSchema.parse(updates);
+
+  const sanitizedUpdates: Record<string, any> = { ...validated };
+  if (validated.content) {
+    sanitizedUpdates.content = sanitizeCardContent(validated.content as Record<string, unknown>) as Json;
+  }
+
   const { data, error } = await supabase
     .from("cards")
-    .update({
-      ...updates,
-      content: updates.content ? (updates.content as Json) : undefined,
-    })
+    .update(sanitizedUpdates)
     .eq("id", id)
     .select()
     .single();
@@ -124,6 +144,9 @@ export async function fetchProjects() {
 }
 
 export async function createProject(project: { name: string; description?: string; repo_url?: string; color?: string }) {
+  // Validate
+  const validated = createProjectSchema.parse(project);
+
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
@@ -131,10 +154,10 @@ export async function createProject(project: { name: string; description?: strin
     .from("projects")
     .insert({
       user_id: user.id,
-      name: project.name,
-      description: project.description || null,
-      repo_url: project.repo_url || null,
-      color: project.color || "#0B1220",
+      name: validated.name,
+      description: validated.description || null,
+      repo_url: validated.repo_url || null,
+      color: validated.color || "#0B1220",
     })
     .select()
     .single();
@@ -159,12 +182,15 @@ export async function fetchProfile() {
 }
 
 export async function updateProfile(updates: { display_name?: string; username?: string; avatar_url?: string; onboarded?: boolean }) {
+  // Validate
+  const validated = updateProfileSchema.parse(updates);
+
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
   const { data, error } = await supabase
     .from("profiles")
-    .update(updates)
+    .update(validated)
     .eq("id", user.id)
     .select()
     .single();
