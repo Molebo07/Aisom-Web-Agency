@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCards } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CardDetailSheet } from "@/components/cards/CardDetailSheet";
 
 const typeOptions = ["all", "bug", "adr", "concept", "library", "learning", "interview"];
 
@@ -26,6 +27,7 @@ function timeAgo(dateStr: string) {
 export default function Cards() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   const { data: cards = [], isLoading } = useQuery({
     queryKey: ["cards", typeFilter, search],
@@ -77,7 +79,7 @@ export default function Cards() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {cards.map((card) => (
-            <div key={card.id} className="aisom-card cursor-pointer group">
+            <div key={card.id} className="aisom-card cursor-pointer group" onClick={() => setSelectedCardId(card.id)}>
               <div className="flex items-center justify-between mb-3">
                 <Badge variant={card.type as any}>{card.type.toUpperCase()}</Badge>
                 <span className="text-[11px] text-muted-foreground">{timeAgo(card.updated_at)}</span>
@@ -91,6 +93,13 @@ export default function Cards() {
           ))}
         </div>
       )}
+
+      <CardDetailSheet
+        cardId={selectedCardId}
+        onClose={() => setSelectedCardId(null)}
+        onCardUpdated={() => {}}
+        onCardDeleted={() => setSelectedCardId(null)}
+      />
     </div>
   );
 }

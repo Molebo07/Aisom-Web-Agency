@@ -7,7 +7,10 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/app/ProtectedRoute";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import Login from "./pages/Login.tsx";
+import AuthLogin from "./pages/AuthLogin.tsx";
+import AuthSignup from "./pages/AuthSignup.tsx";
+import AuthCallback from "./pages/AuthCallback.tsx";
+import Onboarding from "./pages/Onboarding.tsx";
 import AppLayout from "./components/app/AppLayout.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import Cards from "./pages/Cards.tsx";
@@ -27,7 +30,18 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/auth/login" element={<AuthLogin />} />
+            <Route path="/auth/signup" element={<AuthSignup />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/login" element={<AuthLogin />} />
+            <Route
+              path="/app/onboarding"
+              element={
+                <ProtectedRoute>
+                  <Onboarding />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/app"
               element={

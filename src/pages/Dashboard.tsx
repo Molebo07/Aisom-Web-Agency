@@ -2,17 +2,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, BookOpen, Bug, GitBranch, Package, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCards, fetchCardsDueForReview, type Card } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const typeIcons: Record<string, React.ElementType> = {
-  bug: Bug,
-  adr: GitBranch,
-  concept: BookOpen,
-  library: Package,
-};
+import { CardDetailSheet } from "@/components/cards/CardDetailSheet";
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -26,6 +21,7 @@ function timeAgo(dateStr: string) {
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   const { data: reviewCards = [], isLoading: reviewLoading } = useQuery({
     queryKey: ["cards-review"],
@@ -74,7 +70,7 @@ export default function Dashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {reviewCards.map((card) => (
-              <div key={card.id} className="aisom-card cursor-pointer group">
+              <div key={card.id} className="aisom-card cursor-pointer group" onClick={() => setSelectedCardId(card.id)}>
                 <div className="flex items-center gap-2 mb-3">
                   <Badge variant={card.type as any}>{card.type.toUpperCase()}</Badge>
                   <span className="text-[11px] text-muted-foreground">Interval: {card.review_interval}d</span>
@@ -113,7 +109,7 @@ export default function Dashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {recentCards.slice(0, 6).map((card) => (
-              <div key={card.id} className="aisom-card cursor-pointer group">
+              <div key={card.id} className="aisom-card cursor-pointer group" onClick={() => setSelectedCardId(card.id)}>
                 <div className="flex items-center justify-between mb-3">
                   <Badge variant={card.type as any}>{card.type.toUpperCase()}</Badge>
                   <span className="text-[11px] text-muted-foreground">{timeAgo(card.updated_at)}</span>
@@ -142,6 +138,14 @@ export default function Dashboard() {
       >
         <Plus className="h-6 w-6" />
       </Link>
+
+      {/* Card Detail Sheet */}
+      <CardDetailSheet
+        cardId={selectedCardId}
+        onClose={() => setSelectedCardId(null)}
+        onCardUpdated={() => {}}
+        onCardDeleted={() => setSelectedCardId(null)}
+      />
     </div>
   );
 }
