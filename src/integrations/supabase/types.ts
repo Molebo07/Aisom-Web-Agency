@@ -108,24 +108,33 @@ export type Database = {
           avatar_url: string | null
           created_at: string | null
           display_name: string | null
+          github_username: string | null
           id: string
           onboarded: boolean | null
+          preferred_languages: string[] | null
+          primary_role: string | null
           username: string | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
           display_name?: string | null
+          github_username?: string | null
           id: string
           onboarded?: boolean | null
+          preferred_languages?: string[] | null
+          primary_role?: string | null
           username?: string | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string | null
           display_name?: string | null
+          github_username?: string | null
           id?: string
           onboarded?: boolean | null
+          preferred_languages?: string[] | null
+          primary_role?: string | null
           username?: string | null
         }
         Relationships: []
