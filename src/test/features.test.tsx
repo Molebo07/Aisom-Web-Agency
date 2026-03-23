@@ -106,7 +106,9 @@ describe("AUTH-04: Empty email validation", () => {
     render(<AuthLogin />, { wrapper: createWrapper() });
     const emailInput = await screen.findByPlaceholderText("you@company.com");
     fireEvent.change(emailInput, { target: { value: "not-an-email" } });
-    fireEvent.click(screen.getByText("Send magic link"));
+    // Use fireEvent.submit on form since jsdom doesn't propagate click→submit
+    const form = emailInput.closest("form")!;
+    fireEvent.submit(form);
     await waitFor(() => {
       expect(screen.getByText("Please enter a valid email address")).toBeInTheDocument();
     });
