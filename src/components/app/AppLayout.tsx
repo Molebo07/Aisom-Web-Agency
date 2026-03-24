@@ -3,9 +3,20 @@ import { AppSidebar } from "@/components/app/AppSidebar";
 import { CommandPalette } from "@/components/app/CommandPalette";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProfile } from "@/lib/api";
 
 export default function AppLayout() {
   const [commandOpen, setCommandOpen] = useState(false);
+  const { user } = useAuth();
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: fetchProfile,
+    enabled: !!user,
+  });
+
+  const initial = (profile?.display_name?.[0] || user?.email?.[0] || "U").toUpperCase();
 
   return (
     <SidebarProvider>
@@ -25,7 +36,7 @@ export default function AppLayout() {
             </div>
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-xs font-medium text-primary-foreground">
-                D
+                {initial}
               </div>
             </div>
           </header>
