@@ -8,7 +8,6 @@ import {
   Plus,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -24,6 +23,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProjects } from "@/lib/api";
 
 const navItems = [
   { title: "Dashboard", url: "/app/dashboard", icon: LayoutDashboard },
@@ -39,6 +40,11 @@ const bottomItems = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ["projects"],
+    queryFn: fetchProjects,
+  });
 
   return (
     <Sidebar collapsible="icon">
@@ -82,20 +88,33 @@ export function AppSidebar() {
           <SidebarGroup>
             <div className="flex items-center justify-between px-2">
               <SidebarGroupLabel className="text-sidebar-foreground/50">Projects</SidebarGroupLabel>
-              <Button variant="ghost" size="icon" className="h-6 w-6 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent/50">
-                <Plus className="h-3.5 w-3.5" />
+              <Button variant="ghost" size="icon" className="h-6 w-6 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent/50" asChild>
+                <Link to="/app/projects">
+                  <Plus className="h-3.5 w-3.5" />
+                </Link>
               </Button>
             </div>
             <SidebarGroupContent>
               <SidebarMenu>
-                {["Aisom App", "CLI Tool", "Design System"].map((project) => (
-                  <SidebarMenuItem key={project}>
-                    <SidebarMenuButton className="text-sidebar-foreground/70 hover:bg-sidebar-accent/50">
-                      <div className="h-2.5 w-2.5 rounded-full bg-sidebar-foreground/30 mr-2" />
-                      <span className="text-sm">{project}</span>
+                {projects.length === 0 ? (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton className="text-sidebar-foreground/40 text-sm" asChild>
+                      <Link to="/app/projects">No projects yet</Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                ))}
+                ) : (
+                  projects.slice(0, 5).map((project) => (
+                    <SidebarMenuItem key={project.id}>
+                      <SidebarMenuButton className="text-sidebar-foreground/70 hover:bg-sidebar-accent/50">
+                        <div
+                          className="h-2.5 w-2.5 rounded-full mr-2 shrink-0"
+                          style={{ backgroundColor: project.color || "hsl(var(--sidebar-foreground) / 0.3)" }}
+                        />
+                        <span className="text-sm truncate">{project.name}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
