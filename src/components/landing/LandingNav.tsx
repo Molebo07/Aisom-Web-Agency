@@ -1,10 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Terminal } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function LandingNav() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-sm"
+          : "bg-transparent border-b border-transparent"
+      }`}
+    >
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
@@ -15,16 +30,17 @@ export function LandingNav() {
 
         <nav className="hidden md:flex items-center gap-8">
           <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
-          <a href="#cards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Card Types</a>
-          <a href="#cta" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Get Started</a>
+          <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How it works</a>
+          <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+          <a href="#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
         </nav>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/login">Log in</Link>
+          <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
+            <Link to="/auth/login">Log in</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link to="/app/dashboard">Start Free</Link>
+            <Link to="/auth/signup">Get started free</Link>
           </Button>
         </div>
       </div>
