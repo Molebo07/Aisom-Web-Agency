@@ -413,7 +413,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
                   {card.tags && card.tags.length > 0 && (
                     <div className="flex items-center gap-1.5 flex-wrap mb-4">
                       {card.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-[11px] rounded-pill">
+                        <Badge key={tag} variant="outline" className="text-[11px] rounded-full">
                           #{tag}
                         </Badge>
                       ))}
