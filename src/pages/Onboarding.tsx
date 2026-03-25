@@ -411,7 +411,7 @@ export default function Onboarding() {
                       <h3 className="font-medium text-foreground text-sm mb-2">{createdCard.title}</h3>
                       <div className="flex items-center gap-2 flex-wrap">
                         {(createdCard.tags || []).map((tag: string) => (
-                          <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-pill bg-secondary text-muted-foreground">
+                          <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground">
                             #{tag}
                           </span>
                         ))}
