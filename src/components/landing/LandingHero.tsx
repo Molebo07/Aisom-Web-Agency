@@ -30,7 +30,7 @@ export function LandingHero() {
       <div ref={ref} className="container mx-auto px-6 relative opacity-0" style={{ animationDelay: "0.1s" }}>
         <div className="max-w-3xl mx-auto text-center">
           {/* Kbd hint */}
-          <div className="inline-flex items-center gap-2 rounded-pill border px-4 py-1.5 text-sm text-muted-foreground mb-8">
+          <div className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm text-muted-foreground mb-8">
             <Command className="h-3.5 w-3.5" />
             <span>Keyboard-first. Built for how developers think.</span>
           </div>
