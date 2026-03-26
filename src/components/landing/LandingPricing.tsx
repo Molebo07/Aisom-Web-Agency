@@ -9,6 +9,7 @@ const plans = [
     name: "Free",
     monthlyPrice: 0,
     period: "forever",
+    currency: "R",
     desc: "For developers exploring Aisom.",
     features: [
       "Up to 50 cards (all types)",
