@@ -12,7 +12,7 @@ const testimonials = [
   {
     name: "Thabo Mokoena",
     role: "Head of Platform",
-    company: "Ubuntu Capital",
+    company: "Google",
     initials: "TM",
     stars: 5,
     quote: "Our developers finally document architecture decisions in a way that scales. We stopped losing institutional knowledge every time someone changed teams.",
