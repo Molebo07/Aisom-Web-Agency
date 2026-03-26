@@ -3,7 +3,7 @@ import { Star } from "lucide-react";
 const testimonials = [
   {
     name: "Priya Sharma",
-    role: "CTO",
+    role: "Senior Developer",
     company: "Horizon Retail",
     initials: "PS",
     stars: 5,
@@ -11,7 +11,7 @@ const testimonials = [
   },
   {
     name: "Thabo Mokoena",
-    role: "Head of Platform",
+    role: "Junior Developer",
     company: "Google",
     initials: "TM",
     stars: 5,
@@ -19,7 +19,7 @@ const testimonials = [
   },
   {
     name: "Michael Turner",
-    role: "VP Engineering",
+    role: "Senior Engineer",
     company: "Northstar Logistics",
     initials: "MT",
     stars: 5,
