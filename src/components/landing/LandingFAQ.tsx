@@ -8,7 +8,7 @@ import {
 const faqs = [
   {
     q: "Is Aisom free to use?",
-    a: "Yes — the Free plan gives you up to 50 cards, the browser extension, VS Code extension, and basic search. No credit card required. Upgrade to Pro ($9/mo) for unlimited cards, AI semantic search, and spaced repetition.",
+    a: "Yes — the Free plan gives you up to 50 cards, the browser extension, VS Code extension, and basic search. No credit card required. Upgrade to Pro (R150/mo) for unlimited cards, AI semantic search, and spaced repetition.",
   },
   {
     q: "How is Aisom different from Notion or Obsidian?",
@@ -28,7 +28,7 @@ const faqs = [
   },
   {
     q: "Can I use Aisom with my team?",
-    a: "Yes — the Team plan ($15/user/month) includes shared card libraries, a team ADR repository, shared bug knowledge base, admin dashboard, and SSO via Google Workspace.",
+    a: "Yes — the Team plan (R250/user/month) includes shared card libraries, a team ADR repository, shared bug knowledge base, admin dashboard, and SSO via Google Workspace.",
   },
 ];
 
