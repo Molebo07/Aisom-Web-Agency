@@ -9,6 +9,7 @@ const plans = [
     name: "Free",
     monthlyPrice: 0,
     period: "forever",
+    currency: "R",
     desc: "For developers exploring Aisom.",
     features: [
       "Up to 50 cards (all types)",
@@ -24,8 +25,9 @@ const plans = [
   },
   {
     name: "Pro",
-    monthlyPrice: 9,
+    monthlyPrice: 150,
     period: "per month",
+    currency: "R",
     desc: "For engineers who want the full second brain.",
     features: [
       "Unlimited cards",
@@ -45,8 +47,9 @@ const plans = [
   },
   {
     name: "Team",
-    monthlyPrice: 15,
+    monthlyPrice: 250,
     period: "per user / month",
+    currency: "R",
     desc: "For engineering teams sharing institutional knowledge.",
     features: [
       "Everything in Pro",
@@ -103,10 +106,10 @@ export function LandingPricing() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {plans.map((plan) => {
             const displayPrice = plan.monthlyPrice === 0
-              ? "$0"
+              ? `${plan.currency}0`
               : annual
-                ? `$${plan.monthlyPrice * 10}`
-                : `$${plan.monthlyPrice}`;
+                ? `${plan.currency}${plan.monthlyPrice * 10}`
+                : `${plan.currency}${plan.monthlyPrice}`;
             const displayPeriod = plan.monthlyPrice === 0
               ? "forever"
               : annual
