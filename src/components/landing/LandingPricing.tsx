@@ -106,10 +106,10 @@ export function LandingPricing() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {plans.map((plan) => {
             const displayPrice = plan.monthlyPrice === 0
-              ? "$0"
+              ? `${plan.currency}0`
               : annual
-                ? `$${plan.monthlyPrice * 10}`
-                : `$${plan.monthlyPrice}`;
+                ? `${plan.currency}${plan.monthlyPrice * 10}`
+                : `${plan.currency}${plan.monthlyPrice}`;
             const displayPeriod = plan.monthlyPrice === 0
               ? "forever"
               : annual
