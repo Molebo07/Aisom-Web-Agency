@@ -2,28 +2,28 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    name: "Sarah Chen",
-    role: "Senior Backend Engineer",
-    company: "Shopify",
-    initials: "SC",
-    stars: 5,
-    quote: "I used to lose an hour a week re-debugging the same API timeout issues. After two months with Aisom, my Bug Cards have saved me more time than any other tool in my stack.",
-  },
-  {
-    name: "James Okonkwo",
-    role: "Staff Engineer",
-    company: "Stripe",
-    initials: "JO",
-    stars: 5,
-    quote: "The ADR cards changed how our team makes architecture decisions. We stopped repeating debates we'd already resolved. The search is genuinely better than grep-ing through Confluence.",
-  },
-  {
     name: "Priya Sharma",
-    role: "Full-Stack Developer",
-    company: "Vercel",
+    role: "CTO",
+    company: "Horizon Retail",
     initials: "PS",
     stars: 5,
-    quote: "Spaced repetition for technical concepts is a game-changer for interview prep. I went from forgetting algorithms to confidently explaining them. The daily brief takes 5 minutes.",
+    quote: "Aisom gave our engineering teams one searchable source of truth across London, Nairobi, and Johannesburg. Onboarding new developers went from weeks to days.",
+  },
+  {
+    name: "Thabo Mokoena",
+    role: "Head of Platform",
+    company: "Ubuntu Capital",
+    initials: "TM",
+    stars: 5,
+    quote: "Our developers finally document architecture decisions in a way that scales. We stopped losing institutional knowledge every time someone changed teams.",
+  },
+  {
+    name: "Michael Turner",
+    role: "VP Engineering",
+    company: "Northstar Logistics",
+    initials: "MT",
+    stars: 5,
+    quote: "It reduced handover friction between our UK and South African offices almost immediately. The spaced repetition keeps critical API patterns top of mind.",
   },
 ];
 
@@ -36,7 +36,7 @@ export function LandingTestimonials() {
             Trusted by engineers who ship
           </h2>
           <p className="text-muted-foreground max-w-lg mx-auto text-pretty">
-            Developers at top companies use Aisom to turn their debugging history into a searchable superpower.
+            Developers at global companies use Aisom to turn their debugging history into a searchable superpower.
           </p>
         </div>
 
