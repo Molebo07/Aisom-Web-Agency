@@ -25,8 +25,9 @@ const plans = [
   },
   {
     name: "Pro",
-    monthlyPrice: 9,
+    monthlyPrice: 150,
     period: "per month",
+    currency: "R",
     desc: "For engineers who want the full second brain.",
     features: [
       "Unlimited cards",
@@ -46,8 +47,9 @@ const plans = [
   },
   {
     name: "Team",
-    monthlyPrice: 15,
+    monthlyPrice: 250,
     period: "per user / month",
+    currency: "R",
     desc: "For engineering teams sharing institutional knowledge.",
     features: [
       "Everything in Pro",
