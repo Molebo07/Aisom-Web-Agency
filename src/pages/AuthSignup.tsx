@@ -28,7 +28,7 @@ export default function AuthSignup() {
   const handleGoogleSignIn = async () => {
     setError("");
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: import.meta.env.VITE_SITE_URL || window.location.origin,
+      redirect_uri: window.location.origin,
     });
     if (error) setError(error.message || "Google sign-in failed. Please try again.");
   };
