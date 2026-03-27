@@ -45,7 +45,7 @@ export default function AuthSignup() {
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin + "/auth/callback",
+        emailRedirectTo: "https://aisom.co.za/auth/callback",
       },
     });
     setSubmitting(false);
