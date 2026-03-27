@@ -27,16 +27,9 @@ export default function AuthSignup() {
 
   const handleGoogleSignIn = async () => {
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: "https://aisom.co.za",
     });
     if (error) setError(error.message || "Google sign-in failed");
-  };
-
-  const handleAppleSignIn = async () => {
-    const { error } = await lovable.auth.signInWithOAuth("apple", {
-      redirect_uri: window.location.origin,
-    });
-    if (error) setError(error.message || "Apple sign-in failed");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
