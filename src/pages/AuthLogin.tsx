@@ -26,10 +26,11 @@ export default function AuthLogin() {
   if (session) return <Navigate to="/app/dashboard" replace />;
 
   const handleGoogleSignIn = async () => {
+    setError("");
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: "https://aisom.co.za",
+      redirect_uri: import.meta.env.VITE_SITE_URL || window.location.origin,
     });
-    if (error) setError(error.message || "Google sign-in failed");
+    if (error) setError(error.message || "Google sign-in failed. Please try again.");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
