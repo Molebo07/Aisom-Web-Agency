@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/~oauth/:path*", "destination": "https://id-preview--b91d4eb8-151e-4227-b501-c8e3d458e90d.lovable.app/~oauth/:path*" },
     { "source": "/((?!assets|og-image|favicon|robots|sitemap|placeholder).*)", "destination": "/index.html" }
   ],
   "headers": [
