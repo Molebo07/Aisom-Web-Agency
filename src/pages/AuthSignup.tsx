@@ -128,10 +128,6 @@ export default function AuthSignup() {
               {submitting ? "Creating account..." : "Sign up"}
             </Button>
           </form>
-
-          <p className="text-xs text-muted-foreground mt-4 text-center">
-            🔒 Your password is encrypted in transit and never stored in plaintext.
-          </p>
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-5">
