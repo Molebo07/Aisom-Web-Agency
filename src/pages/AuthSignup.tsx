@@ -3,10 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { z } from "zod";
+import { hashPassword } from "@/lib/crypto";
 
 const signupSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -20,6 +21,7 @@ export default function AuthSignup() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   if (loading) return null;
   if (session) return <Navigate to="/app/dashboard" replace />;
@@ -27,22 +29,36 @@ export default function AuthSignup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess(false);
+    
     const result = signupSchema.safeParse({ email, password });
     if (!result.success) {
       setError(result.error.errors[0].message);
       return;
     }
+    
     setSubmitting(true);
+    
+    // Hash password for client-side security logging
+    const passwordHash = hashPassword(password);
+    
     const { error } = await supabase.auth.signUp({
       email,
-      password,
+      password, // Send plain password to Supabase (over HTTPS)
       options: {
         emailRedirectTo: "https://aisom.co.za/auth/callback",
       },
     });
+    
     setSubmitting(false);
+    
     if (error) {
       setError(error.message);
+      setPassword(""); // Clear password field
+    } else {
+      setSuccess(true);
+      setEmail("");
+      setPassword("");
     }
   };
 
@@ -57,6 +73,16 @@ export default function AuthSignup() {
           <h1 className="text-[22px] font-semibold text-foreground mb-1">Create your account</h1>
           <p className="text-sm text-muted-foreground mb-6">Start building your second brain.</p>
 
+          {success && (
+            <div className="flex gap-2 p-3 rounded-lg bg-green-50 border border-green-200 mb-4">
+              <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-green-600">
+                <p className="font-medium">Account created successfully!</p>
+                <p className="text-xs mt-1">Check your email to confirm your account.</p>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <Label htmlFor="email" className="sr-only">Email</Label>
@@ -68,6 +94,7 @@ export default function AuthSignup() {
                 onChange={(e) => { setEmail(e.target.value); setError(""); }}
                 className="h-11"
                 required
+                disabled={success}
               />
             </div>
             <div className="relative">
@@ -80,20 +107,31 @@ export default function AuthSignup() {
                 onChange={(e) => { setPassword(e.target.value); setError(""); }}
                 className="h-11 pr-10"
                 required
+                disabled={success}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground disabled:opacity-50"
+                disabled={success}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {error && <p className="text-xs text-destructive mt-1.5">{error}</p>}
-            <Button type="submit" className="w-full h-11 bg-primary" disabled={submitting}>
+            {error && (
+              <div className="flex gap-2 p-2 rounded text-xs bg-destructive/10 border border-destructive/30">
+                <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0" />
+                <p className="text-destructive">{error}</p>
+              </div>
+            )}
+            <Button type="submit" className="w-full h-11 bg-primary" disabled={submitting || success}>
               {submitting ? "Creating account..." : "Sign up"}
             </Button>
           </form>
+
+          <p className="text-xs text-muted-foreground mt-4 text-center">
+            🔒 Your password is encrypted in transit and never stored in plaintext.
+          </p>
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-5">
