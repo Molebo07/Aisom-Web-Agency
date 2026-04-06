@@ -103,7 +103,7 @@ export default function Onboarding() {
     }
     setNameError("");
     setSaving(true);
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("profiles")
       .update({
         display_name: displayName.trim(),
@@ -120,7 +120,7 @@ export default function Onboarding() {
 
   const handleStep2Continue = async () => {
     setSaving(true);
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("profiles")
       .update({
         preferred_languages: selectedLangs,
@@ -157,7 +157,7 @@ export default function Onboarding() {
       .filter(Boolean)
       .slice(0, 10);
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("cards")
       .insert({
         user_id: user!.id,
@@ -180,7 +180,7 @@ export default function Onboarding() {
 
   const handleFinish = async () => {
     setSaving(true);
-    await supabase
+    await (supabase as any)
       .from("profiles")
       .update({ onboarded: true })
       .eq("id", user!.id);

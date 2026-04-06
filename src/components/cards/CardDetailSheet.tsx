@@ -119,7 +119,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
     queryKey: ["card-detail", cardId],
     queryFn: async () => {
       if (!cardId) return null;
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("cards")
         .select("*")
         .eq("id", cardId)
@@ -175,7 +175,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
     mutationFn: async () => {
       if (!cardId) throw new Error("No card");
       const parsedTags = editTags.split(",").map(t => t.trim().toLowerCase().replace(/[^a-z0-9-]/g, "")).filter(Boolean);
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("cards")
         .update({
           title: editTitle.trim(),
@@ -209,7 +209,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
       if (!card) throw new Error("No card");
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("cards")
         .insert({
           user_id: user.id,
@@ -236,7 +236,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
   const deleteMutation = useMutation({
     mutationFn: async () => {
       if (!cardId) throw new Error("No card");
-      const { error } = await supabase.from("cards").delete().eq("id", cardId);
+      const { error } = await (supabase as any).from("cards").delete().eq("id", cardId);
       if (error) throw error;
     },
     onSuccess: () => {
