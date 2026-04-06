@@ -31,7 +31,6 @@ const plans = [
       "Unlimited cards",
       "AI semantic search",
       "Spaced repetition daily brief",
-      "Mobile app",
       "CLI capture tool",
       "Knowledge graph view",
       "Obsidian import",
