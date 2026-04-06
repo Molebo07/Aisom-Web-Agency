@@ -9,7 +9,7 @@ const plans = [
     name: "Free",
     monthlyPrice: 0,
     period: "forever",
-    currency: "R",
+    currency: "$",
     desc: "For developers exploring Aisom.",
     features: [
       "Up to 50 cards (all types)",
@@ -25,9 +25,9 @@ const plans = [
   },
   {
     name: "Pro",
-    monthlyPrice: 150,
+    monthlyPrice: 10,
     period: "per month",
-    currency: "R",
+    currency: "$",
     desc: "For engineers who want the full second brain.",
     features: [
       "Unlimited cards",
@@ -47,9 +47,9 @@ const plans = [
   },
   {
     name: "Team",
-    monthlyPrice: 250,
+    monthlyPrice: 20,
     period: "per user / month",
-    currency: "R",
+    currency: "$",
     desc: "For engineering teams sharing institutional knowledge.",
     features: [
       "Everything in Pro",
