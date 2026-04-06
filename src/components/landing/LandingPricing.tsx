@@ -13,8 +13,6 @@ const plans = [
     desc: "For developers exploring Aisom.",
     features: [
       "Up to 50 cards (all types)",
-      "Browser extension",
-      "VS Code extension",
       "Basic search",
       "Web app",
     ],

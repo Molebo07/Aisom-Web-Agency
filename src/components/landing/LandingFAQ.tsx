@@ -8,7 +8,7 @@ import {
 const faqs = [
   {
     q: "Is Aisom free to use?",
-    a: "Yes — the Free plan gives you up to 50 cards, the browser extension, VS Code extension, and basic search. No credit card required. Upgrade to Pro ($10/mo) for unlimited cards, AI semantic search, and spaced repetition.",
+    a: "Yes — the Free plan gives you up to 50 cards and basic search. No credit card required. Upgrade to Pro ($10/mo) for unlimited cards, AI semantic search, and spaced repetition.",
   },
   {
     q: "How is Aisom different from Notion or Obsidian?",
