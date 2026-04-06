@@ -2,7 +2,7 @@ export function SocialProofStrip() {
   const stats = [
     { value: "27M+", label: "software engineers worldwide" },
     { value: "61%", label: "lose 30+ min/day re-searching" },
-    { value: "R150/mo", label: "to never re-debug the same bug" },
+    { value: "$10/mo", label: "to never re-debug the same bug" },
   ];
 
   const cardTypes = [
