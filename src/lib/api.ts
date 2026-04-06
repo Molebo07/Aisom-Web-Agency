@@ -39,7 +39,7 @@ export interface Project {
 
 // Cards
 export async function fetchCards(filters?: { type?: string; search?: string }) {
-  let query = supabase
+  let query = (supabase as any)
     .from("cards")
     .select("*")
     .eq("is_archived", false)
@@ -60,7 +60,7 @@ export async function fetchCards(filters?: { type?: string; search?: string }) {
 }
 
 export async function fetchCardsDueForReview() {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("cards")
     .select("*")
     .eq("is_archived", false)
@@ -89,7 +89,7 @@ export async function createCard(card: {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("cards")
     .insert({
       user_id: user.id,
@@ -116,7 +116,7 @@ export async function updateCard(id: string, updates: Partial<Pick<Card, "title"
     sanitizedUpdates.content = sanitizeCardContent(validated.content as Record<string, unknown>) as Json;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("cards")
     .update(sanitizedUpdates)
     .eq("id", id)
@@ -128,13 +128,13 @@ export async function updateCard(id: string, updates: Partial<Pick<Card, "title"
 }
 
 export async function deleteCard(id: string) {
-  const { error } = await supabase.from("cards").delete().eq("id", id);
+  const { error } = await (supabase as any).from("cards").delete().eq("id", id);
   if (error) throw error;
 }
 
 // Projects
 export async function fetchProjects() {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("projects")
     .select("*")
     .order("created_at", { ascending: false });
@@ -150,7 +150,7 @@ export async function createProject(project: { name: string; description?: strin
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("projects")
     .insert({
       user_id: user.id,
@@ -171,7 +171,7 @@ export async function fetchProfile() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("profiles")
     .select("*")
     .eq("id", user.id)
@@ -188,7 +188,7 @@ export async function updateProfile(updates: { display_name?: string; username?:
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("profiles")
     .update(validated)
     .eq("id", user.id)
