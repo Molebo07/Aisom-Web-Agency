@@ -17,13 +17,13 @@ export default function AuthCallback() {
         }
 
         // Check if user has completed onboarding
-        const { data: profile } = await supabase
+        const { data: profile } = await (supabase as any)
           .from("profiles")
           .select("onboarded")
           .eq("id", session.user.id)
           .single();
 
-        const destination = profile?.onboarded ? "/app/dashboard" : "/app/onboarding";
+        const destination = (profile as any)?.onboarded ? "/app/dashboard" : "/app/onboarding";
         navigate(destination, { replace: true });
       } catch {
         navigate("/auth/login?error=auth_failed", { replace: true });

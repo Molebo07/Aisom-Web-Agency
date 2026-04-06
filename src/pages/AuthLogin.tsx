@@ -123,7 +123,7 @@ export default function AuthLogin() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-3" disabled={isLocked}>
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <Label htmlFor="email" className="sr-only">Email</Label>
               <Input
