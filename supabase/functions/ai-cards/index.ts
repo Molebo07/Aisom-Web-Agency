@@ -6,6 +6,72 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Helper function to generate searchable text from card content based on card type
+function generateCardSearchText(card: {
+  type: string;
+  title: string;
+  content: Record<string, unknown>;
+  tags?: string[];
+}): string {
+  const parts: string[] = [];
+
+  // Add title and type context
+  parts.push(`Card Type: ${card.type}`);
+  parts.push(`Title: ${card.title}`);
+
+  // Add tags
+  if (card.tags?.length) {
+    parts.push(`Tags: ${card.tags.join(", ")}`);
+  }
+
+  // Add field-specific content with labels for better semantic understanding
+  const content = card.content || {};
+
+  if (card.type === "bug") {
+    if (content.symptom) parts.push(`Symptom: ${content.symptom}`);
+    if (content.environment) parts.push(`Environment: ${content.environment}`);
+    if (content.stack_trace) parts.push(`Stack Trace: ${content.stack_trace}`);
+    if (content.root_cause) parts.push(`Root Cause: ${content.root_cause}`);
+    if (content.fix) parts.push(`Fix: ${content.fix}`);
+    if (content.key_insight) parts.push(`Key Insight: ${content.key_insight}`);
+  } else if (card.type === "adr") {
+    if (content.context) parts.push(`Context: ${content.context}`);
+    if (content.decision) parts.push(`Decision: ${content.decision}`);
+    if (content.rationale) parts.push(`Rationale: ${content.rationale}`);
+    if (content.consequences) parts.push(`Consequences: ${content.consequences}`);
+    if (content.options) parts.push(`Options: ${content.options}`);
+    if (content.outcome) parts.push(`Outcome: ${content.outcome}`);
+  } else if (card.type === "concept") {
+    if (content.definition) parts.push(`Definition: ${content.definition}`);
+    if (content.code_example) parts.push(`Code Example: ${content.code_example}`);
+    if (content.analogy) parts.push(`Analogy: ${content.analogy}`);
+    if (content.when_to_use) parts.push(`When to Use: ${content.when_to_use}`);
+    if (content.when_not_to) parts.push(`When Not To: ${content.when_not_to}`);
+  } else if (card.type === "library") {
+    if (content.why_chosen) parts.push(`Why Chosen: ${content.why_chosen}`);
+    if (content.gotchas) parts.push(`Gotchas: ${content.gotchas}`);
+    if (content.config_that_works) parts.push(`Config That Works: ${content.config_that_works}`);
+    if (content.verdict) parts.push(`Verdict: ${content.verdict}`);
+    if (content.alternatives_considered) parts.push(`Alternatives Considered: ${content.alternatives_considered}`);
+    if (content.version) parts.push(`Version: ${content.version}`);
+  } else if (card.type === "learning") {
+    if (content.topic) parts.push(`Topic: ${content.topic}`);
+    if (content.key_takeaways) parts.push(`Key Takeaways: ${content.key_takeaways}`);
+    if (content.code_examples) parts.push(`Code Examples: ${content.code_examples}`);
+    if (content.resources) parts.push(`Resources: ${content.resources}`);
+  } else if (card.type === "interview") {
+    if (content.question) parts.push(`Question: ${content.question}`);
+    if (content.answer) parts.push(`Answer: ${content.answer}`);
+    if (content.followups) parts.push(`Follow-ups: ${content.followups}`);
+    if (content.difficulty) parts.push(`Difficulty: ${content.difficulty}`);
+  } else if (card.type === "project") {
+    if (content.description) parts.push(`Description: ${content.description}`);
+    if (content.repo_url) parts.push(`Repository URL: ${content.repo_url}`);
+  }
+
+  return parts.join("\n");
+}
+
 // In-memory rate limiter per user
 const rateLimits = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
@@ -122,12 +188,37 @@ serve(async (req) => {
 
     if (action === "embed") {
       const cardId = validateString(body.card_id, 36);
-      const text = validateString(body.text, 10_000);
-      if (!cardId || !text) {
-        return new Response(JSON.stringify({ error: "card_id and text are required" }), {
+      const cardType = validateString(body.card_type, 50);
+      const cardTitle = validateString(body.card_title, 200);
+      const cardContent = body.card_content && typeof body.card_content === "object" ? body.card_content : null;
+      const cardTags = Array.isArray(body.card_tags) ? body.card_tags.filter((t: unknown) => typeof t === "string") : [];
+      
+      if (!cardId) {
+        return new Response(JSON.stringify({ error: "card_id is required" }), {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
+      }
+
+      // If we have card details, use them to generate comprehensive searchable text
+      let textToEmbed = "";
+      if (cardType && cardTitle && cardContent !== null) {
+        textToEmbed = generateCardSearchText({
+          type: cardType,
+          title: cardTitle,
+          content: cardContent,
+          tags: cardTags,
+        });
+      } else {
+        // Fallback: use text parameter if provided (for backward compatibility)
+        const text = validateString(body.text, 10_000);
+        if (!text) {
+          return new Response(JSON.stringify({ error: "Either card details or text is required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        textToEmbed = text;
       }
 
       // Verify the card belongs to this user
@@ -150,7 +241,7 @@ serve(async (req) => {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ input: text, model: "text-embedding-3-small" }),
+        body: JSON.stringify({ input: textToEmbed, model: "text-embedding-3-small" }),
       });
 
       if (!embeddingResponse.ok) {
@@ -182,12 +273,14 @@ serve(async (req) => {
         });
       }
 
+      // Try semantic search first
       const embeddingResponse = await fetch("https://ai.gateway.lovable.dev/v1/embeddings", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
+        // Use the query directly - the embedding model will understand context from keywords like "symptom", "root cause", etc.
         body: JSON.stringify({ input: query, model: "text-embedding-3-small" }),
       });
 
@@ -227,10 +320,13 @@ serve(async (req) => {
 
         if (cardsError) throw cardsError;
 
-        const results = cards?.map((card: any) => ({
-          ...card,
-          similarity: matches.find((m: any) => m.card_id === card.id)?.similarity,
-        })).sort((a: any, b: any) => (b.similarity || 0) - (a.similarity || 0));
+        const results = cards?.map((card: any) => {
+          const match = matches.find((m: any) => m.card_id === card.id);
+          return {
+            ...card,
+            similarity: match?.similarity,
+          };
+        }).sort((a: any, b: any) => (b.similarity || 0) - (a.similarity || 0));
 
         return new Response(JSON.stringify({ results, semantic: true }), {
           headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },

@@ -132,6 +132,25 @@ export async function createCard(card: {
     .single();
 
   if (error) throw error;
+
+  // Trigger semantic embedding in background (fire and forget)
+  if (data?.id) {
+    supabase.functions
+      .invoke("ai-cards", {
+        body: {
+          action: "embed",
+          card_id: data.id,
+          card_type: validated.type,
+          card_title: validated.title,
+          card_content: sanitizedContent,
+          card_tags: validated.tags,
+        },
+      })
+      .catch(() => {
+        // Silently fail - embedding not critical
+      });
+  }
+
   return data as Card;
 }
 
@@ -152,6 +171,25 @@ export async function updateCard(id: string, updates: Partial<Pick<Card, "title"
     .single();
 
   if (error) throw error;
+
+  // Trigger semantic embedding if content or metadata changed (fire and forget)
+  if ((validated.title || validated.content || validated.tags) && data?.id) {
+    supabase.functions
+      .invoke("ai-cards", {
+        body: {
+          action: "embed",
+          card_id: data.id,
+          card_type: data.type,
+          card_title: data.title,
+          card_content: data.content,
+          card_tags: data.tags,
+        },
+      })
+      .catch(() => {
+        // Silently fail - embedding not critical
+      });
+  }
+
   return data as Card;
 }
 
