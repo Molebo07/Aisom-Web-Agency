@@ -1,3 +1,2 @@
-# Welcome to your Lovable project
+Welcome to Aisom - Personal knowledge System for Developers
 
-TODO: Document your project here

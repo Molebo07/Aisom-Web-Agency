@@ -8,6 +8,31 @@ import {
   sanitizeCardContent,
 } from "@/lib/validation";
 
+// Helper function to ensure user profile exists
+async function ensureProfileExists(userId: string) {
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", userId)
+    .single();
+
+  if (!existingProfile) {
+    // Profile doesn't exist, create it
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
+
+    const { error: insertError } = await supabase
+      .from("profiles")
+      .insert({
+        id: userId,
+        display_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0],
+        avatar_url: user.user_metadata?.avatar_url || null,
+      });
+
+    if (insertError) throw insertError;
+  }
+}
+
 export type CardType = "bug" | "adr" | "concept" | "library" | "learning" | "interview" | "project";
 
 export interface Card {
@@ -89,6 +114,9 @@ export async function createCard(card: {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
+  // Ensure user profile exists
+  await ensureProfileExists(user.id);
+
   const { data, error } = await (supabase as any)
     .from("cards")
     .insert({
@@ -149,6 +177,9 @@ export async function createProject(project: { name: string; description?: strin
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
+
+  // Ensure user profile exists
+  await ensureProfileExists(user.id);
 
   const { data, error } = await (supabase as any)
     .from("projects")
