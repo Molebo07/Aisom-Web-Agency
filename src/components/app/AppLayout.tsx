@@ -7,6 +7,19 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Plus } from "lucide-react";
 
+// Helper component to display keyboard shortcuts
+function KeyboardShortcut({ mac, windows }: { mac?: string; windows?: string }) {
+  const isMac = typeof window !== "undefined" && navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+  const shortcut = isMac ? mac : windows;
+  if (!shortcut) return null;
+
+  return (
+    <kbd className="text-[10px] font-mono bg-secondary px-1.5 py-0.5 rounded">
+      {shortcut}
+    </kbd>
+  );
+}
+
 export default function AppLayout() {
   const [commandOpen, setCommandOpen] = useState(false);
   const { user } = useAuth();
@@ -26,14 +39,14 @@ export default function AppLayout() {
               >
                 <Plus className="h-4 w-4" />
                 <span>New Card</span>
-                <kbd className="ml-2 text-[10px] font-mono bg-secondary px-1.5 py-0.5 rounded">⌘T</kbd>
+                <KeyboardShortcut mac="⌘T" windows="Ctrl+T" />
               </button>
               <button
                 onClick={() => setCommandOpen(true)}
                 className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               >
                 <span>Search cards...</span>
-                <kbd className="ml-4 text-[10px] font-mono bg-secondary px-1.5 py-0.5 rounded">⌘K</kbd>
+                <KeyboardShortcut mac="⌘K" windows="Ctrl+K" />
               </button>
             </div>
             <div className="flex items-center gap-2">
