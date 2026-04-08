@@ -102,11 +102,17 @@ export default function NewCard() {
       if (fieldValues[f.key]) content[f.key] = fieldValues[f.key];
     });
 
+    // Process tags: convert to lowercase, replace invalid chars with hyphens, filter empty
+    const processedTags = tags
+      .split(",")
+      .map((t) => t.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, ""))
+      .filter(Boolean);
+
     mutation.mutate({
       type: selectedType as CardType,
       title,
       content,
-      tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+      tags: processedTags,
       language: language || undefined,
     });
   };
@@ -162,6 +168,7 @@ export default function NewCard() {
             <div>
               <Label htmlFor="tags">Tags</Label>
               <Input id="tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="comma, separated" className="mt-1.5" />
+              <p className="text-xs text-muted-foreground mt-1">Tags will be converted to lowercase and sanitized (alphanumeric + hyphens only)</p>
             </div>
           </div>
 
