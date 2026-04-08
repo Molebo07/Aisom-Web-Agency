@@ -1,4 +1,4 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { CommandPalette } from "@/components/app/CommandPalette";
 import { ProfileMenu } from "@/components/app/ProfileMenu";
@@ -27,37 +27,35 @@ export default function AppLayout() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 flex items-center justify-between border-b px-4 bg-background shrink-0">
-            <div className="flex items-center gap-3">
-              <SidebarTrigger />
-              <button
-                onClick={() => navigate("/app/cards/new")}
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              >
-                <Plus className="h-4 w-4" />
-                <span>New Card</span>
-                <KeyboardShortcut mac="⌘E" windows="Ctrl+E" />
-              </button>
-              <button
-                onClick={() => setCommandOpen(true)}
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              >
-                <span>Search cards...</span>
-                <KeyboardShortcut mac="⌘K" windows="Ctrl+K" />
-              </button>
-            </div>
-            <div className="flex items-center gap-2">
-              <ProfileMenu />
-            </div>
-          </header>
-          <main className="flex-1 overflow-auto">
-            <Outlet />
-          </main>
-        </div>
-      </div>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="h-14 flex items-center justify-between border-b px-4 bg-background shrink-0">
+          <div className="flex items-center gap-3">
+            <SidebarTrigger />
+            <button
+              onClick={() => navigate("/app/cards/new")}
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              <span>New Card</span>
+              <KeyboardShortcut mac="⌘E" windows="Ctrl+E" />
+            </button>
+            <button
+              onClick={() => setCommandOpen(true)}
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            >
+              <span>Search cards...</span>
+              <KeyboardShortcut mac="⌘K" windows="Ctrl+K" />
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <ProfileMenu />
+          </div>
+        </header>
+        <main className="flex-1 overflow-auto">
+          <Outlet />
+        </main>
+      </SidebarInset>
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
     </SidebarProvider>
   );
