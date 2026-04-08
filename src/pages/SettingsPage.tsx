@@ -68,8 +68,8 @@ export default function SettingsPage() {
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">Keyboard Shortcuts</h2>
         <div className="space-y-2">
           {[
-            ["⌘ K", "Open command palette"],
-            ["⌘ N", "New card"],
+            ["⌘ K / Ctrl K", "Open command palette"],
+            ["⌘ E / Ctrl E", "New card"],
             ["Esc", "Close sheet / dialog"],
           ].map(([key, desc]) => (
             <div key={key} className="flex items-center justify-between py-1.5">
