@@ -39,7 +39,7 @@ export default function AppLayout() {
               >
                 <Plus className="h-4 w-4" />
                 <span>New Card</span>
-                <KeyboardShortcut mac="⌘T" windows="Ctrl+T" />
+                <KeyboardShortcut mac="⌘E" windows="Ctrl+E" />
               </button>
               <button
                 onClick={() => setCommandOpen(true)}

@@ -39,8 +39,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         e.preventDefault();
         onOpenChange(!open);
       }
-      // Cmd/Ctrl+T to create new card
-      if (e.key === "t" && (e.metaKey || e.ctrlKey) && !open) {
+      // Cmd/Ctrl+E to create new card
+      if (e.key === "e" && (e.metaKey || e.ctrlKey) && !open) {
         e.preventDefault();
         navigate("/app/cards/new");
       }
@@ -65,7 +65,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               <Plus className="mr-2 h-4 w-4" />
               New Card
             </div>
-            <KeyboardShortcut mac="⌘T" windows="Ctrl+T" />
+            <KeyboardShortcut mac="⌘E" windows="Ctrl+E" />
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
