@@ -8,7 +8,7 @@ import React from "react";
 // Mock supabase - make onAuthStateChange call back immediately with null session
 const mockSignInWithOtp = vi.fn();
 const mockGetSession = vi.fn().mockResolvedValue({ data: { session: null } });
-const mockOnAuthStateChange = vi.fn((callback: any) => {
+const mockOnAuthStateChange = vi.fn((callback: unknown) => {
   // Call the callback immediately with no session
   setTimeout(() => callback("INITIAL_SESSION", null), 0);
   return { data: { subscription: { unsubscribe: vi.fn() } } };

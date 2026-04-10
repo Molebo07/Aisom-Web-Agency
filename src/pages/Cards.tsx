@@ -81,7 +81,7 @@ export default function Cards() {
           {cards.map((card) => (
             <div key={card.id} className="aisom-card cursor-pointer group" onClick={() => setSelectedCardId(card.id)}>
               <div className="flex items-center justify-between mb-3">
-                <Badge variant={card.type as any}>{card.type.toUpperCase()}</Badge>
+                <Badge variant={card.type}>{card.type.toUpperCase()}</Badge>
                 <span className="text-[11px] text-muted-foreground">{timeAgo(card.updated_at)}</span>
               </div>
               <h3 className="font-medium text-foreground text-sm leading-snug mb-2 group-hover:text-primary transition-colors">{card.title}</h3>

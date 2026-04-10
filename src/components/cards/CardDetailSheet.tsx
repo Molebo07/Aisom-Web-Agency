@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Card } from "@/lib/api";
+import type { Card, Json } from "@/lib/api";
 import type { Json } from "@/integrations/supabase/types";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter,
@@ -109,7 +109,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
-  const [editContent, setEditContent] = useState<Record<string, any>>({});
+  const [editContent, setEditContent] = useState<Json>({});
   const [editTags, setEditTags] = useState("");
   const [editLanguage, setEditLanguage] = useState("");
   const draftTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -119,7 +119,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
     queryKey: ["card-detail", cardId],
     queryFn: async () => {
       if (!cardId) return null;
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("cards")
         .select("*")
         .eq("id", cardId)
@@ -148,7 +148,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
   useEffect(() => {
     if (isEditing && card) {
       setEditTitle(card.title);
-      setEditContent(card.content as Record<string, any>);
+      setEditContent(card.content);
       setEditTags((card.tags || []).join(", "));
       setEditLanguage(card.language || "");
     }
@@ -175,7 +175,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
     mutationFn: async () => {
       if (!cardId) throw new Error("No card");
       const parsedTags = editTags.split(",").map(t => t.trim().toLowerCase().replace(/[^a-z0-9-]/g, "")).filter(Boolean);
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("cards")
         .update({
           title: editTitle.trim(),
@@ -209,7 +209,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
       if (!card) throw new Error("No card");
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("cards")
         .insert({
           user_id: user.id,
@@ -236,7 +236,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
   const deleteMutation = useMutation({
     mutationFn: async () => {
       if (!cardId) throw new Error("No card");
-      const { error } = await (supabase as any).from("cards").delete().eq("id", cardId);
+      const { error } = await supabase.from("cards").delete().eq("id", cardId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -256,7 +256,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
   };
 
   const fields = card ? (typeFields[card.type] || []) : [];
-  const content = card?.content as Record<string, any> || {};
+  const content = card?.content as Record<string, unknown> || {};
 
   return (
     <Sheet open={!!cardId} onOpenChange={(open) => { if (!open) onClose(); }}>

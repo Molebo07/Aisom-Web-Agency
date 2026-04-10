@@ -36,9 +36,9 @@ const plans = [
       "Obsidian import",
       "Priority support",
     ],
-    cta: "Start free trial",
+    cta: "Subscribe",
     ctaVariant: "default" as const,
-    ctaLink: "/auth/signup",
+    ctaLink: "/checkout?plan=pro&annual=0",
     featured: true,
     badge: "Most popular",
   },
@@ -154,7 +154,19 @@ export function LandingPricing() {
                 </ul>
 
                 <Button variant={plan.ctaVariant} className="w-full h-11" asChild>
-                  <Link to={plan.ctaLink}>{plan.cta}</Link>
+                  <Link
+                    to={
+                      plan.monthlyPrice > 0 && plan.name !== "Team"
+                        ? `/checkout?plan=${plan.name.toLowerCase()}&annual=${annual ? 1 : 0}`
+                        : plan.ctaLink
+                    }
+                  >
+                    {plan.monthlyPrice > 0 && plan.name !== "Team"
+                      ? annual
+                        ? "Subscribe annual"
+                        : "Subscribe monthly"
+                      : plan.cta}
+                  </Link>
                 </Button>
               </div>
             );

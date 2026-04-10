@@ -8,6 +8,15 @@ import {
   sanitizeCardContent,
 } from "@/lib/validation";
 
+export interface Profile {
+  id: string;
+  username?: string;
+  display_name?: string;
+  avatar_url?: string;
+  created_at: string;
+  onboarded: boolean;
+}
+
 // Helper function to ensure user profile exists
 async function ensureProfileExists(userId: string) {
   const { data: existingProfile } = await supabase
@@ -40,7 +49,7 @@ export interface Card {
   user_id: string;
   type: CardType;
   title: string;
-  content: Record<string, any>;
+  content: Json;
   tags: string[];
   language: string | null;
   project_id: string | null;
@@ -64,7 +73,7 @@ export interface Project {
 
 // Cards
 export async function fetchCards(filters?: { type?: string; search?: string }) {
-  let query = (supabase as any)
+  let query = supabase
     .from("cards")
     .select("*")
     .eq("is_archived", false)
@@ -85,7 +94,7 @@ export async function fetchCards(filters?: { type?: string; search?: string }) {
 }
 
 export async function fetchCardsDueForReview() {
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from("cards")
     .select("*")
     .eq("is_archived", false)
@@ -100,7 +109,7 @@ export async function fetchCardsDueForReview() {
 export async function createCard(card: {
   type: CardType;
   title: string;
-  content: Record<string, any>;
+  content: Json;
   tags: string[];
   language?: string;
   project_id?: string;
@@ -117,7 +126,7 @@ export async function createCard(card: {
   // Ensure user profile exists
   await ensureProfileExists(user.id);
 
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from("cards")
     .insert({
       user_id: user.id,
@@ -158,12 +167,12 @@ export async function updateCard(id: string, updates: Partial<Pick<Card, "title"
   // Validate
   const validated = updateCardSchema.parse(updates);
 
-  const sanitizedUpdates: Record<string, any> = { ...validated };
+  const sanitizedUpdates: Record<string, unknown> = { ...validated };
   if (validated.content) {
     sanitizedUpdates.content = sanitizeCardContent(validated.content as Record<string, unknown>) as Json;
   }
 
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from("cards")
     .update(sanitizedUpdates)
     .eq("id", id)
@@ -194,13 +203,13 @@ export async function updateCard(id: string, updates: Partial<Pick<Card, "title"
 }
 
 export async function deleteCard(id: string) {
-  const { error } = await (supabase as any).from("cards").delete().eq("id", id);
+  const { error } = await supabase.from("cards").delete().eq("id", id);
   if (error) throw error;
 }
 
 // Projects
 export async function fetchProjects() {
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from("projects")
     .select("*")
     .order("created_at", { ascending: false });
@@ -219,7 +228,7 @@ export async function createProject(project: { name: string; description?: strin
   // Ensure user profile exists
   await ensureProfileExists(user.id);
 
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from("projects")
     .insert({
       user_id: user.id,
@@ -236,18 +245,18 @@ export async function createProject(project: { name: string; description?: strin
 }
 
 // Profile
-export async function fetchProfile() {
+export async function fetchProfile(): Promise<Profile | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
 
   if (error) throw error;
-  return data;
+  return data as Profile;
 }
 
 export async function updateProfile(updates: { display_name?: string; username?: string; avatar_url?: string; onboarded?: boolean }) {
@@ -257,7 +266,7 @@ export async function updateProfile(updates: { display_name?: string; username?:
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from("profiles")
     .update(validated)
     .eq("id", user.id)

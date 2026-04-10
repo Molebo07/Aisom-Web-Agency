@@ -97,7 +97,7 @@ export default function NewCard() {
       toast.error("Title is required");
       return;
     }
-    const content: Record<string, any> = {};
+    const content: Record<string, unknown> = {};
     fields.forEach((f) => {
       if (fieldValues[f.key]) content[f.key] = fieldValues[f.key];
     });
@@ -151,7 +151,7 @@ export default function NewCard() {
       {selectedType && (
         <div className="space-y-5">
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant={selectedType as any}>{selectedType.toUpperCase()}</Badge>
+            <Badge variant={selectedType}>{selectedType.toUpperCase()}</Badge>
             <button onClick={() => setSelectedType("")} className="text-xs text-muted-foreground hover:text-foreground">Change type</button>
           </div>
 

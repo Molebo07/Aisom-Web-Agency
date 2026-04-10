@@ -311,7 +311,7 @@ serve(async (req) => {
       if (searchError) throw searchError;
 
       if (matches && matches.length > 0) {
-        const cardIds = matches.map((m: any) => m.card_id);
+        const cardIds = matches.map((m: unknown) => (m as { card_id: string }).card_id);
         const { data: cards, error: cardsError } = await supabase
           .from("cards")
           .select("*")
@@ -320,13 +320,13 @@ serve(async (req) => {
 
         if (cardsError) throw cardsError;
 
-        const results = cards?.map((card: any) => {
-          const match = matches.find((m: any) => m.card_id === card.id);
+        const results = cards?.map((card) => {
+          const match = matches.find((m: unknown) => (m as { card_id: string }).card_id === card.id);
           return {
             ...card,
-            similarity: match?.similarity,
+            similarity: (match as { similarity?: number })?.similarity,
           };
-        }).sort((a: any, b: any) => (b.similarity || 0) - (a.similarity || 0));
+        }).sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
 
         return new Response(JSON.stringify({ results, semantic: true }), {
           headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },

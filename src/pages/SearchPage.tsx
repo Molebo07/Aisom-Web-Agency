@@ -40,7 +40,7 @@ export default function SearchPage() {
 
       if (error) {
         // Check for rate limit / payment errors
-        const msg = typeof error === "object" && "message" in error ? (error as any).message : String(error);
+        const msg = typeof error === "object" && error && "message" in error ? (error as { message: string }).message : String(error);
         if (msg.includes("429") || msg.includes("rate limit")) {
           toast.error("Rate limit exceeded. Please wait a moment and try again.");
         } else if (msg.includes("402")) {
@@ -87,7 +87,7 @@ export default function SearchPage() {
           {results.map((card) => (
             <div key={card.id} className="aisom-card cursor-pointer group">
               <div className="flex items-center gap-2 mb-2">
-                <Badge variant={card.type as any}>{card.type.toUpperCase()}</Badge>
+                <Badge variant={card.type}>{card.type.toUpperCase()}</Badge>
                 <span className="text-[11px] text-muted-foreground">{timeAgo(card.updated_at)}</span>
                 {card.similarity && (
                   <span className="text-[10px] text-muted-foreground ml-auto">{(card.similarity * 100).toFixed(0)}% match</span>

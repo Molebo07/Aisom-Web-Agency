@@ -20,7 +20,7 @@ export function ProfileMenu() {
     enabled: !!user,
   });
 
-  const initial = ((profile as any)?.display_name?.[0] || user?.email?.[0] || "U").toUpperCase();
+  const initial = (profile?.display_name?.[0] || user?.email?.[0] || "U").toUpperCase();
 
   const handleSignOut = async () => {
     await signOut();
@@ -37,7 +37,7 @@ export function ProfileMenu() {
       <DropdownMenuContent align="end" className="w-56">
         <div className="px-2 py-1.5 text-sm">
           <p className="font-medium text-foreground">
-            {(profile as any)?.display_name || user?.email || "User"}
+            {profile?.display_name || user?.email || "User"}
           </p>
           <p className="text-xs text-muted-foreground">{user?.email}</p>
         </div>

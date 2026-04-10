@@ -18,6 +18,7 @@ import NewCard from "./pages/NewCard.tsx";
 import SearchPage from "./pages/SearchPage.tsx";
 import Projects from "./pages/Projects.tsx";
 import SettingsPage from "./pages/SettingsPage.tsx";
+import PayfastCheckout from "./pages/PayfastCheckout.tsx";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ const App = () => (
               <Route path="projects" element={<Projects />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
+            <Route path="/checkout" element={<PayfastCheckout />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

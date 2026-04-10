@@ -52,7 +52,7 @@ export default function Onboarding() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Step 4
-  const [createdCard, setCreatedCard] = useState<any>(null);
+  const [createdCard, setCreatedCard] = useState<Card | null>(null);
 
   const firstInputRef = useRef<HTMLInputElement>(null);
 
@@ -103,7 +103,7 @@ export default function Onboarding() {
     }
     setNameError("");
     setSaving(true);
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from("profiles")
       .update({
         display_name: displayName.trim(),
@@ -120,7 +120,7 @@ export default function Onboarding() {
 
   const handleStep2Continue = async () => {
     setSaving(true);
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from("profiles")
       .update({
         preferred_languages: selectedLangs,
@@ -157,7 +157,7 @@ export default function Onboarding() {
       .filter(Boolean)
       .slice(0, 10);
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from("cards")
       .insert({
         user_id: user!.id,
@@ -180,7 +180,7 @@ export default function Onboarding() {
 
   const handleFinish = async () => {
     setSaving(true);
-    await (supabase as any)
+    await supabase
       .from("profiles")
       .update({ onboarded: true })
       .eq("id", user!.id);
@@ -200,7 +200,7 @@ export default function Onboarding() {
         else if (step === 4) handleFinish();
       }
     },
-    [step, displayName, symptom, fix, keyInsight]
+    [step, displayName, symptom, fix, keyInsight, handleStep1Continue, handleStep2Continue, handleStep3Continue, handleFinish]
   );
 
   if (authLoading || profileLoading) {

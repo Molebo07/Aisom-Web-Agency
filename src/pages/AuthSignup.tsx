@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,7 +47,7 @@ export default function AuthSignup() {
       email,
       password, // Send plain password to Supabase (over HTTPS)
       options: {
-        emailRedirectTo: "https://aisom.co.za/auth/callback",
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
     
@@ -62,6 +63,12 @@ export default function AuthSignup() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setError("");
+    const redirectUri = `${window.location.origin}/auth/callback`;
+    await lovable.auth.signInWithOAuth("google", { redirect_uri: redirectUri });
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "hsl(210 20% 97%)" }}>
       <div className="w-full max-w-[400px]">
@@ -72,6 +79,10 @@ export default function AuthSignup() {
         <div className="bg-background border border-border rounded-[14px] p-10">
           <h1 className="text-[22px] font-semibold text-foreground mb-1">Create your account</h1>
           <p className="text-sm text-muted-foreground mb-6">Start building your second brain.</p>
+
+          <Button type="button" variant="outline" className="w-full mb-4 h-11" onClick={handleGoogleSignIn}>
+            Continue with Google
+          </Button>
 
           {success && (
             <div className="flex gap-2 p-3 rounded-lg bg-green-50 border border-green-200 mb-4">

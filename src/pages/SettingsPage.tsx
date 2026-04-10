@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function SettingsPage() {
   const { signOut, user } = useAuth();
@@ -63,7 +63,20 @@ export default function SettingsPage() {
       </section>
 
       <Separator className="my-8" />
+      <section className="space-y-4 mb-8">
+        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">Billing</h2>
+        <p className="text-sm text-muted-foreground">Upgrade or renew your subscription through Payfast.</p>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <Link to="/checkout?plan=pro&annual=0">Payfast monthly</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/checkout?plan=pro&annual=1">Payfast annual</Link>
+          </Button>
+        </div>
+      </section>
 
+      <Separator className="my-8" />
       <section className="mb-8">
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">Keyboard Shortcuts</h2>
         <div className="space-y-2">
