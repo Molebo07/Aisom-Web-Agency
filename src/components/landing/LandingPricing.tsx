@@ -56,9 +56,9 @@ const plans = [
       "Admin dashboard",
       "SSO (Google Workspace)",
     ],
-    cta: "Contact us",
-    ctaVariant: "outline" as const,
-    ctaLink: "/auth/signup",
+    cta: "Subscribe",
+    ctaVariant: "default" as const,
+    ctaLink: "/checkout?plan=team&annual=0",
     featured: false,
   },
 ];
@@ -156,12 +156,12 @@ export function LandingPricing() {
                 <Button variant={plan.ctaVariant} className="w-full h-11" asChild>
                   <Link
                     to={
-                      plan.monthlyPrice > 0 && plan.name !== "Team"
+                      plan.monthlyPrice > 0
                         ? `/checkout?plan=${plan.name.toLowerCase()}&annual=${annual ? 1 : 0}`
                         : plan.ctaLink
                     }
                   >
-                    {plan.monthlyPrice > 0 && plan.name !== "Team"
+                    {plan.monthlyPrice > 0
                       ? annual
                         ? "Subscribe annual"
                         : "Subscribe monthly"
