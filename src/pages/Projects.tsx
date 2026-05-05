@@ -1,17 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Plus, FolderKanban } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchProjects, createProject } from "@/lib/api";
+import { fetchProjects, createProject, type Project } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Projects() {
   const [open, setOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
@@ -80,7 +83,7 @@ export default function Projects() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {projects.map((project) => (
-            <div key={project.id} className="aisom-card cursor-pointer group">
+            <div key={project.id} className="aisom-card cursor-pointer group" onClick={() => setSelectedProject(project)}>
               <div className="flex items-start gap-3">
                 <div className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: project.color }}>
                   <FolderKanban className="h-5 w-5 text-white" />
@@ -94,6 +97,58 @@ export default function Projects() {
           ))}
         </div>
       )}
+
+      <Sheet open={!!selectedProject} onOpenChange={(openState) => { if (!openState) setSelectedProject(null); }}>
+        <SheetContent side="right" className="w-full sm:w-[520px] p-0">
+          <SheetHeader className="p-6">
+            <SheetTitle>{selectedProject?.name || "Project details"}</SheetTitle>
+          </SheetHeader>
+
+          {selectedProject ? (
+            <div className="space-y-6 p-6">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-xl" style={{ backgroundColor: selectedProject.color }} />
+                <div>
+                  <p className="text-sm text-muted-foreground">Project</p>
+                  <h2 className="text-lg font-semibold text-foreground">{selectedProject.name}</h2>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Description</p>
+                <p className="rounded-xl border border-border p-4 bg-background text-sm">{selectedProject.description || "No description provided."}</p>
+              </div>
+
+              {selectedProject.repo_url && (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">Repository URL</p>
+                  <a
+                    href={selectedProject.repo_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block rounded-xl border border-border p-4 text-sm text-primary underline-offset-2 hover:underline"
+                  >
+                    {selectedProject.repo_url}
+                  </a>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-3">
+                <Button asChild>
+                  <Link to={`/app/cards/new?type=project&projectId=${selectedProject.id}`}>Create a project card</Link>
+                </Button>
+                {selectedProject.repo_url ? (
+                  <Button variant="outline" asChild>
+                    <a href={selectedProject.repo_url} target="_blank" rel="noreferrer">Open repository</a>
+                  </Button>
+                ) : (
+                  <Button variant="outline" onClick={() => setSelectedProject(null)}>Close</Button>
+                )}
+              </div>
+            </div>
+          ) : null}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

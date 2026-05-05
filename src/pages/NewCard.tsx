@@ -71,6 +71,7 @@ export default function NewCard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedType, setSelectedType] = useState(searchParams.get("type") || "");
+  const projectId = searchParams.get("projectId") || undefined;
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState("");
   const [language, setLanguage] = useState("");
@@ -114,6 +115,7 @@ export default function NewCard() {
       content,
       tags: processedTags,
       language: language || undefined,
+      project_id: projectId,
     });
   };
 
