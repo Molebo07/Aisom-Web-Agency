@@ -26,47 +26,69 @@ function generateCardSearchText(card: {
 
   // Add field-specific content with labels for better semantic understanding
   const content = card.content || {};
+  const includedKeys = new Set<string>();
+
+  const includeField = (key: string, label: string) => {
+    const value = content[key];
+    if (typeof value === "string" && value.trim()) {
+      parts.push(`${label}: ${value}`);
+      includedKeys.add(key);
+    }
+  };
 
   if (card.type === "bug") {
-    if (content.symptom) parts.push(`Symptom: ${content.symptom}`);
-    if (content.environment) parts.push(`Environment: ${content.environment}`);
-    if (content.stack_trace) parts.push(`Stack Trace: ${content.stack_trace}`);
-    if (content.root_cause) parts.push(`Root Cause: ${content.root_cause}`);
-    if (content.fix) parts.push(`Fix: ${content.fix}`);
-    if (content.key_insight) parts.push(`Key Insight: ${content.key_insight}`);
+    includeField("symptom", "Symptom");
+    includeField("environment", "Environment");
+    includeField("stack_trace", "Stack Trace");
+    includeField("root_cause", "Root Cause");
+    includeField("fix", "Fix");
+    includeField("key_insight", "Key Insight");
   } else if (card.type === "adr") {
-    if (content.context) parts.push(`Context: ${content.context}`);
-    if (content.decision) parts.push(`Decision: ${content.decision}`);
-    if (content.rationale) parts.push(`Rationale: ${content.rationale}`);
-    if (content.consequences) parts.push(`Consequences: ${content.consequences}`);
-    if (content.options) parts.push(`Options: ${content.options}`);
-    if (content.outcome) parts.push(`Outcome: ${content.outcome}`);
+    includeField("context", "Context");
+    includeField("decision", "Decision");
+    includeField("rationale", "Rationale");
+    includeField("consequences", "Consequences");
+    includeField("options", "Options");
+    includeField("outcome", "Outcome");
   } else if (card.type === "concept") {
-    if (content.definition) parts.push(`Definition: ${content.definition}`);
-    if (content.code_example) parts.push(`Code Example: ${content.code_example}`);
-    if (content.analogy) parts.push(`Analogy: ${content.analogy}`);
-    if (content.when_to_use) parts.push(`When to Use: ${content.when_to_use}`);
-    if (content.when_not_to) parts.push(`When Not To: ${content.when_not_to}`);
+    includeField("definition", "Definition");
+    includeField("code_example", "Code Example");
+    includeField("analogy", "Analogy");
+    includeField("when_to_use", "When to Use");
+    includeField("when_not_to", "When Not To");
   } else if (card.type === "library") {
-    if (content.why_chosen) parts.push(`Why Chosen: ${content.why_chosen}`);
-    if (content.gotchas) parts.push(`Gotchas: ${content.gotchas}`);
-    if (content.config_that_works) parts.push(`Config That Works: ${content.config_that_works}`);
-    if (content.verdict) parts.push(`Verdict: ${content.verdict}`);
-    if (content.alternatives_considered) parts.push(`Alternatives Considered: ${content.alternatives_considered}`);
-    if (content.version) parts.push(`Version: ${content.version}`);
+    includeField("why_chosen", "Why Chosen");
+    includeField("gotchas", "Gotchas");
+    includeField("config_that_works", "Config That Works");
+    includeField("verdict", "Verdict");
+    includeField("alternatives_considered", "Alternatives Considered");
+    includeField("version", "Version");
   } else if (card.type === "learning") {
-    if (content.topic) parts.push(`Topic: ${content.topic}`);
-    if (content.key_takeaways) parts.push(`Key Takeaways: ${content.key_takeaways}`);
-    if (content.code_examples) parts.push(`Code Examples: ${content.code_examples}`);
-    if (content.resources) parts.push(`Resources: ${content.resources}`);
+    includeField("topic", "Topic");
+    includeField("key_takeaways", "Key Takeaways");
+    includeField("code_examples", "Code Examples");
+    includeField("resources", "Resources");
   } else if (card.type === "interview") {
-    if (content.question) parts.push(`Question: ${content.question}`);
-    if (content.answer) parts.push(`Answer: ${content.answer}`);
-    if (content.followups) parts.push(`Follow-ups: ${content.followups}`);
-    if (content.difficulty) parts.push(`Difficulty: ${content.difficulty}`);
+    includeField("question", "Question");
+    includeField("answer", "Answer");
+    includeField("followups", "Follow-ups");
+    includeField("difficulty", "Difficulty");
   } else if (card.type === "project") {
-    if (content.description) parts.push(`Description: ${content.description}`);
-    if (content.repo_url) parts.push(`Repository URL: ${content.repo_url}`);
+    includeField("description", "Description");
+    includeField("repo_url", "Repository URL");
+  }
+
+  // Add any additional text fields not explicitly listed above
+  for (const [key, value] of Object.entries(content)) {
+    if (includedKeys.has(key)) continue;
+    if (typeof value === "string" && value.trim()) {
+      parts.push(`${key.replace(/_/g, " ")}: ${value}`);
+    } else if (Array.isArray(value) && value.length) {
+      const textValues = value.filter((item) => typeof item === "string").join(" ").trim();
+      if (textValues) {
+        parts.push(`${key.replace(/_/g, " ")}: ${textValues}`);
+      }
+    }
   }
 
   return parts.join("\n");
@@ -256,7 +278,7 @@ serve(async (req) => {
 
       const { error } = await supabaseAdmin
         .from("card_embeddings")
-        .upsert({ card_id: cardId, embedding: JSON.stringify(embedding) });
+        .upsert({ card_id: cardId, embedding });
 
       if (error) throw error;
 
@@ -303,7 +325,8 @@ serve(async (req) => {
       const queryEmbedding = embeddingData.data[0].embedding;
 
       const { data: matches, error: searchError } = await supabase.rpc("search_cards", {
-        query_embedding: JSON.stringify(queryEmbedding),
+        query_embedding: queryEmbedding,
+        user_id: userId,
         match_threshold: 0.5,
         match_count: 10,
       });
