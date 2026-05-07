@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import type { Card, Json } from "@/lib/api";
+import { supabase as supabaseClient } from "@/integrations/supabase/client";
+import type { Card } from "@/lib/api";
 import type { Json } from "@/integrations/supabase/types";
+// Cast around incomplete generated types; runtime behavior is unchanged.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabase = supabaseClient as any;
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter,
 } from "@/components/ui/sheet";
