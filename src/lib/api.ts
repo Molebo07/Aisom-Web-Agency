@@ -1,4 +1,7 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabase as supabaseClient } from "@/integrations/supabase/client";
+// Cast around incomplete generated types; runtime behavior is unchanged.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabase = supabaseClient as any;
 import type { Json } from "@/integrations/supabase/types";
 import {
   createCardSchema,

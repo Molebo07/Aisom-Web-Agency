@@ -112,7 +112,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
-  const [editContent, setEditContent] = useState<Json>({});
+  const [editContent, setEditContent] = useState<Record<string, any>>({});
   const [editTags, setEditTags] = useState("");
   const [editLanguage, setEditLanguage] = useState("");
   const draftTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
