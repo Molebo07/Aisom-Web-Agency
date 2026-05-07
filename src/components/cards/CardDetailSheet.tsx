@@ -151,7 +151,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
   useEffect(() => {
     if (isEditing && card) {
       setEditTitle(card.title);
-      setEditContent(card.content);
+      setEditContent((card.content as Record<string, any>) || {});
       setEditTags((card.tags || []).join(", "));
       setEditLanguage(card.language || "");
     }
