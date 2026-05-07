@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import type { Card, Json } from "@/lib/api";
+import { supabase as supabaseClient } from "@/integrations/supabase/client";
+import type { Card } from "@/lib/api";
 import type { Json } from "@/integrations/supabase/types";
+// Cast around incomplete generated types; runtime behavior is unchanged.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabase = supabaseClient as any;
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter,
 } from "@/components/ui/sheet";
@@ -109,7 +112,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
-  const [editContent, setEditContent] = useState<Json>({});
+  const [editContent, setEditContent] = useState<Record<string, any>>({});
   const [editTags, setEditTags] = useState("");
   const [editLanguage, setEditLanguage] = useState("");
   const draftTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -148,7 +151,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
   useEffect(() => {
     if (isEditing && card) {
       setEditTitle(card.title);
-      setEditContent(card.content);
+      setEditContent((card.content as Record<string, any>) || {});
       setEditTags((card.tags || []).join(", "));
       setEditLanguage(card.language || "");
     }

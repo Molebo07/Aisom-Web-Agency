@@ -112,7 +112,7 @@ export default function NewCard() {
     mutation.mutate({
       type: selectedType as CardType,
       title,
-      content,
+      content: content as never,
       tags: processedTags,
       language: language || undefined,
       project_id: projectId,
@@ -153,7 +153,7 @@ export default function NewCard() {
       {selectedType && (
         <div className="space-y-5">
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant={selectedType}>{selectedType.toUpperCase()}</Badge>
+            <Badge variant={selectedType as never}>{selectedType.toUpperCase()}</Badge>
             <button onClick={() => setSelectedType("")} className="text-xs text-muted-foreground hover:text-foreground">Change type</button>
           </div>
 
