@@ -186,7 +186,7 @@ export type Database = {
         Args: {
           match_count?: number
           match_threshold?: number
-          query_embedding: number[]
+          query_embedding: string
           user_id: string
         }
         Returns: {
