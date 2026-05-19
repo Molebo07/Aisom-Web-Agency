@@ -1,0 +1,11 @@
+# Aisom
+
+> Personal knowledge system for software engineers. Capture bugs, architecture decisions, and concepts in structured cards with AI-powered semantic search.
+
+Aisom is a code-native knowledge tool built for how developers think. Instead of blank pages, it provides structured card types (Bug Cards, ADRs, Concept Cards, Library Cards, Learning Cards, Interview Cards) with spaced repetition review and semantic search.
+
+## Pages
+
+- [Home](/): Product overview, features, pricing, and FAQ.
+- [Log in](/auth/login): Sign in to an existing account.
+- [Sign up](/auth/signup): Create a free account (up to 50 cards).
