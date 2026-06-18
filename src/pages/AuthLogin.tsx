@@ -114,10 +114,6 @@ export default function AuthLogin() {
           <h1 className="text-[22px] font-semibold text-foreground mb-1">Welcome back</h1>
           <p className="text-sm text-muted-foreground mb-6">Sign in to your knowledge base.</p>
 
-          <Button type="button" variant="outline" className="w-full mb-4 h-11" onClick={handleGoogleSignIn}>
-            Continue with Google
-          </Button>
-
           {isLocked && (
             <div className="flex gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 mb-4">
               <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
