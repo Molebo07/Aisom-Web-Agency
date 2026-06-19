@@ -437,7 +437,7 @@ serve(async (req) => {
   } catch (e) {
     // Never log card content or sensitive data
     console.error("ai-cards error:", e instanceof Error ? e.message : "Unknown error");
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
