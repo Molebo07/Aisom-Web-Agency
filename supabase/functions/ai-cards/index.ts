@@ -126,8 +126,24 @@ function validateString(val: unknown, maxLen: number): string | null {
 
 function validateAction(val: unknown): string | null {
   if (typeof val !== "string") return null;
-  const allowed = ["embed", "search", "classify"];
+  const allowed = ["embed", "search", "classify", "backfill"];
   return allowed.includes(val) ? val : null;
+}
+
+const EMBEDDING_MODEL = "openai/text-embedding-3-small";
+
+async function embedText(text: string, apiKey: string): Promise<number[] | null> {
+  const res = await fetch("https://ai.gateway.lovable.dev/v1/embeddings", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ input: text, model: EMBEDDING_MODEL }),
+  });
+  if (!res.ok) {
+    console.error("Embedding API error:", res.status, await res.text().catch(() => ""));
+    return null;
+  }
+  const data = await res.json();
+  return data?.data?.[0]?.embedding ?? null;
 }
 
 serve(async (req) => {
