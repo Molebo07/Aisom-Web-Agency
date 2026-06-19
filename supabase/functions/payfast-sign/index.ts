@@ -1,5 +1,6 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createHash } from 'node:crypto';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const MERCHANT_ID = Deno.env.get('PAYFAST_MERCHANT_ID') ?? '';
 const MERCHANT_KEY = Deno.env.get('PAYFAST_MERCHANT_KEY') ?? '';
@@ -34,6 +35,26 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+    );
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     if (!MERCHANT_ID || !MERCHANT_KEY) {
       return new Response(JSON.stringify({ error: 'Payment provider not configured' }), {
         status: 500,
