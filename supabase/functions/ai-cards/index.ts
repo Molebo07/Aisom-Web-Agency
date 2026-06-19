@@ -311,24 +311,13 @@ serve(async (req) => {
           })
         : Promise.resolve({ data: null, error: null });
 
-      // Text search across title, content (jsonb cast to text), and tags
-      const escaped = query.replace(/[%_]/g, (m) => `\\${m}`);
+      const escaped = query.replace(/[%_\\]/g, (m) => `\\${m}`);
       const pattern = `%${escaped}%`;
-      const textPromise = supabase
-        .from("cards")
-        .select("*")
-        .eq("user_id", userId)
-        .or(`title.ilike.${pattern},content_text.ilike.${pattern}`)
-        .limit(20);
-
-      // The or() above references a generated column we don't have; use two separate queries instead.
       const [titleRes, tagRes, semRes] = await Promise.all([
         supabase.from("cards").select("*").eq("user_id", userId).ilike("title", pattern).limit(20),
         supabase.from("cards").select("*").eq("user_id", userId).contains("tags", [query.toLowerCase()]).limit(20),
         semanticPromise,
       ]);
-      // Suppress unused
-      void textPromise;
 
       const semMatches = (semRes as { data: Array<{ card_id: string; similarity: number }> | null }).data || [];
       const merged = new Map<string, Record<string, unknown> & { similarity?: number }>();
@@ -357,15 +346,6 @@ serve(async (req) => {
       };
       for (const c of titleRes.data || []) addTextMatch(c as { id: string }, 0.85);
       for (const c of tagRes.data || []) addTextMatch(c as { id: string }, 0.8);
-
-      // Also do a content-text fallback search via jsonb::text cast for cards without embeddings
-      const { data: contentMatches } = await supabaseAdmin
-        .from("cards")
-        .select("*")
-        .eq("user_id", userId)
-        .filter("content", "ilike", `%${query}%`)
-        .limit(20);
-      for (const c of contentMatches || []) addTextMatch(c as { id: string }, 0.6);
 
       const results = Array.from(merged.values()).sort(
         (a, b) => (b.similarity || 0) - (a.similarity || 0),
