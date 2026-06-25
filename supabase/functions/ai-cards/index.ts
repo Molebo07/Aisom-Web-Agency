@@ -385,6 +385,50 @@ serve(async (req) => {
         });
       }
 
+    } else if (action === "reembed_all") {
+      // Backfill embeddings for all of this user's cards that don't have one yet.
+      const { data: userCards, error: cardsErr } = await supabase
+        .from("cards")
+        .select("id, type, title, content, tags")
+        .eq("user_id", userId)
+        .eq("is_archived", false);
+
+      if (cardsErr) throw cardsErr;
+
+      let embedded = 0;
+      let failed = 0;
+      for (const card of userCards || []) {
+        const text = generateCardSearchText({
+          type: card.type,
+          title: card.title,
+          content: (card.content || {}) as Record<string, unknown>,
+          tags: (card.tags || []) as string[],
+        });
+        const r = await fetch("https://ai.gateway.lovable.dev/v1/embeddings", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ input: text, model: "openai/text-embedding-3-small" }),
+        });
+        if (!r.ok) {
+          failed++;
+          continue;
+        }
+        const j = await r.json();
+        const emb = j?.data?.[0]?.embedding;
+        if (!emb) { failed++; continue; }
+        const { error: upErr } = await supabaseAdmin
+          .from("card_embeddings")
+          .upsert({ card_id: card.id, embedding: emb });
+        if (upErr) failed++; else embedded++;
+      }
+
+      return new Response(JSON.stringify({ success: true, embedded, failed, total: userCards?.length || 0 }), {
+        headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
+      });
+
     } else if (action === "classify") {
       const text = validateString(body.text, 2000);
       if (!text) {
