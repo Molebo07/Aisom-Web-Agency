@@ -107,7 +107,15 @@ export default function Projects() {
         </div>
       )}
 
-      <Sheet open={!!selectedProject} onOpenChange={(openState) => { if (!openState) setSelectedProject(null); }}>
+      <Sheet open={!!selectedProject} onOpenChange={(openState) => {
+        if (!openState) {
+          setSelectedProject(null);
+          if (searchParams.get("projectId")) {
+            searchParams.delete("projectId");
+            setSearchParams(searchParams, { replace: true });
+          }
+        }
+      }}>
         <SheetContent side="right" className="w-full sm:w-[520px] p-0">
           <SheetHeader className="p-6">
             <SheetTitle>{selectedProject?.name || "Project details"}</SheetTitle>
