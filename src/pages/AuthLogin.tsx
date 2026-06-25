@@ -102,38 +102,6 @@ export default function AuthLogin() {
     }
   };
 
-  const handleSendMagicLink = async () => {
-    setError("");
-    setMagicLinkSent(false);
-    const result = loginSchema.safeParse({ email, password: "dummy-password" });
-    if (!result.success) {
-      setError(result.error.errors[0].message);
-      return;
-    }
-
-    setSubmitting(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-    setSubmitting(false);
-
-    if (error) {
-      setError(error.message);
-      return;
-    }
-
-    setMagicLinkSent(true);
-  };
-
-  const handleGoogleSignIn = async () => {
-    setError("");
-    const redirectUri = `${window.location.origin}/auth/callback`;
-    await lovable.auth.signInWithOAuth("google", { redirect_uri: redirectUri });
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "hsl(210 20% 97%)" }}>
       <div className="w-full max-w-[400px]">
