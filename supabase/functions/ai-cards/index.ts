@@ -126,7 +126,7 @@ function validateString(val: unknown, maxLen: number): string | null {
 
 function validateAction(val: unknown): string | null {
   if (typeof val !== "string") return null;
-  const allowed = ["embed", "search", "classify"];
+  const allowed = ["embed", "search", "classify", "reembed_all"];
   return allowed.includes(val) ? val : null;
 }
 
@@ -263,12 +263,16 @@ serve(async (req) => {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ input: textToEmbed, model: "text-embedding-3-small" }),
+        body: JSON.stringify({
+          input: textToEmbed,
+          model: "openai/text-embedding-3-small",
+        }),
       });
 
       if (!embeddingResponse.ok) {
-        console.log("Embedding API not available, skipping");
-        return new Response(JSON.stringify({ success: true, embedded: false }), {
+        const errText = await embeddingResponse.text();
+        console.error("Embedding failed:", embeddingResponse.status, errText.slice(0, 200));
+        return new Response(JSON.stringify({ success: true, embedded: false, reason: errText.slice(0, 200) }), {
           headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
         });
       }
@@ -303,19 +307,30 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         // Use the query directly - the embedding model will understand context from keywords like "symptom", "root cause", etc.
-        body: JSON.stringify({ input: query, model: "text-embedding-3-small" }),
+        body: JSON.stringify({ input: query, model: "openai/text-embedding-3-small" }),
       });
 
       if (!embeddingResponse.ok) {
-        // Fallback to text search
+        const errText = await embeddingResponse.text();
+        console.error("Search embedding failed:", embeddingResponse.status, errText.slice(0, 200));
+        // Fallback to broad text search across title, tags, and content
+        const escaped = query.replace(/[%,()]/g, " ");
         const { data, error } = await supabase
           .from("cards")
           .select("*")
           .eq("user_id", userId)
-          .ilike("title", `%${query}%`)
+          .or(`title.ilike.%${escaped}%,content.cs.{"${escaped}"},tags.cs.{${escaped}}`)
           .limit(10);
 
-        if (error) throw error;
+        if (error) {
+          // Last-resort title-only fallback
+          const { data: titleData } = await supabase
+            .from("cards").select("*").eq("user_id", userId)
+            .ilike("title", `%${escaped}%`).limit(10);
+          return new Response(JSON.stringify({ results: titleData || [], semantic: false }), {
+            headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
+          });
+        }
         return new Response(JSON.stringify({ results: data, semantic: false }), {
           headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
         });
@@ -327,7 +342,7 @@ serve(async (req) => {
       const { data: matches, error: searchError } = await supabase.rpc("search_cards", {
         query_embedding: queryEmbedding,
         user_id: userId,
-        match_threshold: 0.5,
+        match_threshold: 0.25,
         match_count: 10,
       });
 
@@ -356,9 +371,19 @@ serve(async (req) => {
         });
       }
 
-      return new Response(JSON.stringify({ results: [], semantic: true }), {
-        headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
-      });
+      // No semantic matches — fall back to broad text search so users still get results
+      {
+        const escaped = query.replace(/[%,()]/g, " ");
+        const { data: fbData } = await supabase
+          .from("cards")
+          .select("*")
+          .eq("user_id", userId)
+          .or(`title.ilike.%${escaped}%,content.cs.{"${escaped}"},tags.cs.{${escaped}}`)
+          .limit(10);
+        return new Response(JSON.stringify({ results: fbData || [], semantic: false }), {
+          headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
+        });
+      }
 
     } else if (action === "classify") {
       const text = validateString(body.text, 2000);
