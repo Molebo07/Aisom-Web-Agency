@@ -55,7 +55,6 @@ export default function AuthLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setMagicLinkSent(false);
     
     // Check if account is locked
     if (isAccountLocked(email)) {
