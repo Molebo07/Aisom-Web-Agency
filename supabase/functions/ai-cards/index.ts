@@ -126,24 +126,8 @@ function validateString(val: unknown, maxLen: number): string | null {
 
 function validateAction(val: unknown): string | null {
   if (typeof val !== "string") return null;
-  const allowed = ["embed", "search", "classify", "backfill"];
+  const allowed = ["embed", "search", "classify"];
   return allowed.includes(val) ? val : null;
-}
-
-const EMBEDDING_MODEL = "openai/text-embedding-3-small";
-
-async function embedText(text: string, apiKey: string): Promise<number[] | null> {
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/embeddings", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ input: text, model: EMBEDDING_MODEL }),
-  });
-  if (!res.ok) {
-    console.error("Embedding API error:", res.status, await res.text().catch(() => ""));
-    return null;
-  }
-  const data = await res.json();
-  return data?.data?.[0]?.embedding ?? null;
 }
 
 serve(async (req) => {
@@ -273,12 +257,24 @@ serve(async (req) => {
         });
       }
 
-      const embedding = await embedText(textToEmbed, LOVABLE_API_KEY);
-      if (!embedding) {
+      const embeddingResponse = await fetch("https://ai.gateway.lovable.dev/v1/embeddings", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ input: textToEmbed, model: "text-embedding-3-small" }),
+      });
+
+      if (!embeddingResponse.ok) {
+        console.log("Embedding API not available, skipping");
         return new Response(JSON.stringify({ success: true, embedded: false }), {
           headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
         });
       }
+
+      const embeddingData = await embeddingResponse.json();
+      const embedding = embeddingData.data[0].embedding;
 
       const { error } = await supabaseAdmin
         .from("card_embeddings")
@@ -299,104 +295,68 @@ serve(async (req) => {
         });
       }
 
-      // Run semantic + text search in parallel, then merge.
-      const queryEmbedding = await embedText(query, LOVABLE_API_KEY);
+      // Try semantic search first
+      const embeddingResponse = await fetch("https://ai.gateway.lovable.dev/v1/embeddings", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        // Use the query directly - the embedding model will understand context from keywords like "symptom", "root cause", etc.
+        body: JSON.stringify({ input: query, model: "text-embedding-3-small" }),
+      });
 
-      const semanticPromise = queryEmbedding
-        ? supabase.rpc("search_cards", {
-            query_embedding: queryEmbedding,
-            user_id: userId,
-            match_threshold: 0.3,
-            match_count: 20,
-          })
-        : Promise.resolve({ data: null, error: null });
+      if (!embeddingResponse.ok) {
+        // Fallback to text search
+        const { data, error } = await supabase
+          .from("cards")
+          .select("*")
+          .eq("user_id", userId)
+          .ilike("title", `%${query}%`)
+          .limit(10);
 
-      const escaped = query.replace(/[%_\\]/g, (m) => `\\${m}`);
-      const pattern = `%${escaped}%`;
-      const [titleRes, tagRes, semRes] = await Promise.all([
-        supabase.from("cards").select("*").eq("user_id", userId).ilike("title", pattern).limit(20),
-        supabase.from("cards").select("*").eq("user_id", userId).contains("tags", [query.toLowerCase()]).limit(20),
-        semanticPromise,
-      ]);
+        if (error) throw error;
+        return new Response(JSON.stringify({ results: data, semantic: false }), {
+          headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
+        });
+      }
 
-      const semMatches = (semRes as { data: Array<{ card_id: string; similarity: number }> | null }).data || [];
-      const merged = new Map<string, Record<string, unknown> & { similarity?: number }>();
+      const embeddingData = await embeddingResponse.json();
+      const queryEmbedding = embeddingData.data[0].embedding;
 
-      if (semMatches.length > 0) {
-        const cardIds = semMatches.map((m) => m.card_id);
-        const { data: semCards } = await supabase
+      const { data: matches, error: searchError } = await supabase.rpc("search_cards", {
+        query_embedding: queryEmbedding,
+        user_id: userId,
+        match_threshold: 0.5,
+        match_count: 10,
+      });
+
+      if (searchError) throw searchError;
+
+      if (matches && matches.length > 0) {
+        const cardIds = matches.map((m: unknown) => (m as { card_id: string }).card_id);
+        const { data: cards, error: cardsError } = await supabase
           .from("cards")
           .select("*")
           .eq("user_id", userId)
           .in("id", cardIds);
-        for (const c of semCards || []) {
-          const m = semMatches.find((x) => x.card_id === (c as { id: string }).id);
-          merged.set((c as { id: string }).id, { ...c, similarity: m?.similarity });
-        }
-      }
 
-      // Boost / include title and tag matches
-      const addTextMatch = (c: { id: string }, boost: number) => {
-        const existing = merged.get(c.id);
-        if (existing) {
-          existing.similarity = Math.max(existing.similarity ?? 0, boost);
-        } else {
-          merged.set(c.id, { ...c, similarity: boost });
-        }
-      };
-      for (const c of titleRes.data || []) addTextMatch(c as { id: string }, 0.85);
-      for (const c of tagRes.data || []) addTextMatch(c as { id: string }, 0.8);
+        if (cardsError) throw cardsError;
 
-      const results = Array.from(merged.values()).sort(
-        (a, b) => (b.similarity || 0) - (a.similarity || 0),
-      ).slice(0, 15);
+        const results = cards?.map((card) => {
+          const match = matches.find((m: unknown) => (m as { card_id: string }).card_id === card.id);
+          return {
+            ...card,
+            similarity: (match as { similarity?: number })?.similarity,
+          };
+        }).sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
 
-      return new Response(JSON.stringify({ results, semantic: !!queryEmbedding }), {
-        headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
-      });
-
-    } else if (action === "backfill") {
-      // Embed all of the user's cards that don't have an embedding yet.
-      const { data: cards, error: cardsError } = await supabase
-        .from("cards")
-        .select("id, type, title, content, tags")
-        .eq("user_id", userId)
-        .eq("is_archived", false);
-      if (cardsError) throw cardsError;
-
-      const { data: existing } = await supabaseAdmin
-        .from("card_embeddings")
-        .select("card_id");
-      const have = new Set((existing || []).map((e: { card_id: string }) => e.card_id));
-      const todo = (cards || []).filter((c: { id: string }) => !have.has(c.id));
-
-      let embedded = 0;
-      let failed = 0;
-      // Limit per call to avoid timeouts
-      for (const c of todo.slice(0, 50)) {
-        const text = generateCardSearchText({
-          type: (c as { type: string }).type,
-          title: (c as { title: string }).title,
-          content: ((c as { content: Record<string, unknown> }).content) || {},
-          tags: (c as { tags?: string[] }).tags || [],
+        return new Response(JSON.stringify({ results, semantic: true }), {
+          headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
         });
-        const vec = await embedText(text, LOVABLE_API_KEY);
-        if (!vec) { failed++; continue; }
-        const { error: upErr } = await supabaseAdmin
-          .from("card_embeddings")
-          .upsert({ card_id: (c as { id: string }).id, embedding: vec });
-        if (upErr) { failed++; continue; }
-        embedded++;
       }
 
-      return new Response(JSON.stringify({
-        success: true,
-        total: cards?.length || 0,
-        missing: todo.length,
-        embedded,
-        failed,
-        remaining: Math.max(0, todo.length - 50),
-      }), {
+      return new Response(JSON.stringify({ results: [], semantic: true }), {
         headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
       });
 
@@ -477,7 +437,7 @@ serve(async (req) => {
   } catch (e) {
     // Never log card content or sensitive data
     console.error("ai-cards error:", e instanceof Error ? e.message : "Unknown error");
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

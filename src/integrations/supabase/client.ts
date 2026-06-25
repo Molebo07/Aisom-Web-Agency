@@ -12,10 +12,10 @@ export const supabase = createBrowserClient<Database>(
   {
     cookieOptions: {
       name: 'sb-auth',
-      maxAge: 60 * 60 * 24 * 365,
+      lifetime: 60 * 60 * 24 * 365,
       domain: '',
       path: '/',
-      sameSite: 'lax',
+      sameSite: 'Lax',
       secure: true,
     },
   }

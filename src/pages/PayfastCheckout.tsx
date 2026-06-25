@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { payfastPlans, fetchPayfastFields, getPayfastActionUrl } from "@/lib/payfast";
+import { payfastPlans, buildPayfastFields, getPayfastActionUrl } from "@/lib/payfast";
 
 export default function PayfastCheckout() {
   const [searchParams] = useSearchParams();
@@ -24,24 +24,10 @@ export default function PayfastCheckout() {
   const returnUrl = `${origin}/checkout?plan=${planId}&annual=${annual ? 1 : 0}&status=success`;
   const cancelUrl = `${origin}/checkout?plan=${planId}&annual=${annual ? 1 : 0}&status=cancelled`;
 
-  const [formFields, setFormFields] = useState<Record<string, string> | null>(null);
-  const [signError, setSignError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!plan) return;
-    let cancelled = false;
-    setSignError(null);
-    setFormFields(null);
-    fetchPayfastFields({ planId: plan.id, annual, returnUrl, cancelUrl })
-      .then((fields) => {
-        if (!cancelled) setFormFields(fields);
-      })
-      .catch((err) => {
-        if (!cancelled) setSignError(err instanceof Error ? err.message : "Unable to prepare payment");
-      });
-    return () => {
-      cancelled = true;
-    };
+  const formFields = useMemo(() => {
+    if (!plan) return null;
+    const amount = plan.monthlyPrice * (annual ? 10 : 1);
+    return buildPayfastFields(plan, amount, annual, returnUrl, cancelUrl);
   }, [plan, annual, returnUrl, cancelUrl]);
 
   if (!plan) {
@@ -110,11 +96,8 @@ export default function PayfastCheckout() {
               Object.entries(formFields).map(([name, value]) => (
                 <input key={name} type="hidden" name={name} value={value} />
               ))}
-            {signError && (
-              <p className="text-sm text-destructive">{signError}</p>
-            )}
-            <Button className="w-full py-4" type="submit" disabled={!formFields}>
-              {formFields ? `Pay ${displayAmount} with Payfast` : "Preparing payment..."}
+            <Button className="w-full py-4" type="submit">
+              Pay {displayAmount} with Payfast
             </Button>
           </form>
 

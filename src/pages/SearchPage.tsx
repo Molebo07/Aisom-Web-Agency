@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search as SearchIcon, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Card } from "@/lib/api";
 import { searchQuerySchema } from "@/lib/validation";
@@ -22,33 +22,6 @@ export default function SearchPage() {
   const [results, setResults] = useState<(Card & { similarity?: number })[]>([]);
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
-  const [indexing, setIndexing] = useState(false);
-
-  // Backfill semantic embeddings for any cards that don't have them yet.
-  // Runs in the background once when the page mounts and continues in
-  // batches until done so all of the user's cards become searchable.
-  useEffect(() => {
-    let cancelled = false;
-    const run = async () => {
-      setIndexing(true);
-      try {
-        for (let i = 0; i < 5; i++) {
-          if (cancelled) return;
-          const { data, error } = await supabase.functions.invoke("ai-cards", {
-            body: { action: "backfill" },
-          });
-          if (error) break;
-          if (!data?.remaining || data.remaining === 0) break;
-        }
-      } catch {
-        /* ignore */
-      } finally {
-        if (!cancelled) setIndexing(false);
-      }
-    };
-    run();
-    return () => { cancelled = true; };
-  }, []);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,13 +73,6 @@ export default function SearchPage() {
           className="pl-12 h-12 text-base rounded-xl"
         />
       </form>
-
-      {indexing && (
-        <p className="text-xs text-muted-foreground mb-4 flex items-center gap-2">
-          <Loader2 className="h-3 w-3 animate-spin" />
-          Indexing your cards for semantic search…
-        </p>
-      )}
 
       {searching && (
         <div className="flex items-center justify-center py-12">
