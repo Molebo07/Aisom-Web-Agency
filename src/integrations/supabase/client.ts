@@ -15,7 +15,7 @@ export const supabase = createBrowserClient<Database>(
       lifetime: 60 * 60 * 24 * 365,
       domain: '',
       path: '/',
-      sameSite: 'Lax',
+      sameSite: 'lax',
       secure: true,
     },
   }
