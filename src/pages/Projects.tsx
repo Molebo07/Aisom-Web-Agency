@@ -8,13 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function Projects() {
   const [open, setOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
@@ -24,6 +25,14 @@ export default function Projects() {
     queryKey: ["projects"],
     queryFn: fetchProjects,
   });
+
+  useEffect(() => {
+    const id = searchParams.get("projectId");
+    if (id && projects.length) {
+      const p = projects.find((pr) => pr.id === id);
+      if (p) setSelectedProject(p);
+    }
+  }, [searchParams, projects]);
 
   const mutation = useMutation({
     mutationFn: createProject,
@@ -98,7 +107,15 @@ export default function Projects() {
         </div>
       )}
 
-      <Sheet open={!!selectedProject} onOpenChange={(openState) => { if (!openState) setSelectedProject(null); }}>
+      <Sheet open={!!selectedProject} onOpenChange={(openState) => {
+        if (!openState) {
+          setSelectedProject(null);
+          if (searchParams.get("projectId")) {
+            searchParams.delete("projectId");
+            setSearchParams(searchParams, { replace: true });
+          }
+        }
+      }}>
         <SheetContent side="right" className="w-full sm:w-[520px] p-0">
           <SheetHeader className="p-6">
             <SheetTitle>{selectedProject?.name || "Project details"}</SheetTitle>

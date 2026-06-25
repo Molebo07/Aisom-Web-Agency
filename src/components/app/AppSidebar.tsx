@@ -105,12 +105,14 @@ export function AppSidebar() {
                 ) : (
                   projects.slice(0, 5).map((project) => (
                     <SidebarMenuItem key={project.id}>
-                      <SidebarMenuButton className="text-sidebar-foreground/70 hover:bg-sidebar-accent/50">
-                        <div
-                          className="h-2.5 w-2.5 rounded-full mr-2 shrink-0"
-                          style={{ backgroundColor: project.color || "hsl(var(--sidebar-foreground) / 0.3)" }}
-                        />
-                        <span className="text-sm truncate">{project.name}</span>
+                      <SidebarMenuButton asChild className="text-sidebar-foreground/70 hover:bg-sidebar-accent/50">
+                        <Link to={`/app/projects?projectId=${project.id}`}>
+                          <div
+                            className="h-2.5 w-2.5 rounded-full mr-2 shrink-0"
+                            style={{ backgroundColor: project.color || "hsl(var(--sidebar-foreground) / 0.3)" }}
+                          />
+                          <span className="text-sm truncate">{project.name}</span>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))
