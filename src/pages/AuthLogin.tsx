@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +22,6 @@ export default function AuthLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [lockoutTimeRemaining, setLockoutTimeRemaining] = useState(0);
 
@@ -57,7 +55,6 @@ export default function AuthLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setMagicLinkSent(false);
     
     // Check if account is locked
     if (isAccountLocked(email)) {
@@ -105,38 +102,6 @@ export default function AuthLogin() {
     }
   };
 
-  const handleSendMagicLink = async () => {
-    setError("");
-    setMagicLinkSent(false);
-    const result = loginSchema.safeParse({ email, password: "dummy-password" });
-    if (!result.success) {
-      setError(result.error.errors[0].message);
-      return;
-    }
-
-    setSubmitting(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-    setSubmitting(false);
-
-    if (error) {
-      setError(error.message);
-      return;
-    }
-
-    setMagicLinkSent(true);
-  };
-
-  const handleGoogleSignIn = async () => {
-    setError("");
-    const redirectUri = `${window.location.origin}/auth/callback`;
-    await lovable.auth.signInWithOAuth("google", { redirect_uri: redirectUri });
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "hsl(210 20% 97%)" }}>
       <div className="w-full max-w-[400px]">
@@ -147,10 +112,6 @@ export default function AuthLogin() {
         <div className="bg-background border border-border rounded-[14px] p-10">
           <h1 className="text-[22px] font-semibold text-foreground mb-1">Welcome back</h1>
           <p className="text-sm text-muted-foreground mb-6">Sign in to your knowledge base.</p>
-
-          <Button type="button" variant="outline" className="w-full mb-4 h-11" onClick={handleGoogleSignIn}>
-            Continue with Google
-          </Button>
 
           {isLocked && (
             <div className="flex gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 mb-4">
@@ -204,15 +165,6 @@ export default function AuthLogin() {
                 <p className="text-destructive">{error}</p>
               </div>
             )}
-            {magicLinkSent && (
-              <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
-                <p>Check your inbox</p>
-                <p className="text-xs text-emerald-700">We sent the magic link to your email.</p>
-              </div>
-            )}
-            <Button type="button" className="w-full h-11 bg-secondary text-secondary-foreground hover:bg-secondary/90" onClick={handleSendMagicLink} disabled={submitting || isLocked}>
-              Send magic link
-            </Button>
             <Button type="submit" className="w-full h-11 bg-primary" disabled={submitting || isLocked}>
               {submitting ? "Signing in..." : "Sign in"}
             </Button>
