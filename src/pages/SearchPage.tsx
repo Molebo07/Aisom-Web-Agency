@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search as SearchIcon, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Card } from "@/lib/api";
 import { searchQuerySchema } from "@/lib/validation";
@@ -22,6 +22,18 @@ export default function SearchPage() {
   const [results, setResults] = useState<(Card & { similarity?: number })[]>([]);
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
+
+  // Backfill embeddings once per session so semantic search works for older cards.
+  useEffect(() => {
+    const key = "aisom:reembed_done";
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    supabase.functions
+      .invoke("ai-cards", { body: { action: "reembed_all" } })
+      .catch(() => {
+        // Silent — semantic search will still fall back to text search.
+      });
+  }, []);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
