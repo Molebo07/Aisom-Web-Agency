@@ -103,6 +103,57 @@ export type Database = {
           },
         ]
       }
+      payfast_payments: {
+        Row: {
+          amount_fee: number | null
+          amount_gross: number | null
+          amount_net: number | null
+          billing_cycle: string | null
+          created_at: string
+          email_address: string | null
+          id: string
+          item_name: string | null
+          m_payment_id: string | null
+          payment_status: string
+          pf_payment_id: string | null
+          plan_id: string | null
+          raw_payload: Json
+          user_id: string | null
+        }
+        Insert: {
+          amount_fee?: number | null
+          amount_gross?: number | null
+          amount_net?: number | null
+          billing_cycle?: string | null
+          created_at?: string
+          email_address?: string | null
+          id?: string
+          item_name?: string | null
+          m_payment_id?: string | null
+          payment_status: string
+          pf_payment_id?: string | null
+          plan_id?: string | null
+          raw_payload: Json
+          user_id?: string | null
+        }
+        Update: {
+          amount_fee?: number | null
+          amount_gross?: number | null
+          amount_net?: number | null
+          billing_cycle?: string | null
+          created_at?: string
+          email_address?: string | null
+          id?: string
+          item_name?: string | null
+          m_payment_id?: string | null
+          payment_status?: string
+          pf_payment_id?: string | null
+          plan_id?: string | null
+          raw_payload?: Json
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
