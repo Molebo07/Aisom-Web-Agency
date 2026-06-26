@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { payfastPlans, buildPayfastFields, getPayfastActionUrl } from "@/lib/payfast";
+import { payfastPlans, getPayfastActionUrl } from "@/lib/payfast";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function PayfastCheckout() {
   const [searchParams] = useSearchParams();
@@ -24,10 +25,35 @@ export default function PayfastCheckout() {
   const returnUrl = `${origin}/checkout?plan=${planId}&annual=${annual ? 1 : 0}&status=success`;
   const cancelUrl = `${origin}/checkout?plan=${planId}&annual=${annual ? 1 : 0}&status=cancelled`;
 
-  const formFields = useMemo(() => {
-    if (!plan) return null;
-    const amount = plan.monthlyPrice * (annual ? 10 : 1);
-    return buildPayfastFields(plan, amount, annual, returnUrl, cancelUrl);
+  const [formFields, setFormFields] = useState<Record<string, string> | null>(null);
+  const [signError, setSignError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!plan) return;
+    setFormFields(null);
+    setSignError(null);
+    (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const { data, error } = await supabase.functions.invoke("payfast-sign", {
+        body: {
+          planId: plan.id,
+          annual,
+          returnUrl,
+          cancelUrl,
+          email: userData?.user?.email ?? "",
+        },
+      });
+      if (cancelled) return;
+      if (error || !data?.fields) {
+        setSignError(error?.message || "Failed to prepare Payfast checkout.");
+        return;
+      }
+      setFormFields(data.fields as Record<string, string>);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [plan, annual, returnUrl, cancelUrl]);
 
   if (!plan) {
@@ -96,9 +122,12 @@ export default function PayfastCheckout() {
               Object.entries(formFields).map(([name, value]) => (
                 <input key={name} type="hidden" name={name} value={value} />
               ))}
-            <Button className="w-full py-4" type="submit">
-              Pay {displayAmount} with Payfast
+            <Button className="w-full py-4" type="submit" disabled={!formFields}>
+              {formFields ? `Pay ${displayAmount} with Payfast` : "Preparing secure checkout…"}
             </Button>
+            {signError && (
+              <p className="text-sm text-red-600">{signError}</p>
+            )}
           </form>
 
           <div className="flex flex-col gap-2 text-sm text-muted-foreground">
