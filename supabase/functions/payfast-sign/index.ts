@@ -52,6 +52,8 @@ Deno.serve(async (req) => {
 
   try {
     const { planId, annual, returnUrl, cancelUrl, email } = await req.json();
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const notifyUrl = `${supabaseUrl}/functions/v1/payfast-itn`;
 
     const plan = PLANS[planId as keyof typeof PLANS];
     if (!plan) {
@@ -76,6 +78,7 @@ Deno.serve(async (req) => {
       merchant_key: PAYFAST_MERCHANT_KEY,
       return_url: String(returnUrl ?? ""),
       cancel_url: String(cancelUrl ?? ""),
+      notify_url: notifyUrl,
       ...(email ? { email_address: String(email) } : {}),
       m_payment_id: `${planId}-${frequencyLabel}-${Date.now()}`,
       amount,
