@@ -19,6 +19,8 @@ import SearchPage from "./pages/SearchPage.tsx";
 import Projects from "./pages/Projects.tsx";
 import SettingsPage from "./pages/SettingsPage.tsx";
 import PayfastCheckout from "./pages/PayfastCheckout.tsx";
+import Terms from "./pages/Terms.tsx";
+import RefundPolicy from "./pages/RefundPolicy.tsx";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +61,8 @@ const App = () => (
               <Route path="settings" element={<SettingsPage />} />
             </Route>
             <Route path="/checkout" element={<PayfastCheckout />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
