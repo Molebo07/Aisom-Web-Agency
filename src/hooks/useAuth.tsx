@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { posthog } from "@/integrations/posthog/client";
 
 interface AuthContextType {
   session: Session | null;
@@ -26,6 +27,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setLoading(false);
+      if (event === "SIGNED_IN" && session?.user) {
+        try { posthog.identify(session.user.id, { email: session.user.email }); } catch {}
+      }
+      if (event === "SIGNED_OUT") {
+        try { posthog.reset(); } catch {}
+      }
     });
 
     // Then check for existing session
