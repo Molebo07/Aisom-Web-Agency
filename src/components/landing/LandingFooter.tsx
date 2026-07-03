@@ -16,6 +16,8 @@ export function LandingFooter() {
             <Link to="/auth/login" className="hover:text-primary-foreground transition-colors">Log in</Link>
             <a href="#pricing" className="hover:text-primary-foreground transition-colors">Pricing</a>
             <a href="#faq" className="hover:text-primary-foreground transition-colors">FAQ</a>
+            <Link to="/terms" className="hover:text-primary-foreground transition-colors">Terms</Link>
+            <Link to="/refund-policy" className="hover:text-primary-foreground transition-colors">Refunds</Link>
           </div>
           <p className="text-xs text-primary-foreground/40">
             © {new Date().getFullYear()} Aisom. Built for how developers think.
