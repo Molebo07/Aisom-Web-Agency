@@ -30,11 +30,17 @@ export default function Terms() {
 
         <Section title="1. Who we are">
           <p>
-            The Service is operated by <Placeholder>[Legal Entity Name]</Placeholder>, a business
+            The Service is operated by Aisom Systems (Pty) Ltd, a business
             registered in the Republic of South Africa
-            (registration number <Placeholder>[Reg No]</Placeholder>), with its address at{" "}
-            <Placeholder>[Registered Address]</Placeholder>. You can contact us at{" "}
-            <Placeholder>[support@aisom.co.za]</Placeholder>.
+            (registration number 2026/234071/07), with its address at{" "}
+            53 Crane Street, Tembisa, 1632. You can contact us at{" "}
+            <a
+              href="mailto:sales.aisom@gmail.com"
+              className="underline hover:text-primary"
+            >
+              sales.aisom@gmail.com
+            </a>
+            .
           </p>
         </Section>
 
@@ -140,7 +146,13 @@ export default function Terms() {
             We process personal information in accordance with POPIA. For details on what we
             collect, how we use it, and your rights (including access, correction, and deletion),
             see our Privacy Policy at <Placeholder>[/privacy]</Placeholder> or email{" "}
-            <Placeholder>[privacy@aisom.co.za]</Placeholder>.
+            <a
+              href="mailto:sales.aisom@gmail.com"
+              className="underline hover:text-primary"
+            >
+              sales.aisom@gmail.com
+            </a>
+            .
           </p>
         </Section>
 
@@ -154,7 +166,14 @@ export default function Terms() {
 
         <Section title="12. Contact">
           <p>
-            Questions about these Terms? Email <Placeholder>[support@aisom.co.za]</Placeholder>.
+            Questions about these Terms? Email{" "}
+            <a
+              href="mailto:sales.aisom@gmail.com"
+              className="underline hover:text-primary"
+            >
+              sales.aisom@gmail.com
+            </a>
+            .
           </p>
         </Section>
       </main>

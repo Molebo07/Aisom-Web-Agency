@@ -49,7 +49,13 @@ export default function RefundPolicy() {
             <li>
               You may cancel your paid subscription at any time from{" "}
               <strong>Settings → Billing</strong> in the app, or by emailing{" "}
-              <Placeholder>[billing@aisom.co.za]</Placeholder>.
+              <a
+                href="mailto:sales.aisom@gmail.com"
+                className="underline hover:text-primary"
+              >
+                sales.aisom@gmail.com
+              </a>
+              .
             </li>
             <li>
               Cancellation stops the next automatic renewal. You will keep access to paid features
@@ -106,8 +112,14 @@ export default function RefundPolicy() {
         <Section title="5. How to request a refund">
           <ol className="list-decimal pl-6 space-y-2">
             <li>
-              Email <Placeholder>[billing@aisom.co.za]</Placeholder> from the email address on your
-              Aisom account.
+              Email{" "}
+              <a
+                href="mailto:sales.aisom@gmail.com"
+                className="underline hover:text-primary"
+              >
+                sales.aisom@gmail.com
+              </a>{" "}
+              from the email address on your Aisom account.
             </li>
             <li>
               Include the PayFast payment reference (`m_payment_id` or `pf_payment_id`), the date
@@ -142,9 +154,21 @@ export default function RefundPolicy() {
 
         <Section title="8. Contact">
           <p>
-            Billing and refund queries: <Placeholder>[billing@aisom.co.za]</Placeholder>
+            Billing and refund queries:{" "}
+            <a
+              href="mailto:sales.aisom@gmail.com"
+              className="underline hover:text-primary"
+            >
+              sales.aisom@gmail.com
+            </a>
             <br />
-            General support: <Placeholder>[support@aisom.co.za]</Placeholder>
+            General support:{" "}
+            <a
+              href="mailto:sales.aisom@gmail.com"
+              className="underline hover:text-primary"
+            >
+              sales.aisom@gmail.com
+            </a>
           </p>
         </Section>
       </main>
