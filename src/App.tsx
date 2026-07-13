@@ -21,6 +21,8 @@ import SettingsPage from "./pages/SettingsPage.tsx";
 import PayfastCheckout from "./pages/PayfastCheckout.tsx";
 import Terms from "./pages/Terms.tsx";
 import RefundPolicy from "./pages/RefundPolicy.tsx";
+import WorkspaceMembers from "./pages/WorkspaceMembers.tsx";
+import { WorkspaceProvider } from "@/hooks/useWorkspace";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <WorkspaceProvider>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth/login" element={<AuthLogin />} />
@@ -59,12 +62,14 @@ const App = () => (
               <Route path="search" element={<SearchPage />} />
               <Route path="projects" element={<Projects />} />
               <Route path="settings" element={<SettingsPage />} />
+              <Route path="workspace" element={<WorkspaceMembers />} />
             </Route>
             <Route path="/checkout" element={<PayfastCheckout />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/refund-policy" element={<RefundPolicy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </WorkspaceProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

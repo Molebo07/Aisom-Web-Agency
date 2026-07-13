@@ -6,6 +6,7 @@ import {
   Settings,
   Terminal,
   Plus,
+  Users,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -25,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProjects } from "@/lib/api";
+import { WorkspaceSwitcher } from "@/components/app/WorkspaceSwitcher";
 
 const navItems = [
   { title: "Dashboard", url: "/app/dashboard", icon: LayoutDashboard },
@@ -34,6 +36,7 @@ const navItems = [
 ];
 
 const bottomItems = [
+  { title: "Workspace", url: "/app/workspace", icon: Users },
   { title: "Settings", url: "/app/settings", icon: Settings },
 ];
 
@@ -59,6 +62,11 @@ export function AppSidebar() {
             </span>
           )}
         </Link>
+        {!collapsed && (
+          <div className="mt-2">
+            <WorkspaceSwitcher />
+          </div>
+        )}
       </SidebarHeader>
 
       <SidebarContent>

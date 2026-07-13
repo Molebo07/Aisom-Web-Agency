@@ -75,7 +75,7 @@ export interface Project {
 }
 
 // Cards
-export async function fetchCards(filters?: { type?: string; search?: string }) {
+export async function fetchCards(filters?: { type?: string; search?: string; workspaceId?: string | null }) {
   let query = supabase
     .from("cards")
     .select("*")
@@ -84,6 +84,9 @@ export async function fetchCards(filters?: { type?: string; search?: string }) {
 
   if (filters?.type && filters.type !== "all") {
     query = query.eq("type", filters.type);
+  }
+  if (filters?.workspaceId) {
+    query = query.eq("workspace_id", filters.workspaceId);
   }
   if (filters?.search) {
     // Sanitize search input
@@ -116,6 +119,7 @@ export async function createCard(card: {
   tags: string[];
   language?: string;
   project_id?: string;
+  workspace_id?: string | null;
 }) {
   // Validate input with Zod
   const validated = createCardSchema.parse(card);
@@ -139,6 +143,7 @@ export async function createCard(card: {
       tags: validated.tags,
       language: validated.language || null,
       project_id: validated.project_id || null,
+      workspace_id: card.workspace_id ?? null,
     })
     .select()
     .single();
@@ -211,17 +216,18 @@ export async function deleteCard(id: string) {
 }
 
 // Projects
-export async function fetchProjects() {
-  const { data, error } = await supabase
+export async function fetchProjects(workspaceId?: string | null) {
+  let query = supabase
     .from("projects")
     .select("*")
     .order("created_at", { ascending: false });
-
+  if (workspaceId) query = query.eq("workspace_id", workspaceId);
+  const { data, error } = await query;
   if (error) throw error;
   return (data || []) as Project[];
 }
 
-export async function createProject(project: { name: string; description?: string; repo_url?: string; color?: string }) {
+export async function createProject(project: { name: string; description?: string; repo_url?: string; color?: string; workspace_id?: string | null }) {
   // Validate
   const validated = createProjectSchema.parse(project);
 
@@ -239,6 +245,7 @@ export async function createProject(project: { name: string; description?: strin
       description: validated.description || null,
       repo_url: validated.repo_url || null,
       color: validated.color || "#0B1220",
+      workspace_id: project.workspace_id ?? null,
     })
     .select()
     .single();
