@@ -88,8 +88,11 @@ export async function fetchWorkspaceMembers(workspaceId: string): Promise<Worksp
     .select("id, display_name, avatar_url")
     .in("id", userIds);
 
-  const byId = new Map(
-    (profiles || []).map((p: { id: string; display_name: string | null; avatar_url: string | null }) => [p.id, p])
+  const byId = new Map<string, { display_name: string | null; avatar_url: string | null }>(
+    (profiles || []).map((p: { id: string; display_name: string | null; avatar_url: string | null }) => [
+      p.id,
+      { display_name: p.display_name, avatar_url: p.avatar_url },
+    ])
   );
   return members.map((m) => ({ ...m, profile: byId.get(m.user_id) ?? null }));
 }
