@@ -27,6 +27,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProjects } from "@/lib/api";
 import { WorkspaceSwitcher } from "@/components/app/WorkspaceSwitcher";
+import { useWorkspace } from "@/hooks/useWorkspace";
 
 const navItems = [
   { title: "Dashboard", url: "/app/dashboard", icon: LayoutDashboard },
@@ -43,10 +44,11 @@ const bottomItems = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const { activeWorkspaceId } = useWorkspace();
 
   const { data: projects = [] } = useQuery({
-    queryKey: ["projects"],
-    queryFn: fetchProjects,
+    queryKey: ["projects", activeWorkspaceId],
+    queryFn: () => fetchProjects(activeWorkspaceId),
   });
 
   return (

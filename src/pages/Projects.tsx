@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, FolderKanban } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchProjects, createProject, type Project } from "@/lib/api";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -20,10 +21,11 @@ export default function Projects() {
   const [description, setDescription] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const queryClient = useQueryClient();
+  const { activeWorkspaceId } = useWorkspace();
 
   const { data: projects = [], isLoading } = useQuery({
-    queryKey: ["projects"],
-    queryFn: fetchProjects,
+    queryKey: ["projects", activeWorkspaceId],
+    queryFn: () => fetchProjects(activeWorkspaceId),
   });
 
   useEffect(() => {
@@ -72,7 +74,7 @@ export default function Projects() {
                 <Label htmlFor="prepo">Repository URL</Label>
                 <Input id="prepo" value={repoUrl} onChange={(e) => setRepoUrl(e.target.value)} placeholder="https://github.com/..." className="mt-1.5" />
               </div>
-              <Button onClick={() => mutation.mutate({ name, description, repo_url: repoUrl })} disabled={!name.trim() || mutation.isPending}>
+              <Button onClick={() => mutation.mutate({ name, description, repo_url: repoUrl, workspace_id: activeWorkspaceId })} disabled={!name.trim() || mutation.isPending}>
                 {mutation.isPending ? "Creating..." : "Create Project"}
               </Button>
             </div>
