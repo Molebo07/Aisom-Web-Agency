@@ -17,6 +17,7 @@ import { ArrowLeft, Bug, Command, CalendarDays, Code2, Check } from "lucide-reac
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProfile } from "@/lib/api";
+import { useWorkspace } from "@/hooks/useWorkspace";
 
 const languages = [
   "TypeScript", "JavaScript", "Python", "Rust", "Go",
@@ -33,6 +34,7 @@ const roles = [
 
 export default function Onboarding() {
   const { user, loading: authLoading } = useAuth();
+  const { activeWorkspaceId } = useWorkspace();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
@@ -168,6 +170,7 @@ export default function Onboarding() {
         title: cardTitle,
         content,
         tags: parsedTags,
+        workspace_id: activeWorkspaceId,
       })
       .select()
       .single();
