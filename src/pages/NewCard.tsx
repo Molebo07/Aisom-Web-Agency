@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Bug, GitBranch, BookOpen, Package, GraduationCap, MessageSquare, FolderKanban } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCard, type CardType } from "@/lib/api";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { toast } from "sonner";
 
 const cardTypes = [
@@ -70,6 +71,7 @@ export default function NewCard() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { activeWorkspaceId } = useWorkspace();
   const [selectedType, setSelectedType] = useState(searchParams.get("type") || "");
   const projectId = searchParams.get("projectId") || undefined;
   const [title, setTitle] = useState("");
@@ -116,6 +118,7 @@ export default function NewCard() {
       tags: processedTags,
       language: language || undefined,
       project_id: projectId,
+      workspace_id: activeWorkspaceId,
     });
   };
 
