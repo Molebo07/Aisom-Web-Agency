@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchCards } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardDetailSheet } from "@/components/cards/CardDetailSheet";
+import { useWorkspace } from "@/hooks/useWorkspace";
 
 const typeOptions = ["all", "bug", "adr", "concept", "library", "learning", "interview"];
 
@@ -28,10 +29,11 @@ export default function Cards() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const { activeWorkspaceId } = useWorkspace();
 
   const { data: cards = [], isLoading } = useQuery({
-    queryKey: ["cards", typeFilter, search],
-    queryFn: () => fetchCards({ type: typeFilter, search }),
+    queryKey: ["cards", typeFilter, search, activeWorkspaceId],
+    queryFn: () => fetchCards({ type: typeFilter, search, workspaceId: activeWorkspaceId }),
   });
 
   return (
