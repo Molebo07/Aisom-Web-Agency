@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Bug, GitBranch, BookOpen, Package, GraduationCap, MessageSquare, FolderKanban } from "lucide-react";
+import { ArrowLeft, Bug, GitBranch, BookOpen, Package, GraduationCap, MessageSquare, FolderKanban, Sparkles, Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCard, type CardType } from "@/lib/api";
 import { useWorkspace } from "@/hooks/useWorkspace";
+import { getAiLabel, suggestField } from "@/lib/aiSuggest";
 import { toast } from "sonner";
 
 const cardTypes = [
@@ -78,6 +79,7 @@ export default function NewCard() {
   const [tags, setTags] = useState("");
   const [language, setLanguage] = useState("");
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
+  const [aiLoading, setAiLoading] = useState<string | null>(null);
 
   const fields = selectedType ? typeFields[selectedType] || [] : [];
 
@@ -124,6 +126,41 @@ export default function NewCard() {
 
   const updateField = (key: string, value: string) => {
     setFieldValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const runSuggest = async (fieldKey: string) => {
+    if (!title.trim()) {
+      toast.error("Add a title first — the agent needs something to reason from.");
+      return;
+    }
+    if (fieldValues[fieldKey]?.trim()) {
+      const ok = window.confirm("Replace what you've already written in this field with an AI suggestion?");
+      if (!ok) return;
+    }
+    setAiLoading(fieldKey);
+    try {
+      const tagList = tags
+        .split(",")
+        .map((t) => t.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, ""))
+        .filter(Boolean);
+      const suggestion = await suggestField({
+        cardType: selectedType,
+        fieldKey,
+        title,
+        language,
+        tags: tagList,
+        existingContent: fieldValues,
+      });
+      if (!suggestion) {
+        toast.error("Agent returned nothing. Try adding more context.");
+        return;
+      }
+      updateField(fieldKey, suggestion);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "AI request failed");
+    } finally {
+      setAiLoading(null);
+    }
   };
 
   return (
@@ -179,19 +216,39 @@ export default function NewCard() {
 
           {fields.map((field) => (
             <div key={field.key}>
-              <Label htmlFor={field.key}>{field.label}</Label>
+              <div className="flex items-center justify-between mb-1.5">
+                <Label htmlFor={field.key}>{field.label}</Label>
+                {getAiLabel(selectedType, field.key) && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs gap-1 text-primary hover:text-primary hover:bg-primary/5"
+                    onClick={() => runSuggest(field.key)}
+                    disabled={aiLoading !== null || !title.trim()}
+                    title={!title.trim() ? "Add a title first" : "Ask the pseudo-coding agent"}
+                  >
+                    {aiLoading === field.key ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-3.5 w-3.5" />
+                    )}
+                    {getAiLabel(selectedType, field.key)}
+                  </Button>
+                )}
+              </div>
               {field.type === "input" ? (
-                <Input id={field.key} value={fieldValues[field.key] || ""} onChange={(e) => updateField(field.key, e.target.value)} placeholder={field.label} className="mt-1.5" />
+                <Input id={field.key} value={fieldValues[field.key] || ""} onChange={(e) => updateField(field.key, e.target.value)} placeholder={field.label} />
               ) : field.type === "code" ? (
                 <Textarea
                   id={field.key}
                   value={fieldValues[field.key] || ""}
                   onChange={(e) => updateField(field.key, e.target.value)}
                   placeholder={`Enter ${field.label.toLowerCase()}...`}
-                  className="mt-1.5 font-mono text-sm min-h-[120px] bg-primary text-primary-foreground placeholder:text-primary-foreground/40 border-primary"
+                  className="font-mono text-sm min-h-[120px] bg-primary text-primary-foreground placeholder:text-primary-foreground/40 border-primary"
                 />
               ) : (
-                <Textarea id={field.key} value={fieldValues[field.key] || ""} onChange={(e) => updateField(field.key, e.target.value)} placeholder={`Enter ${field.label.toLowerCase()}...`} className="mt-1.5 min-h-[100px]" />
+                <Textarea id={field.key} value={fieldValues[field.key] || ""} onChange={(e) => updateField(field.key, e.target.value)} placeholder={`Enter ${field.label.toLowerCase()}...`} className="min-h-[100px]" />
               )}
             </div>
           ))}
