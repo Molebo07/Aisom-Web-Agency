@@ -20,8 +20,9 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CodeBlock } from "@/components/ui/CodeBlock";
-import { Pencil, Copy, Trash2, X } from "lucide-react";
+import { Pencil, Copy, Trash2, X, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { getAiLabel, suggestField } from "@/lib/aiSuggest";
 
 interface CardDetailSheetProps {
   cardId: string | null;
@@ -115,6 +116,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
   const [editContent, setEditContent] = useState<Record<string, any>>({});
   const [editTags, setEditTags] = useState("");
   const [editLanguage, setEditLanguage] = useState("");
+  const [aiLoading, setAiLoading] = useState<string | null>(null);
   const draftTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [draftSaved, setDraftSaved] = useState(false);
 
@@ -258,6 +260,49 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
     setDraftSaved(false);
   };
 
+  const runSuggest = useCallback(async (fieldKey: string) => {
+    if (!card) return;
+    const currentTitle = editTitle.trim() || card.title;
+    if (!currentTitle) {
+      toast.error("Add a title first.");
+      return;
+    }
+    const existingVal = editContent[fieldKey];
+    if (typeof existingVal === "string" && existingVal.trim()) {
+      const ok = window.confirm("Replace what you've written in this field with an AI suggestion?");
+      if (!ok) return;
+    }
+    setAiLoading(fieldKey);
+    try {
+      const tagList = editTags
+        .split(",")
+        .map((t) => t.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, ""))
+        .filter(Boolean);
+      const existingStrings: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(editContent)) {
+        if (typeof v === "string") existingStrings[k] = v;
+        else if (Array.isArray(v)) existingStrings[k] = v.join(", ");
+      }
+      const suggestion = await suggestField({
+        cardType: card.type,
+        fieldKey,
+        title: currentTitle,
+        language: editLanguage,
+        tags: tagList,
+        existingContent: existingStrings,
+      });
+      if (!suggestion) {
+        toast.error("Agent returned nothing. Try adding more context.");
+        return;
+      }
+      setEditContent((prev) => ({ ...prev, [fieldKey]: suggestion }));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "AI request failed");
+    } finally {
+      setAiLoading(null);
+    }
+  }, [card, editTitle, editContent, editTags, editLanguage]);
+
   const fields = card ? (typeFields[card.type] || []) : [];
   const content = card?.content as Record<string, unknown> || {};
 
@@ -381,12 +426,31 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
                   <Separator />
                   {fields.map((field) => (
                     <div key={field.key}>
-                      <Label className="text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">{field.label}</Label>
+                      <div className="flex items-center justify-between mb-1">
+                        <Label className="text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">{field.label}</Label>
+                        {card && getAiLabel(card.type, field.key) && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 px-2 text-[11px] gap-1 text-primary hover:text-primary hover:bg-primary/5"
+                            onClick={() => runSuggest(field.key)}
+                            disabled={aiLoading !== null || !editTitle.trim()}
+                          >
+                            {aiLoading === field.key ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <Sparkles className="h-3 w-3" />
+                            )}
+                            {getAiLabel(card.type, field.key)}
+                          </Button>
+                        )}
+                      </div>
                       {field.isCode ? (
                         <Textarea
                           value={editContent[field.key] || ""}
                           onChange={(e) => setEditContent((prev) => ({ ...prev, [field.key]: e.target.value }))}
-                          className="mt-1 font-mono text-[13px] min-h-[120px] resize-y bg-primary text-primary-foreground placeholder:text-primary-foreground/40 border-primary rounded-md p-3 focus:ring-1 focus:ring-ring"
+                          className="font-mono text-[13px] min-h-[120px] resize-y bg-primary text-primary-foreground placeholder:text-primary-foreground/40 border-primary rounded-md p-3 focus:ring-1 focus:ring-ring"
                         />
                       ) : (
                         <Textarea
@@ -396,7 +460,7 @@ export function CardDetailSheet({ cardId, onClose, onCardUpdated, onCardDeleted 
                               : (editContent[field.key] || "")
                           }
                           onChange={(e) => setEditContent((prev) => ({ ...prev, [field.key]: e.target.value }))}
-                          className="mt-1 min-h-[80px] resize-y"
+                          className="min-h-[80px] resize-y"
                         />
                       )}
                     </div>
