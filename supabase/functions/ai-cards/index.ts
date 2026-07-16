@@ -126,7 +126,7 @@ function validateString(val: unknown, maxLen: number): string | null {
 
 function validateAction(val: unknown): string | null {
   if (typeof val !== "string") return null;
-  const allowed = ["embed", "search", "classify", "reembed_all"];
+  const allowed = ["embed", "search", "classify", "reembed_all", "suggest_field"];
   return allowed.includes(val) ? val : null;
 }
 
@@ -495,6 +495,140 @@ serve(async (req) => {
       const result = toolCall ? JSON.parse(toolCall.function.arguments) : { type: "bug", confidence: 0 };
 
       return new Response(JSON.stringify(result), {
+        headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
+      });
+    } else if (action === "suggest_field") {
+      const cardType = validateString(body.card_type, 50) || "";
+      const fieldKey = validateString(body.field_key, 60) || "";
+      const title = validateString(body.title, 200) || "";
+      const language = validateString(body.language, 30) || "";
+      const tagsArr = Array.isArray(body.tags)
+        ? (body.tags as unknown[]).filter((t) => typeof t === "string").slice(0, 10) as string[]
+        : [];
+      const existing = body.existing_content && typeof body.existing_content === "object"
+        ? body.existing_content as Record<string, unknown>
+        : {};
+
+      if (!cardType || !fieldKey || !title) {
+        return new Response(JSON.stringify({ error: "card_type, field_key, and title are required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const fieldPrompts: Record<string, Record<string, string>> = {
+        bug: {
+          symptom: "Describe the most likely observable symptom a developer would see for this bug. 1-3 sentences.",
+          environment: "Hypothesise the environment (runtime, OS, framework versions) where this bug most likely occurs.",
+          stack_trace: "Sketch a plausible stack trace or error message for this bug. Use realistic frames for the stated language.",
+          root_cause: "Diagnose the most probable root cause. Reason step-by-step in pseudo-code where useful. Be specific — name the module, API, or invariant that is violated.",
+          fix: "Propose a concrete possible fix. Prefer minimal pseudo-code or real code in the user's language. Show only the changed lines with a short rationale.",
+          key_insight: "Extract the durable insight another engineer should remember. One or two crisp sentences — no fluff.",
+        },
+        adr: {
+          context: "Frame the technical context and forces that make this decision necessary.",
+          decision: "Propose the decision itself in one paragraph, imperative voice.",
+          rationale: "Argue the rationale — why this beats the obvious alternatives.",
+          consequences: "Predict the consequences: positive, negative, and future constraints imposed.",
+        },
+        concept: {
+          definition: "Define the concept precisely, in the user's own likely words. Avoid textbook prose.",
+          code_example: "Sketch a minimal, idiomatic code example that demonstrates the concept.",
+          analogy: "Draw a memorable analogy that grounds the concept in something concrete.",
+          when_to_use: "Enumerate the situations where this concept is the right tool.",
+          when_not_to: "Enumerate the situations where this concept is the wrong tool.",
+        },
+        library: {
+          why_chosen: "Justify why an engineer would choose this library over its peers.",
+          gotchas: "Foresee the gotchas — footguns, hidden defaults, and painful edges.",
+          config_that_works: "Draft a minimal working config or setup snippet.",
+          alternatives_considered: "List the credible alternatives with a one-line tradeoff for each.",
+          version: "Suggest a sensible current stable version.",
+        },
+        learning: {
+          topic: "Name the topic in a precise, searchable phrase.",
+          key_takeaways: "Distill the key takeaways into a tight bullet list.",
+          code_examples: "Sketch one or two illustrative code examples.",
+          resources: "Recommend 2-4 high-signal resources (docs, papers, talks). Do NOT invent URLs — cite by title and author.",
+        },
+        interview: {
+          question: "Rephrase this as a crisp interview question.",
+          answer: "Draft a strong answer an interviewer would score highly. Reason step-by-step.",
+          followups: "Anticipate 2-4 follow-up questions an interviewer would drill into.",
+        },
+        project: {
+          description: "Describe this project in 2-4 sentences an engineer would find useful.",
+        },
+      };
+
+      const instruction = fieldPrompts[cardType]?.[fieldKey];
+      if (!instruction) {
+        return new Response(JSON.stringify({ error: "No AI suggestion available for this field" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const contextLines: string[] = [
+        `Card type: ${cardType}`,
+        `Title: ${title}`,
+      ];
+      if (language) contextLines.push(`Language: ${language}`);
+      if (tagsArr.length) contextLines.push(`Tags: ${tagsArr.join(", ")}`);
+      for (const [k, v] of Object.entries(existing)) {
+        if (k === fieldKey) continue;
+        if (typeof v === "string" && v.trim()) {
+          contextLines.push(`${k.replace(/_/g, " ")}: ${v.trim().slice(0, 1200)}`);
+        }
+      }
+
+      const systemPrompt =
+        "You are a senior engineer pair-programming with the user as a pseudo-coding agent. " +
+        "Reason like a careful engineer: cite likely causes, be specific, and prefer concise pseudo-code or the user's stated language when code helps. " +
+        "Ground every claim in the context the user has provided. If information is missing, hypothesise explicitly rather than hedging. " +
+        "Return ONLY the content that belongs in the requested field — no preamble, no headings, no meta-commentary.";
+
+      const userPrompt = `${instruction}\n\nContext:\n${contextLines.join("\n")}`;
+
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          return new Response(JSON.stringify({ error: "AI rate limit exceeded. Please try again later." }), {
+            status: 429,
+            headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (response.status === 402) {
+          return new Response(JSON.stringify({ error: "AI usage limit reached. Please add credits." }), {
+            status: 402,
+            headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const errText = await response.text();
+        return new Response(JSON.stringify({ error: errText.slice(0, 200) || "AI request failed" }), {
+          status: 500,
+          headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const data = await response.json();
+      const suggestion = (data?.choices?.[0]?.message?.content ?? "").toString().trim();
+
+      return new Response(JSON.stringify({ suggestion }), {
         headers: { ...corsHeaders, ...rateLimitHeaders, "Content-Type": "application/json" },
       });
     }
