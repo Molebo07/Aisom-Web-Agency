@@ -36,9 +36,7 @@ export function WaitlistForm({ source = "landing" }: { source?: string }) {
   };
 
   if (status === "success") {
-    return (
-      <p className="text-[14px] text-[#111111]">You're on the list. We'll be in touch.</p>
-    );
+    return <p className="text-[14px] text-[#111111]">You're on the list. We'll be in touch.</p>;
   }
 
   if (status === "duplicate") {
@@ -46,36 +44,30 @@ export function WaitlistForm({ source = "landing" }: { source?: string }) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full"
-    >
-      <Input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="your@email.com"
-        aria-label="Email address"
-        className="h-11 w-full sm:w-[280px] rounded-[6px] border-[#E8ECEF] bg-white text-[#111111] placeholder:text-[#888888]"
-      />
-      <Button
-        type="submit"
-        disabled={status === "loading"}
-        className="h-11 rounded-[6px] bg-[#111111] text-white hover:bg-[#111111]/90"
+    <div className="w-full">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-center gap-3 w-full"
       >
-        {status === "loading" ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          "Join the waitlist"
-        )}
-      </Button>
+        <Input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your@email.com"
+          aria-label="Email address"
+          className="h-11 w-full sm:w-[280px] rounded-[6px] border-[#E8ECEF] bg-white text-[#111111] placeholder:text-[#888888]"
+        />
+        <Button
+          type="submit"
+          disabled={status === "loading"}
+          className="h-11 rounded-[6px] bg-[#111111] text-white hover:bg-[#111111]/90"
+        >
+          {status === "loading" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Join the waitlist"}
+        </Button>
+      </form>
       {status === "error" && (
-        <p className="text-[14px] text-[#111111] sm:hidden">Something went wrong. Try again.</p>
+        <p className="mt-3 text-[14px] text-[#111111]">Something went wrong. Try again.</p>
       )}
-    </form>
+    </div>
   );
-}
-
-export function WaitlistError() {
-  return null;
 }
