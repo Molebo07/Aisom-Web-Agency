@@ -8,6 +8,7 @@ import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { z } from "zod";
 import { hashPassword } from "@/lib/crypto";
+import { siteUrl } from "@/lib/siteUrl";
 
 const signupSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -46,7 +47,7 @@ export default function AuthSignup() {
       email,
       password, // Send plain password to Supabase (over HTTPS)
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: siteUrl("/auth/callback"),
       },
     });
     
