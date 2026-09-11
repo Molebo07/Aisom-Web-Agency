@@ -259,6 +259,27 @@ export type Database = {
           },
         ]
       }
+      waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
+        }
+        Relationships: []
+      }
       workspace_invites: {
         Row: {
           accepted_at: string | null
@@ -394,6 +415,7 @@ export type Database = {
           similarity: number
         }[]
       }
+      waitlist_count: { Args: never; Returns: number }
       workspace_role_rank: {
         Args: { _role: Database["public"]["Enums"]["app_workspace_role"] }
         Returns: number
