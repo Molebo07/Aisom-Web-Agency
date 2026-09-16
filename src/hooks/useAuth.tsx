@@ -28,16 +28,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setLoading(false);
       if (event === "SIGNED_IN" && session?.user) {
-        try { posthog.identify(session.user.id, { email: session.user.email }); } catch {}
+        try {
+          posthog.identify(session.user.id, { email: session.user.email });
+        } catch (error) {
+          console.warn("Failed to identify PostHog user", error);
+        }
       }
       if (event === "SIGNED_OUT") {
-        try { posthog.reset(); } catch {}
+        try {
+          posthog.reset();
+        } catch (error) {
+          console.warn("Failed to reset PostHog session", error);
+        }
       }
     });
 
     // Then check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setLoading(false);
+    }).catch((error: unknown) => {
+      console.warn("Failed to load auth session", error);
       setLoading(false);
     });
 

@@ -51,7 +51,7 @@ export function Footer() {
       return;
     }
     setBusy(true);
-    const { error } = await (supabase as any).from("leads").insert({
+    const { error } = await supabase.from("leads").insert({
       kind: "newsletter",
       name: name.trim() || null,
       email: parsed.data.toLowerCase(),

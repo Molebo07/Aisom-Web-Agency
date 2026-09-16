@@ -44,10 +44,12 @@ export default function Landing() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    (supabase as any)
+    supabase
       .rpc("waitlist_count")
       .then(({ data }: { data: number | null }) => setCount(Number(data ?? 0)))
-      .catch(() => {});
+      .catch((error: unknown) => {
+        console.warn("Failed to load waitlist count", error);
+      });
   }, []);
 
   return (

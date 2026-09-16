@@ -61,7 +61,7 @@ export default function Contact() {
         if (!res.ok) throw new Error(json?.error || "Submission failed");
       } else {
         // Fallback: write directly to Supabase table (same shape as the function)
-        const { error } = await (supabase as any).from("leads").insert({
+        const { error } = await supabase.from("leads").insert({
           kind: "quote",
           name: parsed.data.name,
           business_name: parsed.data.businessName || null,
@@ -79,9 +79,10 @@ export default function Contact() {
       trackGenerateLead({ value: 0 });
       toast.success("Thanks — we have your request. We'll be in touch soon.");
       setDone(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("contact submit error", err);
-      toast.error(err?.message || "That did not go through. Please try again.");
+      const message = err instanceof Error ? err.message : "That did not go through. Please try again.";
+      toast.error(message);
     } finally {
       setBusy(false);
     }
