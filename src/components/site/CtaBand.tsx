@@ -1,6 +1,23 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
+export function CtaBand({ title = "Ready to start?", cta = "/contact", ctaLabel = "Get a free quote" }: { title?: string; cta?: string; ctaLabel?: string }) {
+  return (
+    <section className="bg-slate text-white">
+      <div className="wrap flex flex-col items-center justify-between gap-4 py-10 md:flex-row">
+        <h2 className="text-[18px] font-medium">{title}</h2>
+        <div>
+          <Button asChild size="lg">
+            <Link to={cta}>{ctaLabel}</Link>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+
 interface CtaBandProps {
   heading?: string;
   body?: string;

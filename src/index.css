@@ -1,15 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Aisom brand: white / slate / ash only */
-    --white: 0 0% 100%;
-    --slate: 0 0% 10%;
-    --ash: 0 0% 33%;
+    /* Brand tokens (use these only) */
+    --color-white: #FFFFFF;
+    --color-slate: #1A1A1A;
+    --color-ash: #555555;
+
+    /* Backwards-compatible HSL variables used by Tailwind theme */
+    --white: 0 0% 100%; /* white */
+    --slate: 0 0% 10%; /* approx #1A1A1A */
+    --ash: 0 0% 33%; /* approx #555555 */
 
     --background: var(--white);
     --foreground: var(--slate);
@@ -40,6 +43,29 @@
     --ring: var(--slate);
 
     --radius: 6px;
+  }
+
+  /* Self-hosted Roboto Mono (place font files in /public/fonts) */
+  @font-face {
+    font-family: 'Roboto Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/RobotoMono-Regular.woff2') format('woff2'), url('/fonts/RobotoMono-Regular.woff') format('woff');
+  }
+  @font-face {
+    font-family: 'Roboto Mono';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/RobotoMono-Medium.woff2') format('woff2'), url('/fonts/RobotoMono-Medium.woff') format('woff');
+  }
+  @font-face {
+    font-family: 'Roboto Mono';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/RobotoMono-Bold.woff2') format('woff2'), url('/fonts/RobotoMono-Bold.woff') format('woff');
   }
 }
 

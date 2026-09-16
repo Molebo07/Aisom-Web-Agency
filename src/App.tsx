@@ -17,6 +17,8 @@ import AuthCallback from "./pages/AuthCallback.tsx";
 import PayfastCheckout from "./pages/PayfastCheckout.tsx";
 import Terms from "./pages/Terms.tsx";
 import RefundPolicy from "./pages/RefundPolicy.tsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
+import TermsOfService from "./pages/TermsOfService.tsx";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +60,8 @@ const App = () => (
             {/* Payments — unchanged */}
             <Route path="/checkout" element={<PayfastCheckout />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/refund-policy" element={<RefundPolicy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
