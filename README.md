@@ -1,2 +1,1 @@
-Welcome to Aisom - Personal knowledge System for Developers
-
+Welcome to the Repo for the Aisom Web Agency Website
