@@ -8,7 +8,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/app/ProtectedRoute";
-import Landing from "./pages/Landing.tsx";
+import Home from "./pages/site/Home.tsx";
+import About from "./pages/site/About.tsx";
+import Services from "./pages/site/Services.tsx";
+import Pricing from "./pages/site/Pricing.tsx";
+import Process from "./pages/site/Process.tsx";
+import Work from "./pages/site/Work.tsx";
+import Contact from "./pages/site/Contact.tsx";
 import Placeholder from "./pages/Placeholder.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import AuthLogin from "./pages/AuthLogin.tsx";
@@ -36,7 +42,13 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Landing />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/process" element={<Process />} />
+            <Route path="/work" element={<Work />} />
+            <Route path="/contact" element={<Contact />} />
 
             {/* Auth — unchanged */}
             <Route path="/auth/login" element={<AuthLogin />} />
