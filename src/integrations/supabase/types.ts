@@ -113,6 +113,54 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          budget_range: string | null
+          business_name: string | null
+          created_at: string
+          details: string | null
+          email: string
+          heard_about: string | null
+          id: string
+          industry: string | null
+          kind: string
+          name: string | null
+          page_path: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          budget_range?: string | null
+          business_name?: string | null
+          created_at?: string
+          details?: string | null
+          email: string
+          heard_about?: string | null
+          id?: string
+          industry?: string | null
+          kind?: string
+          name?: string | null
+          page_path?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          budget_range?: string | null
+          business_name?: string | null
+          created_at?: string
+          details?: string | null
+          email?: string
+          heard_about?: string | null
+          id?: string
+          industry?: string | null
+          kind?: string
+          name?: string | null
+          page_path?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payfast_payments: {
         Row: {
           amount_fee: number | null
