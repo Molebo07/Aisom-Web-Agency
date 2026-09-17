@@ -1,94 +1,60 @@
-# Minimal Cards + Pseudo-Coding AI Agent
+# Aisom Agency Visual Upgrade
 
 ## Goal
 
-Let engineers save any card with just **title, language, tags** (detail fields optional), then invoke a **pseudo-coding agent** that reasons like a senior engineer to draft each missing field. Each field gets its own contextual AI button (e.g., "Possible Fix" on a Bug's fix field), not a single generic "Suggest with AI".
+Turn the current agency site into a confident, motion-led studio experience while preserving its real South African business copy, pricing, legal content, enquiry flow, auth routes, and payment plumbing. The supplied v2 SVG logos will be used exactly once uploaded.
 
-## Persona
+## Visual system
 
-The agent behaves like a pair-programming senior engineer: it reasons aloud in pseudocode where relevant, cites likely causes, and proposes concrete next steps. Output is grounded in whatever the user has already typed (title, language, tags, and any sibling fields).
+- Keep Roboto Mono and the light-first white/slate/ash foundation.
+- Add semantic Navy and Accent Blue tokens, including the lighter dark-surface accent, focus rings, borders, glows, and accessible dark-section text roles.
+- Use Navy only for major bookends and selected contrast areas, not as the default page background.
+- Increase headline scale and whitespace while keeping mobile line lengths and controls stable.
+- Restyle shared shadcn buttons and interactive states with restrained accent glow, lift, press feedback, and visible keyboard focus.
 
-## Per-field AI button labels
+## Shared experience
 
-**Bug**
+- Replace every old mark with the supplied light, reversed, and icon-only v2 assets; derive the complete favicon set from the supplied logomark.
+- Build a scroll-aware sticky header that is transparent over dark page headers and becomes a solid blurred surface after scrolling.
+- Add a route-level `ScrollToTop` mounted above all routes and audit every header/footer internal link.
+- Add reusable reduced-motion-aware reveal components using `motion/react`, with staggered section, card, and numbered-content entrances.
+- Rework the dark CTA band and footer into calm, spacious brand bookends with the correct reversed logo and existing sitemap columns.
 
-- symptom → "Reproduce it"
-- environment → "Likely Environment"
-- stack_trace → "Expected Trace"
-- root_cause → "Diagnose Cause"
-- fix → **"Possible Fix"**
-- key_insight → "Extract Insight"
+## Homepage
 
-**ADR**
+- Create a full-bleed Navy first view with an oversized staggered headline, concise supporting copy, and two clear actions.
+- Build a lightweight self-assembling browser scene using semantic HTML/CSS shapes and transform-only motion: typed `aisom.co.za`, staged navigation, image, text, and button blocks.
+- Replace generic service cards with three numbered benefits: fast launch, conversion-minded design, and support after launch.
+- Present the process with an animated connecting line, keep claims aligned to the real package timelines, and clearly state that client work is coming soon rather than inventing proof.
+- Finish with transparent pricing and a centered dark CTA.
 
-- context → "Frame Context"
-- decision → "Propose Decision"
-- rationale → "Argue Rationale"
-- consequences → "Predict Consequences"
+## Remaining pages
 
-**Concept**
+- **Services:** oversized dark header, numbered service narrative, current deliverables, and shadcn FAQ accordion with FAQPage structured data.
+- **Work:** honest “first client work in progress” presentation, industry filter tabs, build-standard proof, and a reusable dialog-ready case-study pattern without fabricated clients or metrics.
+- **Pricing:** shadcn tabs for project/package views, three real package cards, recommended badge, hover motion, comparison table, ZAR and payment-term clarity.
+- **About:** strong founder-led story using the three supplied real bios and no invented credentials.
+- **Process:** five-step flow with an animated connecting line and clear client responsibilities.
+- **Contact:** retain Zod validation, honeypot, lead capture, founder-email function, Sonner feedback, and GA4 `generate_lead`; improve field hierarchy and accessible inline errors.
+- **Legal:** restyle Privacy Policy, Terms of Service, and existing refund policy using the real company details and current South African-law wording; remove visible placeholders and use the supplied address/email.
+- **Blog:** restore the missing `/blog` destination and three launch articles required by the original sitemap, with Article metadata and related links, so existing navigation does not lead to a 404.
+- **404:** bring the not-found page into the same brand system.
 
-- definition → "Define It"
-- code_example → "Sketch Example"
-- analogy → "Draw Analogy"
-- when_to_use → "When to Use"
-- when_not_to → "When to Avoid"
+## Technical and SEO corrections
 
-**Library**
+- Replace stale Study Buddy metadata in `index.html`, `llms.txt`, sitemap, and robots references with agency-specific content for `https://aisom.co.za`.
+- Preserve per-page canonical tags, unique titles/descriptions, Organization/LocalBusiness/Breadcrumb/FAQ/Article structured data, semantic heading order, and meaningful alt text.
+- Preserve the existing auth, protected placeholders, PayFast routes, environment variables, and backend schema.
+- Repair the existing TypeScript failures in the unused legacy landing and lead function dependency so the project is green.
+- Keep animations GPU-friendly, avoid video/canvas, lazy-load noncritical page code where practical, and disable motion through `prefers-reduced-motion`.
 
-- why_chosen → "Justify Choice"
-- gotchas → "Foresee Gotchas"
-- config_that_works → "Draft Config"
-- alternatives_considered → "List Alternatives"
-- version → "Suggest Version"
+## Verification
 
-**Learning**
+- Check the current and new layouts at desktop and mobile sizes, including hero framing, menu behavior, forms, tabs, accordions, dialogs, and reduced-motion mode.
+- Click every header and footer destination from multiple pages and verify each route starts at scroll position zero.
+- Verify the enquiry success/error paths and GA4 event call without exposing secrets.
+- Run focused tests, inspect runtime/console/network diagnostics, confirm the final preview visually, and audit Lighthouse targets. Aim for 90+ across Performance, Accessibility, Best Practices, and SEO; report any environment-dependent limitation rather than claiming an unmeasured score.
 
-- topic → "Name Topic"
-- key_takeaways → "Distill Takeaways"
-- code_examples → "Sketch Examples"
-- resources → "Recommend Reading"
+## Required input
 
-**Interview**
-
-- question → "Rephrase Question"
-- answer → "Draft Answer"
-- followups → "Anticipate Follow-ups"
-
-**Project**
-
-- description → "Describe It"
-- repo_url → (no AI — user-provided only)
-
-Each button appears inline next to its field's label. Clicking it fills only that field, using the current type + title + language + tags + any other filled fields as context. Users edit freely afterward.
-
-## Changes
-
-### 1. `src/pages/NewCard.tsx`
-
-- All type-specific fields optional. Title remains required. Save works with just the title, language, and tags.
-- Add an inline AI button per field with the labels above. Button shows spinner while loading and is disabled when title is empty (agent needs at least a title to reason from).
-- On click: call `ai-cards` edge function with `action: "suggest_field"`, passing `{ card_type, field_key, title, language, tags, existing_content }`. Writes the response into that field only; never overwrites non-empty user text without confirm.
-
-### 2. `src/components/cards/CardDetailSheet.tsx`
-
-- Same per-field buttons so users can enrich stub cards after saving.
-
-### 3. `supabase/functions/ai-cards/index.ts`
-
-- Add `action: "suggest_field"` branch.
-- Uses Lovable AI Gateway (`google/gemini-3.5-flash`) via AI SDK `generateText`.
-- System prompt establishes the pseudo-coding-agent persona: "You are a senior engineer pair-programming with the user. Reason step-by-step. Where code helps, use concise pseudo-code or the user's stated language. Be specific, not generic."
-- Per-field user prompt template picks the right instruction (e.g. for `fix`: "Given the symptom, environment, stack trace, and root cause, propose a concrete fix in {language}. Prefer pseudo-code or minimal real code.").
-- Returns `{ suggestion: string }`. Plain text; the field renders it as-is.
-- Handles 429 / 402 with clear error payloads.
-
-## Out of scope
-
-- No DB migration. No changes to card schema, RLS, or workspaces.
-
-## Files touched
-
-- edit `src/pages/NewCard.tsx`
-- edit `src/components/cards/CardDetailSheet.tsx`
-- edit `supabase/functions/ai-cards/index.ts`
+- Await `aisom-logomark-v2.svg`, `aisom-primary-logo-v2.svg`, and `aisom-primary-logo-v2-dark.svg` before implementation so the exact brand assets and favicon set can be completed in one pass.
