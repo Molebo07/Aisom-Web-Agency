@@ -1,0 +1,8 @@
+<svg width="1000" height="260" viewBox="0 0 1000 260" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1000" height="260" fill="#FFFFFF"/>
+  <path fill="#1A1A1A" d="M110 28c2-4 6-6 10-6s8 2 10 6l74 174c3 7-2 14-9 14h-17c-5 0-9-3-11-8l-47-113-47 113c-2 5-6 8-11 8H45c-7 0-12-7-9-14l74-174Z"/>
+  <circle fill="#3B6EF6" cx="120" cy="148" r="15"/>
+  <text x="205" y="150" fill="#1A1A1A" font-family="Roboto Mono, monospace" font-size="88" font-weight="700">aisom</text>
+  <rect x="500" y="88" width="14" height="62" fill="#3B6EF6"/>
+  <text x="208" y="188" fill="#555555" font-family="Roboto Mono, monospace" font-size="22" font-weight="500" letter-spacing="6">WEB AGENCY</text>
+</svg>

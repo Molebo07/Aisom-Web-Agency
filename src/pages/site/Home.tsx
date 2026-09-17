@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Seo } from "@/components/site/Seo";
 import { organizationJsonLd } from "@/lib/siteConfig";
 import { processSteps, tiers } from "@/data/site";
+import { Reveal } from "@/components/site/Motion";
 
 const services = [
   {
@@ -33,6 +35,8 @@ const facts = [
 ];
 
 export default function Home() {
+  const reducedMotion = useReducedMotion();
+
   return (
     <SiteLayout cta={false}>
       <Seo
@@ -42,24 +46,42 @@ export default function Home() {
         jsonLd={organizationJsonLd}
       />
 
-      {/* Hero */}
-      <section className="wrap py-20 md:py-28">
-        <p className="section-index">AISOM SYSTEMS / WEB DESIGN</p>
-        <h1 className="mt-6 max-w-4xl text-[34px] leading-[1.08] text-slate md:text-[58px]">
-          Websites for South African businesses that need to look serious online.
-        </h1>
-        <p className="mt-6 max-w-2xl text-[15px] leading-relaxed text-ash md:text-[16px]">
-          We build for owner run companies in Gauteng and across South Africa. Fixed price, no
-          monthly lock in, and a site that is live in one to four weeks instead of one to four
-          months.
-        </p>
-        <div className="mt-9 flex flex-wrap gap-3">
-          <Button asChild size="lg">
-            <Link to="/contact">Get a free quote</Link>
-          </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link to="/work">See our work</Link>
-          </Button>
+      <section className="dark-section overflow-hidden bg-navy">
+        <div className="wrap grid min-h-[720px] items-center gap-16 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:py-28">
+          <div>
+            <motion.p className="section-index text-white/50" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              AISOM SYSTEMS / WEB DESIGN
+            </motion.p>
+            <motion.h1 className="mt-6 max-w-3xl text-5xl leading-[0.98] text-white md:text-7xl lg:text-8xl" initial={reducedMotion ? false : { opacity: 0, y: 24 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.7 }}>
+              Serious websites for serious businesses.
+            </motion.h1>
+            <motion.p className="mt-7 max-w-xl text-[15px] leading-relaxed text-white/65 md:text-[16px]" initial={reducedMotion ? false : { opacity: 0, y: 20 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 0.22, duration: 0.6 }}>
+              Fixed-price websites for South African businesses that need to look credible, load fast, and bring in better enquiries.
+            </motion.p>
+            <motion.div className="mt-9 flex flex-wrap gap-3" initial={reducedMotion ? false : { opacity: 0, y: 20 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 0.32, duration: 0.6 }}>
+              <Button asChild size="lg"><Link to="/contact">Get a free quote</Link></Button>
+              <Button asChild size="lg" variant="hero-outline" className="border-white/30 text-white hover:border-accent-blue"><Link to="/work">See our work</Link></Button>
+            </motion.div>
+          </div>
+
+          <motion.div className="relative mx-auto w-full max-w-[620px]" initial={reducedMotion ? false : { opacity: 0, scale: 0.96, y: 20 }} animate={reducedMotion ? undefined : { opacity: 1, scale: 1, y: 0 }} transition={{ delay: 0.18, duration: 0.8 }}>
+            <div className="overflow-hidden rounded-lg border border-white/20 bg-[#f7f9fc] shadow-[0_30px_100px_rgba(0,0,0,0.35)]">
+              <div className="flex h-10 items-center gap-2 border-b border-slate/10 bg-white px-4">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b6b]" /><span className="h-2.5 w-2.5 rounded-full bg-[#f7c948]" /><span className="h-2.5 w-2.5 rounded-full bg-[#51cf66]" />
+                <span className="ml-5 rounded-sm bg-slate/5 px-4 py-1 text-[9px] text-ash">aisom.co.za</span>
+              </div>
+              <div className="p-6 md:p-10">
+                <motion.div className="h-2 w-20 bg-accent-blue" initial={reducedMotion ? false : { scaleX: 0, transformOrigin: "left" }} animate={reducedMotion ? undefined : { scaleX: 1 }} transition={{ delay: 0.7, duration: 0.5 }} />
+                <motion.div className="mt-7 h-9 max-w-[360px] bg-slate" initial={reducedMotion ? false : { opacity: 0, y: 10 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 0.9 }} />
+                <motion.div className="mt-3 h-3 max-w-[280px] bg-slate/20" initial={reducedMotion ? false : { opacity: 0 }} animate={reducedMotion ? undefined : { opacity: 1 }} transition={{ delay: 1.05 }} />
+                <div className="mt-10 grid gap-3 sm:grid-cols-[1.3fr_0.7fr]">
+                  <motion.div className="h-36 bg-accent-blue/15" initial={reducedMotion ? false : { opacity: 0, y: 14 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 1.15 }} />
+                  <motion.div className="space-y-3" initial={reducedMotion ? false : { opacity: 0, y: 14 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 1.28 }}><div className="h-3 bg-slate/20" /><div className="h-3 w-4/5 bg-slate/20" /><div className="h-9 w-28 bg-accent-blue" /></motion.div>
+                </div>
+              </div>
+            </div>
+            <p className="mt-4 text-right text-[11px] uppercase tracking-[0.18em] text-white/40">A better first impression, loading now</p>
+          </motion.div>
         </div>
       </section>
 
@@ -67,10 +89,10 @@ export default function Home() {
       <section className="border-y border-border bg-secondary">
         <div className="wrap grid grid-cols-2 gap-8 py-10 md:grid-cols-4">
           {facts.map((f) => (
-            <div key={f.label}>
+            <Reveal key={f.label}>
               <p className="text-[22px] text-slate md:text-[26px]">{f.value}</p>
               <p className="mt-2 text-[12px] leading-relaxed text-ash">{f.label}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -82,14 +104,14 @@ export default function Home() {
           Three things, done properly.
         </h2>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {services.map((s) => (
-            <Card key={s.name} className="rounded-md border-border shadow-none">
+          {services.map((s, i) => (
+            <Reveal key={s.name} delay={i * 0.08}><Card className="rounded-md border-border shadow-none transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
               <CardContent className="p-7">
-                <p className="section-index">{s.index}</p>
+                <p className="text-4xl text-ash/50">{s.index}</p>
                 <h3 className="mt-4 text-[18px] text-slate">{s.name}</h3>
                 <p className="mt-3 text-[14px] leading-relaxed text-ash">{s.body}</p>
               </CardContent>
-            </Card>
+            </Card></Reveal>
           ))}
         </div>
         <Link
@@ -101,20 +123,20 @@ export default function Home() {
       </section>
 
       {/* Process teaser */}
-      <section className="border-t border-border bg-secondary">
+      <section className="dark-section border-t border-white/10 bg-navy">
         <div className="wrap py-20">
-          <p className="section-index">HOW IT RUNS</p>
-          <h2 className="mt-4 max-w-2xl text-[26px] leading-tight text-slate md:text-[34px]">
+          <p className="section-index text-white/50">HOW IT RUNS</p>
+          <h2 className="mt-4 max-w-2xl text-[26px] leading-tight text-white md:text-[34px]">
             Five steps from first call to live site.
           </h2>
           <div className="mt-12 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-5">
             {processSteps.map((step) => (
-              <div key={step.index} className="bg-background p-6">
-                <p className="section-index">
+              <div key={step.index} className="bg-white/5 p-6">
+                <p className="section-index text-white/50">
                   {step.index} / 05
                 </p>
-                <h3 className="mt-4 text-[16px] text-slate">{step.name}</h3>
-                <p className="mt-2 text-[12px] text-ash">{step.timeframe}</p>
+                <h3 className="mt-4 text-[16px] text-white">{step.name}</h3>
+                <p className="mt-2 text-[12px] text-white/55">{step.timeframe}</p>
               </div>
             ))}
           </div>

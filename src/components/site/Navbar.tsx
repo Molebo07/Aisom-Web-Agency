@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,17 +18,31 @@ const links = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(() => window.scrollY > 24);
   const location = useLocation();
+  const overHero = location.pathname === "/" && !scrolled;
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+    <header
+      className={cn(
+        "sticky top-0 z-50 border-b transition-colors duration-300",
+        overHero ? "border-white/10 bg-navy/80 text-white backdrop-blur-sm" : "border-border bg-background/95 backdrop-blur",
+      )}
+    >
       <div className="wrap flex h-16 items-center justify-between">
         <Link to="/" aria-label="Aisom home" className="flex items-center">
           <span className="hidden md:inline-flex">
-            <Logo />
+            <Logo dark={overHero} />
           </span>
           <span className="md:hidden">
-            <Logomark />
+            <Logomark className={overHero ? "brightness-0 invert" : undefined} />
           </span>
         </Link>
 
@@ -39,8 +53,9 @@ export function Navbar() {
               to={link.to}
               className={({ isActive }) =>
                 cn(
-                  "text-[13px] text-ash transition-colors hover:text-slate",
-                  isActive && "font-medium text-slate",
+                  "relative text-[13px] transition-colors after:absolute after:-bottom-2 after:left-1/2 after:h-px after:w-0 after:-translate-x-1/2 after:bg-accent-blue after:transition-all hover:text-accent-blue hover:after:w-full",
+                  overHero ? "text-white/70 hover:text-white" : "text-ash hover:text-slate",
+                  isActive && (overHero ? "font-medium text-white" : "font-medium text-slate"),
                 )
               }
             >
@@ -56,7 +71,7 @@ export function Navbar() {
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="outline" size="icon" aria-label="Open menu">
+              <Button variant="outline" size="icon" aria-label="Open menu" className={overHero ? "border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white" : undefined}>
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>

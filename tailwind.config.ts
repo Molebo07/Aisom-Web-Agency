@@ -27,6 +27,8 @@ export default {
         foreground: "hsl(var(--foreground))",
         slate: "hsl(var(--slate))",
         ash: "hsl(var(--ash))",
+        navy: "hsl(var(--navy))",
+        "accent-blue": "hsl(var(--accent-blue))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

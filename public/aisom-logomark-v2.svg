@@ -1,0 +1,5 @@
+<svg width="240" height="240" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Aisom</title>
+  <path fill="#1A1A1A" d="M120 22c4 0 8 2 10 6l74 174c3 7-2 14-9 14h-17c-5 0-9-3-11-8L120 95 73 208c-2 5-6 8-11 8H45c-7 0-12-7-9-14l74-174c2-4 6-6 12-6Z"/>
+  <circle fill="#3B6EF6" cx="120" cy="148" r="15"/>
+</svg>

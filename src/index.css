@@ -8,11 +8,15 @@
     --color-white: #FFFFFF;
     --color-slate: #1A1A1A;
     --color-ash: #555555;
+    --color-navy: #0B1220;
+    --color-accent: #3B6EF6;
 
     /* Backwards-compatible HSL variables used by Tailwind theme */
     --white: 0 0% 100%; /* white */
     --slate: 0 0% 10%; /* approx #1A1A1A */
     --ash: 0 0% 33%; /* approx #555555 */
+    --navy: 217 48% 8%;
+    --accent-blue: 223 91% 60%;
 
     --background: var(--white);
     --foreground: var(--slate);
@@ -23,7 +27,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: var(--slate);
 
-    --primary: var(--slate);
+    --primary: var(--accent-blue);
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 97%;
@@ -40,7 +44,7 @@
 
     --border: 0 0% 88%;
     --input: 0 0% 82%;
-    --ring: var(--slate);
+    --ring: var(--accent-blue);
 
     --radius: 6px;
   }
@@ -76,6 +80,15 @@
 
   html {
     scroll-behavior: smooth;
+  }
+
+  .dark-section {
+    --background: var(--navy);
+    --foreground: 0 0% 100%;
+    --primary-foreground: var(--navy);
+    --border: 217 20% 24%;
+    --muted-foreground: 214 14% 66%;
+    color: white;
   }
 
   body {
@@ -115,4 +128,9 @@
 
 .animate-fade-up {
   animation: aisom-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

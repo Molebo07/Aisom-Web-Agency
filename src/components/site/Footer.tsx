@@ -66,28 +66,28 @@ export function Footer() {
   }
 
   return (
-    <footer className="border-t border-border bg-background">
+    <footer className="dark-section border-t border-white/10 bg-navy text-white">
       <div className="wrap grid gap-12 py-16 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <Logo />
-          <p className="mt-4 max-w-xs text-[13px] leading-relaxed text-ash">
+          <Logo dark />
+          <p className="mt-4 max-w-xs text-[13px] leading-relaxed text-white/60">
             We build fast, professional websites for South African businesses.
           </p>
-          <div className="mt-6 space-y-1 text-[13px] text-ash">
-            <p className="text-slate">{siteConfig.legalName}</p>
+          <div className="mt-6 space-y-1 text-[13px] text-white/60">
+            <p className="text-white">{siteConfig.legalName}</p>
             <p>
               {siteConfig.address.street}, {siteConfig.address.locality},{" "}
               {siteConfig.address.region}, {siteConfig.address.postalCode}
             </p>
             <p>
-              <a className="hover:text-slate hover:underline" href={`mailto:${siteConfig.email}`}>
+              <a className="hover:text-accent-blue hover:underline" href={`mailto:${siteConfig.email}`}>
                 {siteConfig.email}
               </a>
             </p>
             {siteConfig.phone && (
               <p>
                 <a
-                  className="hover:text-slate hover:underline"
+                  className="hover:text-accent-blue hover:underline"
                   href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}
                 >
                   {siteConfig.phone}
@@ -99,11 +99,11 @@ export function Footer() {
 
         {columns.map((col) => (
           <div key={col.title}>
-            <p className="section-index uppercase">{col.title}</p>
+            <p className="section-index uppercase text-white/50">{col.title}</p>
             <ul className="mt-4 space-y-2">
               {col.links.map((link) => (
                 <li key={link.to}>
-                  <Link to={link.to} className="text-[13px] text-ash hover:text-slate hover:underline">
+                    <Link to={link.to} className="text-[13px] text-white/60 hover:text-white hover:underline">
                     {link.label}
                   </Link>
                 </li>
@@ -113,16 +113,16 @@ export function Footer() {
         ))}
       </div>
 
-      <div className="border-t border-border">
+      <div className="border-t border-white/10">
         <div className="wrap grid gap-6 py-10 md:grid-cols-2 md:items-center">
           <div>
-            <p className="text-[14px] font-medium text-slate">Updates from Aisom</p>
-            <p className="mt-1 text-[13px] text-ash">
+            <p className="text-[14px] font-medium text-white">Updates from Aisom</p>
+            <p className="mt-1 text-[13px] text-white/60">
               One short email a month. Practical website tips for SA business owners. No sales spam.
             </p>
           </div>
           {done ? (
-            <p className="text-[13px] text-slate md:justify-self-end">
+            <p className="text-[13px] text-white md:justify-self-end">
               Thanks. Check your inbox for the next one.
             </p>
           ) : (
@@ -156,8 +156,8 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-border">
-        <div className="wrap flex flex-col gap-2 py-6 text-[12px] text-ash md:flex-row md:items-center md:justify-between">
+      <div className="border-t border-white/10">
+        <div className="wrap flex flex-col gap-2 py-6 text-[12px] text-white/50 md:flex-row md:items-center md:justify-between">
           <p>
             {siteConfig.legalName} · Reg. {siteConfig.registration}
           </p>
