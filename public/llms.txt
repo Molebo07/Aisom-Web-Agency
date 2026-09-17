@@ -1,11 +1,45 @@
-# Aisom
+# Aisom Web Agency
 
-> Personal knowledge system for software engineers. Capture bugs, architecture decisions, and concepts in structured cards with AI-powered semantic search.
+> Aisom designs and develops fast, mobile-friendly business websites for small businesses, startups, and service companies in Johannesburg, Gauteng, and across South Africa.
 
-Aisom is a code-native knowledge tool built for how developers think. Instead of blank pages, it provides structured card types (Bug Cards, ADRs, Concept Cards, Library Cards, Learning Cards, Interview Cards) with spaced repetition review and semantic search.
+Aisom is a Johannesburg-based web design agency and website development company. We create custom, responsive websites that help businesses look credible online and generate better enquiries. Our work is mobile-first, SEO-friendly, fixed-price where possible, and built without unnecessary templates or plugin sprawl.
 
-## Pages
+## Core services
 
-- [Home](/): Product overview, features, pricing, and FAQ.
-- [Log in](/auth/login): Sign in to an existing account.
-- [Sign up](/auth/signup): Create a free account (up to 50 cards).
+- Custom website design and web development for small businesses and startups.
+- Responsive and mobile-friendly website design for phones, tablets, and desktop.
+- Business website design, landing page design, and website redesign services.
+- E-commerce website development for businesses ready to sell online.
+- Website maintenance, content updates, hosting coordination, and launch support.
+- SEO-friendly website design with page titles, descriptions, structured data, sitemap, robots.txt, and performance considerations.
+- Website design and hosting packages with transparent South African pricing.
+
+## Location and service area
+
+Aisom is based in Johannesburg and serves businesses across Gauteng, including Pretoria, Sandton, Midrand, Benoni, and Ekurhuleni. We also work remotely with businesses anywhere in South Africa. Relevant service searches include web design Gauteng, web design Johannesburg, web design Pretoria, web design Sandton, web design Midrand, web design Benoni, website developer near me, affordable web design South Africa, and website design company South Africa.
+
+## Pricing and commercial intent
+
+Aisom publishes website design packages and pricing in South African rand. The site is designed for businesses comparing website design cost in South Africa, affordable website design near them, website design packages, website design for small business prices, and how much a business website costs. Visitors can request a fixed-price quote through the contact page.
+
+## Helpful questions
+
+Aisom can help answer practical questions such as what a small business website should include, whether a small business needs a website, how much to budget for a website, how long a website takes to build, what is included in website maintenance, how to fix a website that is not mobile-friendly, how to improve a website that is not showing up on Google, whether to redesign an old website, and the difference between a web design agency, freelancer, Wix, and a DIY website builder.
+
+## Public pages
+
+- [Home](https://aisom.co.za/): Overview of Aisom website design and development services.
+- [Services](https://aisom.co.za/services): Website packages, custom web design, development, and FAQ content.
+- [Pricing](https://aisom.co.za/pricing): Website design packages and pricing in South African rand.
+- [Process](https://aisom.co.za/process): How a website project moves from brief to launch.
+- [Work](https://aisom.co.za/work): Build standards and example business website directions.
+- [About](https://aisom.co.za/about): Aisom company information and Johannesburg service area.
+- [Contact](https://aisom.co.za/contact): Request a website design quote from the sales team.
+
+## Contact
+
+For website design, website development, redesign, maintenance, hosting, or a quote, contact sales.aisom@gmail.com or use the contact form at https://aisom.co.za/contact.
+
+## Crawl guidance
+
+The canonical public URL is https://aisom.co.za. The XML sitemap is available at https://aisom.co.za/sitemap.xml. Authenticated app routes, login routes, and checkout routes are not public marketing content.
