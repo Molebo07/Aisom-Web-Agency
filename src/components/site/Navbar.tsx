@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Logo, Logomark } from "@/components/site/Logo";
+import { Logo } from "@/components/site/Logo";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -38,12 +38,7 @@ export function Navbar() {
     >
       <div className="wrap flex h-16 items-center justify-between">
         <Link to="/" aria-label="Aisom home" className="flex items-center">
-          <span className="hidden md:inline-flex">
-            <Logo dark={overHero} />
-          </span>
-          <span className="md:hidden">
-            <Logomark className={overHero ? "brightness-0 invert" : undefined} />
-          </span>
+          <Logo dark={overHero} />
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-6 lg:flex">

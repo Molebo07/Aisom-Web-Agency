@@ -60,18 +60,8 @@ export default function Contact() {
         const json = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(json?.error || "Submission failed");
       } else {
-        // Fallback: write directly to Supabase table (same shape as the function)
-        const { error } = await supabase.from("leads").insert({
-          kind: "quote",
-          name: parsed.data.name,
-          business_name: parsed.data.businessName || null,
-          email: parsed.data.email.toLowerCase(),
-          phone: parsed.data.phone || null,
-          industry: parsed.data.industry || null,
-          budget_range: parsed.data.budgetRange || null,
-          details: parsed.data.details,
-          heard_about: parsed.data.heardAbout || null,
-          page_path: "/contact",
+        const { error } = await supabase.functions.invoke("send-lead", {
+          body: { ...parsed.data, kind: "quote", pagePath: "/contact" },
         });
         if (error) throw error;
       }

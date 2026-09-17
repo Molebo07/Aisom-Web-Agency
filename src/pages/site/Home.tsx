@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
@@ -31,11 +32,24 @@ const facts = [
   { value: "R3 000", label: "Starting price, fixed" },
   { value: "1 to 2", label: "Weeks to a live starter site" },
   { value: "100%", label: "Mobile first builds" },
-  { value: "Gauteng", label: "Based in Tembisa, working nationally" },
+  { value: "Gauteng", label: "Based in Johannesburg, working nationally" },
 ];
 
 export default function Home() {
   const reducedMotion = useReducedMotion();
+  const [typedAddress, setTypedAddress] = useState("aisom.co.za");
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    let index = 0;
+    setTypedAddress("");
+    const timer = window.setInterval(() => {
+      index += 1;
+      setTypedAddress("aisom.co.za".slice(0, index));
+      if (index === "aisom.co.za".length) window.clearInterval(timer);
+    }, 85);
+    return () => window.clearInterval(timer);
+  }, [reducedMotion]);
 
   return (
     <SiteLayout cta={false}>
@@ -64,19 +78,19 @@ export default function Home() {
             </motion.div>
           </div>
 
-          <motion.div className="relative mx-auto w-full max-w-[620px]" initial={reducedMotion ? false : { opacity: 0, scale: 0.96, y: 20 }} animate={reducedMotion ? undefined : { opacity: 1, scale: 1, y: 0 }} transition={{ delay: 0.18, duration: 0.8 }}>
+          <motion.div className="relative mx-auto w-full max-w-[620px]" initial={reducedMotion ? false : { opacity: 0, scale: 0.96, y: 20 }} animate={reducedMotion ? undefined : { opacity: 1, scale: 1, y: [0, -5, 0], rotate: [0, 0.2, 0] }} transition={{ delay: 0.18, duration: 0.8, y: { delay: 1.5, duration: 7, repeat: Infinity, ease: "easeInOut" }, rotate: { delay: 1.5, duration: 7, repeat: Infinity, ease: "easeInOut" } }}>
             <div className="overflow-hidden rounded-lg border border-white/20 bg-[#f7f9fc] shadow-[0_30px_100px_rgba(0,0,0,0.35)]">
               <div className="flex h-10 items-center gap-2 border-b border-slate/10 bg-white px-4">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b6b]" /><span className="h-2.5 w-2.5 rounded-full bg-[#f7c948]" /><span className="h-2.5 w-2.5 rounded-full bg-[#51cf66]" />
-                <span className="ml-5 rounded-sm bg-slate/5 px-4 py-1 text-[9px] text-ash">aisom.co.za</span>
+                <span className="ml-5 rounded-sm bg-slate/5 px-4 py-1 text-[9px] text-ash">{typedAddress}<span className="ml-0.5 text-accent-blue">|</span></span>
               </div>
               <div className="p-6 md:p-10">
-                <motion.div className="h-2 w-20 bg-accent-blue" initial={reducedMotion ? false : { scaleX: 0, transformOrigin: "left" }} animate={reducedMotion ? undefined : { scaleX: 1 }} transition={{ delay: 0.7, duration: 0.5 }} />
-                <motion.div className="mt-7 h-9 max-w-[360px] bg-slate" initial={reducedMotion ? false : { opacity: 0, y: 10 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 0.9 }} />
-                <motion.div className="mt-3 h-3 max-w-[280px] bg-slate/20" initial={reducedMotion ? false : { opacity: 0 }} animate={reducedMotion ? undefined : { opacity: 1 }} transition={{ delay: 1.05 }} />
+                <motion.div className="h-2 w-20 bg-accent-blue" initial={reducedMotion ? false : { scaleX: 0, transformOrigin: "left" }} animate={reducedMotion ? undefined : { scaleX: [0, 1, 1, 0] }} transition={{ delay: 0.7, duration: 8, repeat: Infinity, repeatDelay: 1 }} />
+                <motion.div className="mt-7 h-9 max-w-[360px] bg-slate" initial={reducedMotion ? false : { opacity: 0, y: 10 }} animate={reducedMotion ? undefined : { opacity: [0, 1, 1, 0], y: [10, 0, 0, -5] }} transition={{ delay: 0.9, duration: 8, repeat: Infinity, repeatDelay: 1 }} />
+                <motion.div className="mt-3 h-3 max-w-[280px] bg-slate/20" initial={reducedMotion ? false : { opacity: 0 }} animate={reducedMotion ? undefined : { opacity: [0, 1, 1, 0] }} transition={{ delay: 1.05, duration: 8, repeat: Infinity, repeatDelay: 1 }} />
                 <div className="mt-10 grid gap-3 sm:grid-cols-[1.3fr_0.7fr]">
-                  <motion.div className="h-36 bg-accent-blue/15" initial={reducedMotion ? false : { opacity: 0, y: 14 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 1.15 }} />
-                  <motion.div className="space-y-3" initial={reducedMotion ? false : { opacity: 0, y: 14 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 1.28 }}><div className="h-3 bg-slate/20" /><div className="h-3 w-4/5 bg-slate/20" /><div className="h-9 w-28 bg-accent-blue" /></motion.div>
+                  <motion.div className="h-36 bg-accent-blue/15" initial={reducedMotion ? false : { opacity: 0, y: 14 }} animate={reducedMotion ? undefined : { opacity: [0, 1, 1, 0], y: [14, 0, 0, -5] }} transition={{ delay: 1.15, duration: 8, repeat: Infinity, repeatDelay: 1 }} />
+                  <motion.div className="space-y-3" initial={reducedMotion ? false : { opacity: 0, y: 14 }} animate={reducedMotion ? undefined : { opacity: [0, 1, 1, 0], y: [14, 0, 0, -5] }} transition={{ delay: 1.28, duration: 8, repeat: Infinity, repeatDelay: 1 }}><div className="h-3 bg-slate/20" /><div className="h-3 w-4/5 bg-slate/20" /><div className="h-9 w-28 bg-accent-blue" /></motion.div>
                 </div>
               </div>
             </div>

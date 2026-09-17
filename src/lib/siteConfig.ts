@@ -9,7 +9,7 @@ export const siteConfig = {
   whatsapp: "", // digits only, e.g. "27712345678"
   address: {
     street: "53 Crane Street",
-    locality: "Tembisa",
+    locality: "Johannesburg",
     region: "Gauteng",
     postalCode: "1632",
     country: "ZA",

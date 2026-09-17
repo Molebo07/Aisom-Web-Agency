@@ -33,7 +33,7 @@ export default function About() {
     <SiteLayout crumbs={crumbs}>
       <Seo
         title="About Aisom | A Gauteng Web Design Studio"
-        description="Aisom Systems is a small South African web studio based in Tembisa, Gauteng. Meet the three people who design, build and sell every site we ship."
+        description="Aisom Systems is a small South African web studio based in Johannesburg, Gauteng. Meet the three people who design, build and sell every site we ship."
         path="/about"
         jsonLd={breadcrumbJsonLd(crumbs)}
       />
@@ -41,7 +41,7 @@ export default function About() {
       <PageHeader
         index="ABOUT"
         title="A small studio, three people, no account managers."
-        lead="Aisom Systems (Pty) Ltd is a registered South African company based in Tembisa, Gauteng. You deal with the people who do the work, not a call centre in front of them."
+        lead="Aisom Systems (Pty) Ltd is a registered South African company based in Johannesburg, Gauteng. You deal with the people who do the work, not a call centre in front of them."
       />
 
       <section className="wrap pb-20">
@@ -97,8 +97,8 @@ export default function About() {
           <div>
             <p className="section-index">WHERE WE WORK</p>
             <p className="mt-4 text-[14px] leading-relaxed text-ash">
-              We are based in Tembisa and work across Gauteng in person, from Johannesburg and
-              Pretoria to Ekurhuleni. Everywhere else in South Africa we run the same process
+              We are based in Johannesburg and work across Gauteng in person, from Pretoria to
+              Ekurhuleni. Everywhere else in South Africa we run the same process
               remotely, by call and shared link. Read the{" "}
               <Link to="/process" className="text-slate hover:underline">
                 process
