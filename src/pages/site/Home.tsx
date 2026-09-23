@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Seo } from "@/components/site/Seo";
 import { organizationJsonLd } from "@/lib/siteConfig";
@@ -117,15 +116,24 @@ export default function Home() {
         <h2 className="mt-4 max-w-2xl text-[26px] leading-tight text-slate md:text-[34px]">
           Three things, done properly.
         </h2>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12">
           {services.map((s, i) => (
-            <Reveal key={s.name} delay={i * 0.08}><Card className="rounded-md border-border shadow-none transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <CardContent className="p-7">
-                <p className="text-4xl text-ash/50">{s.index}</p>
-                <h3 className="mt-4 text-[18px] text-slate">{s.name}</h3>
-                <p className="mt-3 text-[14px] leading-relaxed text-ash">{s.body}</p>
-              </CardContent>
-            </Card></Reveal>
+            <Reveal key={s.name} delay={i * 0.08}>
+              <article className={`group relative grid gap-5 border-t border-slate/15 py-16 md:grid-cols-[180px_minmax(0,620px)] md:gap-12 md:py-24 ${s.name === "Build" ? "md:py-28" : ""}`}>
+                <p
+                  aria-hidden="true"
+                  className="select-none text-[112px] font-bold leading-[0.72] tracking-[-0.1em] text-slate/[0.07] transition-colors duration-500 group-hover:text-accent-blue/20 md:text-[164px]"
+                  style={{ WebkitTextStroke: "1px rgba(26, 26, 26, 0.14)" }}
+                >
+                  {s.index}
+                </p>
+                <div className="max-w-2xl md:pt-3">
+                  <h3 className={`text-3xl leading-tight text-slate md:text-5xl ${s.name === "Build" ? "md:max-w-xl" : ""}`}>{s.name}</h3>
+                  <p className={`mt-5 text-[15px] leading-relaxed text-ash md:text-[16px] ${s.name === "Build" ? "md:max-w-xl" : "max-w-lg"}`}>{s.body}</p>
+                  {s.name === "Build" && <p className="mt-6 text-[11px] uppercase tracking-[0.16em] text-accent-blue">The part that makes the difference</p>}
+                </div>
+              </article>
+            </Reveal>
           ))}
         </div>
         <Link
@@ -143,20 +151,37 @@ export default function Home() {
           <h2 className="mt-4 max-w-2xl text-[26px] leading-tight text-white md:text-[34px]">
             Five steps from first call to live site.
           </h2>
-          <div className="mt-12 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-5">
-            {processSteps.map((step) => (
-              <div key={step.index} className="bg-white/5 p-6">
-                <p className="section-index text-white/50">
-                  {step.index} / 05
-                </p>
-                <h3 className="mt-4 text-[16px] text-white">{step.name}</h3>
-                <p className="mt-2 text-[12px] text-white/55">{step.timeframe}</p>
-              </div>
-            ))}
+          <div className="relative mt-16 md:mt-24">
+            <motion.div
+              aria-hidden="true"
+              className="absolute left-3 top-0 h-full w-px origin-top bg-gradient-to-b from-accent-blue via-white/30 to-white/10 md:hidden"
+              initial={reducedMotion ? false : { scaleY: 0 }}
+              whileInView={reducedMotion ? undefined : { scaleY: 1 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+            />
+            <motion.div
+              aria-hidden="true"
+              className="absolute left-0 top-5 hidden h-px w-full origin-left bg-gradient-to-r from-accent-blue via-white/30 to-white/10 md:block"
+              initial={reducedMotion ? false : { scaleX: 0 }}
+              whileInView={reducedMotion ? undefined : { scaleX: 1 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+            />
+            <div className="relative grid gap-10 pl-10 md:grid-cols-5 md:gap-5 md:pl-0">
+              {processSteps.map((step) => (
+                <Reveal key={step.index} delay={Number(step.index) * 0.06} className="relative md:pt-12">
+                  <span className={`absolute left-[-35px] top-0 h-3 w-3 rounded-full border-2 border-navy bg-accent-blue md:left-0 md:top-0 ${step.name === "Build" ? "h-5 w-5 -translate-x-1" : ""}`} />
+                  <p className="section-index text-white/50">{step.index} / 05</p>
+                  <h3 className={`mt-3 text-xl text-white ${step.name === "Build" ? "font-bold text-accent-blue" : ""}`}>{step.name}</h3>
+                  <p className="mt-2 text-[12px] text-white/55">{step.timeframe}</p>
+                </Reveal>
+              ))}
+            </div>
           </div>
           <Link
             to="/process"
-            className="mt-8 inline-flex items-center gap-2 text-[13px] text-slate hover:underline"
+            className="mt-8 inline-flex items-center gap-2 text-[13px] text-white hover:text-accent-blue hover:underline"
           >
             Read what happens in each step <ArrowRight className="h-3.5 w-3.5" />
           </Link>
@@ -189,18 +214,23 @@ export default function Home() {
           <h2 className="mt-4 max-w-2xl text-[26px] leading-tight text-slate md:text-[34px]">
             You see the price before you talk to us.
           </h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {tiers.map((tier) => (
-              <Card key={tier.id} className="rounded-md border-border shadow-none">
-                <CardContent className="p-7">
-                  <h3 className="text-[16px] text-slate">{tier.name}</h3>
-                  <p className="mt-4 text-[26px] text-slate">{tier.price}</p>
-                  <p className="mt-1 text-[12px] text-ash">{tier.priceNote}</p>
-                  <p className="mt-5 text-[13px] leading-relaxed text-ash">{tier.summary}</p>
-                  <p className="mt-5 text-[12px] text-ash">{tier.timeline}</p>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="mt-12 grid items-start gap-10 md:grid-cols-[0.85fr_1.15fr_0.85fr] md:gap-8">
+            {tiers.map((tier) => {
+              const featured = tier.id === "business";
+              return (
+                <Reveal key={tier.id} delay={featured ? 0.08 : 0}>
+                  <article className={`relative border-t pt-7 ${featured ? "-mt-5 border-accent-blue bg-navy px-7 pb-9 pt-10 text-white shadow-[0_20px_55px_rgba(59,110,246,0.2)] md:-mt-8" : "border-slate/25"}`}>
+                    {featured && <p className="mb-7 text-[11px] uppercase tracking-[0.18em] text-accent-blue">Most chosen</p>}
+                    <h3 className={`text-[16px] ${featured ? "text-white" : "text-slate"}`}>{tier.name}</h3>
+                    <p className={`mt-5 text-5xl font-bold leading-none tracking-[-0.06em] ${featured ? "text-white md:text-6xl" : "text-slate md:text-5xl"}`}>{tier.price}</p>
+                    <p className={`mt-2 text-[12px] ${featured ? "text-white/55" : "text-ash"}`}>{tier.priceNote}</p>
+                    <p className={`mt-7 text-[13px] leading-relaxed ${featured ? "text-white/70" : "text-ash"}`}>{tier.summary}</p>
+                    <p className={`mt-7 text-[12px] ${featured ? "text-white/55" : "text-ash"}`}>{tier.timeline}</p>
+                    {featured && <Link to="/contact" className="mt-8 inline-flex items-center gap-2 text-[13px] text-accent-blue hover:underline">Choose Business <ArrowRight className="h-3.5 w-3.5" /></Link>}
+                  </article>
+                </Reveal>
+              );
+            })}
           </div>
           <Link
             to="/pricing"
