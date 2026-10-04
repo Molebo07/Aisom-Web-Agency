@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Terminal } from "lucide-react";
+import { siteConfig } from "@/lib/siteConfig";
 
 export default function RefundPolicy() {
   const effectiveDate = "3 July 2026";
@@ -50,10 +51,10 @@ export default function RefundPolicy() {
               You may cancel your paid subscription at any time from{" "}
               <strong>Settings → Billing</strong> in the app, or by emailing{" "}
               <a
-                href="mailto:sales.aisom@gmail.com"
+                href={`mailto:${siteConfig.email}`}
                 className="underline hover:text-primary"
               >
-                sales.aisom@gmail.com
+                {siteConfig.email}
               </a>
               .
             </li>
@@ -114,10 +115,10 @@ export default function RefundPolicy() {
             <li>
               Email{" "}
               <a
-                href="mailto:sales.aisom@gmail.com"
+                href={`mailto:${siteConfig.email}`}
                 className="underline hover:text-primary"
               >
-                sales.aisom@gmail.com
+                {siteConfig.email}
               </a>{" "}
               from the email address on your Aisom account.
             </li>
@@ -156,18 +157,18 @@ export default function RefundPolicy() {
           <p>
             Billing and refund queries:{" "}
             <a
-              href="mailto:sales.aisom@gmail.com"
+              href={`mailto:${siteConfig.email}`}
               className="underline hover:text-primary"
             >
-              sales.aisom@gmail.com
+              {siteConfig.email}
             </a>
             <br />
             General support:{" "}
             <a
-              href="mailto:sales.aisom@gmail.com"
+              href={`mailto:${siteConfig.email}`}
               className="underline hover:text-primary"
             >
-              sales.aisom@gmail.com
+              {siteConfig.email}
             </a>
           </p>
         </Section>

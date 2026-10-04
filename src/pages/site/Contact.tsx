@@ -7,8 +7,9 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { Seo } from "@/components/site/Seo";
 import { toast } from "sonner";
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
 import { trackGenerateLead } from "@/lib/analytics";
+import { siteConfig } from "@/lib/siteConfig";
+import { submitLead } from "@/lib/submitLead";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Enter your name"),
@@ -19,6 +20,7 @@ const schema = z.object({
   budgetRange: z.string().trim().max(80).optional().or(z.literal("")),
   details: z.string().trim().min(10, "Tell us a bit about the project"),
   heardAbout: z.string().trim().max(120).optional().or(z.literal("")),
+  consent: z.literal(true, { errorMap: () => ({ message: "Please agree to the privacy notice." }) }),
   company: z.string().max(200).optional().or(z.literal("")), // honeypot
 });
 
@@ -32,6 +34,7 @@ export default function Contact() {
     budgetRange: "",
     details: "",
     heardAbout: "",
+    consent: false,
     company: "",
   });
   const [busy, setBusy] = useState(false);
@@ -47,25 +50,8 @@ export default function Contact() {
     }
     setBusy(true);
 
-    // Prefer a deployed function endpoint if configured
-    const fnUrl = import.meta.env.VITE_SEND_LEAD_URL;
-
     try {
-      if (fnUrl) {
-        const res = await fetch(fnUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...parsed.data, kind: "quote", pagePath: "/contact" }),
-        });
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(json?.error || "Submission failed");
-      } else {
-        const { error } = await supabase.functions.invoke("send-lead", {
-          body: { ...parsed.data, kind: "quote", pagePath: "/contact" },
-        });
-        if (error) throw error;
-      }
-
+      await submitLead({ ...parsed.data, kind: "quote", pagePath: "/contact" });
       trackGenerateLead({ value: 0 });
       toast.success("Thanks — we have your request. We'll be in touch soon.");
       setDone(true);
@@ -84,7 +70,7 @@ export default function Contact() {
         <Seo title="Get a free quote" description="Thanks — we have your request." path="/contact" />
         <section className="wrap py-24">
           <h1 className="text-[26px] font-semibold text-slate">Thanks — we will be in touch</h1>
-          <p className="mt-4 text-ash">Expect a reply within one business day. If this is urgent, email sales.aisom@gmail.com.</p>
+          <p className="mt-4 text-ash">Expect a reply within one business day. If you need to follow up, email <a className="text-slate underline" href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>.</p>
           <div className="mt-8">
             <Link to="/" className="text-[13px] text-slate hover:underline">Return home</Link>
           </div>
@@ -143,15 +129,15 @@ export default function Contact() {
             <Textarea id="details" placeholder="Tell us about your project" value={form.details} onChange={(e) => setForm({ ...form, details: e.target.value })} required />
           </div>
 
-          <div className="md:col-span-2 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <input type="hidden" name="company" value={form.company} onChange={() => {}} />
-              <p className="text-[13px] text-ash">By submitting you agree we may contact you about your enquiry.</p>
-            </div>
-
+          <div className="md:col-span-2 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <Button type="submit" disabled={busy}>{busy ? "Sending" : "Send request"}</Button>
+              <input type="hidden" name="company" value={form.company} onChange={() => {}} />
+              <label className="flex max-w-xl items-start gap-3 text-[13px] leading-relaxed text-ash">
+                <input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} className="mt-1 h-4 w-4 shrink-0" />
+                <span>I agree that Aisom may use my details to respond to this enquiry, as described in the <Link to="/privacy-policy" className="text-slate underline">privacy policy</Link>.</span>
+              </label>
             </div>
+            <Button type="submit" disabled={busy}>{busy ? "Sending" : "Send request"}</Button>
           </div>
         </form>
       </section>

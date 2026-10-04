@@ -12,7 +12,22 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  build: {
+    sourcemap: false,
+    target: "esnext",
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom"],
+          router: ["react-router-dom"],
+          ui: ["@radix-ui/react-accordion", "@radix-ui/react-dialog", "@radix-ui/react-slot"],
+          charts: ["recharts"],
+        },
+      },
+    },
+  },
+  plugins: [react(), mode === "development" ? componentTagger() : null].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

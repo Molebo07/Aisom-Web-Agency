@@ -8,6 +8,11 @@ declare global {
 
 export function track(event: string, params: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
+  try {
+    if (window.localStorage.getItem("aisom-analytics-consent") !== "accepted") return;
+  } catch {
+    return;
+  }
   if (typeof window.gtag === "function") {
     window.gtag("event", event, params);
     return;

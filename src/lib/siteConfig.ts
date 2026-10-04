@@ -1,12 +1,14 @@
-// Contact details: fill these in when they are ready.
-// Anything left as an empty string is simply not rendered anywhere on the site.
+// Contact details: a few values remain placeholders until the team confirms exact commercial terms.
+// These are intentionally surfaced as visible TODO markers rather than guessed.
 export const siteConfig = {
   name: "Aisom",
   legalName: "Aisom Systems (Pty) Ltd",
   registration: "2026/234071/07",
-  email: "sales.aisom@gmail.com",
-  phone: "", // e.g. "+27 71 234 5678"
-  whatsapp: "", // digits only, e.g. "27712345678"
+  vatNumber: "[CONFIRM: VAT number]",
+  email: "sales@aisom.co.za",
+  phone: "[CONFIRM: +27 00 000 0000]",
+  whatsapp: "[CONFIRM: 27820000000]",
+  openingHours: "[CONFIRM: Mon-Fri, 08:00-17:00]",
   address: {
     street: "53 Crane Street",
     locality: "Johannesburg",
@@ -15,7 +17,7 @@ export const siteConfig = {
     country: "ZA",
   },
   areaServed: ["Gauteng", "South Africa"],
-  priceRange: "R3000 - R5000",
+  priceRange: "R3000 - R10000",
   social: {
     linkedin: "",
     instagram: "",
@@ -30,6 +32,7 @@ export const organizationJsonLd = {
   legalName: siteConfig.legalName,
   url: "https://aisom.co.za",
   email: siteConfig.email,
+  ...(siteConfig.phone.startsWith("[CONFIRM:") ? {} : { telephone: siteConfig.phone }),
   description:
     "Aisom designs and builds websites for small and medium businesses in Gauteng and across South Africa.",
   priceRange: siteConfig.priceRange,

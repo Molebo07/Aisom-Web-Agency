@@ -11,8 +11,6 @@ const links = [
   { to: "/work", label: "Work" },
   { to: "/pricing", label: "Pricing" },
   { to: "/about", label: "About" },
-  { to: "/process", label: "Process" },
-  { to: "/blog", label: "Blog" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -85,9 +83,21 @@ export function Navbar() {
                     </Link>
                   </SheetClose>
                 ))}
+                <SheetClose asChild>
+                  <Link to="/contact" className="mt-3 rounded-md bg-primary px-3 py-3 text-[15px] font-medium text-white">
+                    Get a quote
+                  </Link>
+                </SheetClose>
               </nav>
             </SheetContent>
           </Sheet>
+        </div>
+      </div>
+      <div className="border-t border-white/10 bg-background/95 lg:hidden">
+        <div className="wrap flex justify-end py-2">
+          <Link to="/contact" className="rounded-md bg-primary px-5 py-2 text-center text-[12px] font-medium text-white">
+            Get a quote
+          </Link>
         </div>
       </div>
     </header>

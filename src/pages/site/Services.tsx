@@ -40,7 +40,7 @@ export default function Services() {
       <PageHeader
         index="SERVICES"
         title="Website packages built around what your buyers look for."
-        lead="Every package below is a complete build. Design, copy polish, mobile testing, analytics and launch are in the price. You are never handed an empty template to finish yourself."
+        lead="Choose a focused one-page site, a multi-page business site, or a larger build scoped around the way your business works. Each package lists what is included and what sits outside the price."
       />
 
       <section className="wrap pb-20">
@@ -83,7 +83,7 @@ export default function Services() {
                 <p className="mt-7 text-[12px] text-ash">{tier.timeline}</p>
                 <div className="mt-7 pt-2">
                   <Button asChild className="w-full">
-                    <Link to="/contact">Get a quote</Link>
+                    <Link to="/contact">Ask about {tier.name}</Link>
                   </Button>
                 </div>
               </CardContent>

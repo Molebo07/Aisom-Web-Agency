@@ -1,21 +1,56 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3.23.8";
 
-const FOUNDER_EMAILS = ["sales.aisom@gmail.com"];
+const allowedOrigins = new Set(
+  (Deno.env.get("LEAD_ALLOWED_ORIGINS") ?? "https://aisom.co.za,https://www.aisom.co.za,http://localhost:5173")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+);
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get("origin") ?? "";
+  return {
+    "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://aisom.co.za",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+  };
+}
 
 const BodySchema = z.object({
-  kind: z.enum(["quote", "newsletter"]).default("quote"),
-  name: z.string().trim().min(1).max(120),
+  kind: z.enum(["quote", "snapshot", "newsletter"]).default("quote"),
+  name: z.string().trim().min(1).max(120).optional().or(z.literal("")),
   businessName: z.string().trim().max(160).optional().or(z.literal("")),
   email: z.string().trim().email().max(254),
   phone: z.string().trim().max(40).optional().or(z.literal("")),
   industry: z.string().trim().max(80).optional().or(z.literal("")),
   budgetRange: z.string().trim().max(80).optional().or(z.literal("")),
-  details: z.string().trim().min(10).max(5000),
+  packageInterest: z.string().trim().max(80).optional().or(z.literal("")),
+  websiteUrl: z.string().trim().url().max(220).optional().or(z.literal("")),
+  details: z.string().trim().max(5000).optional().or(z.literal("")),
   heardAbout: z.string().trim().max(120).optional().or(z.literal("")),
   pagePath: z.string().trim().max(200).optional().or(z.literal("")),
+  consent: z.boolean().optional(),
+  marketingConsent: z.boolean().optional(),
   company: z.string().max(200).optional(), // honeypot
+}).superRefine((data, ctx) => {
+  if (data.kind === "newsletter") {
+    if (!data.marketingConsent) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["marketingConsent"], message: "Marketing consent is required." });
+    }
+    return;
+  }
+
+  if (!data.name?.trim()) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["name"], message: "Name is required." });
+  }
+  if (!data.consent) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["consent"], message: "Enquiry consent is required." });
+  }
+  if (!data.details || data.details.trim().length < 10) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["details"], message: "Tell us a little about your request." });
+  }
 });
 
 // Simple in-memory rate limit: 5 submissions per IP per hour.
@@ -33,7 +68,20 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed." }), {
+      status: 405,
+      headers: { ...corsHeaders, "Allow": "POST, OPTIONS", "Content-Type": "application/json" },
+    });
+  }
+  if (Number(req.headers.get("content-length") ?? 0) > 20_000) {
+    return new Response(JSON.stringify({ error: "Request is too large." }), {
+      status: 413,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   try {
     const parsed = BodySchema.safeParse(await req.json());
@@ -68,15 +116,19 @@ Deno.serve(async (req) => {
 
     const { error: dbError } = await supabase.from("leads").insert({
       kind: d.kind,
-      name: d.name,
+      name: d.name?.trim() || null,
       business_name: d.businessName || null,
       email: d.email.toLowerCase(),
       phone: d.phone || null,
       industry: d.industry || null,
-      budget_range: d.budgetRange || null,
-      details: d.details,
+      budget_range: d.budgetRange || d.packageInterest || null,
+      package_interest: d.packageInterest || null,
+      website_url: d.websiteUrl || null,
+      details: d.details || null,
       heard_about: d.heardAbout || null,
       page_path: d.pagePath || null,
+      consent_at: d.consent ? new Date().toISOString() : null,
+      marketing_consent_at: d.marketingConsent ? new Date().toISOString() : null,
     });
 
     if (dbError) {
@@ -87,24 +139,36 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Notify the founders. Skipped silently until an email key is configured.
+    if (d.kind === "newsletter") {
+      return new Response(JSON.stringify({ ok: true, emailed: false }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const resendKey = Deno.env.get("RESEND_API_KEY");
     const from = Deno.env.get("LEAD_FROM_EMAIL") ?? "Aisom <onboarding@resend.dev>";
+    const recipients = (Deno.env.get("LEAD_TO_EMAIL") ?? "sales@aisom.co.za")
+      .split(",")
+      .map((email) => email.trim())
+      .filter(Boolean);
     let emailed = false;
 
-    if (resendKey) {
+    if (resendKey && recipients.length > 0) {
+      const requestName = d.kind === "snapshot" ? "website snapshot" : "quote";
       const html = `
-        <h2>New quote request</h2>
-        <p><strong>Name:</strong> ${esc(d.name)}</p>
+        <h2>New ${requestName} request</h2>
+        <p><strong>Name:</strong> ${esc(d.name || "-")}</p>
         <p><strong>Business:</strong> ${esc(d.businessName || "-")}</p>
         <p><strong>Email:</strong> ${esc(d.email)}</p>
         <p><strong>Phone:</strong> ${esc(d.phone || "-")}</p>
+        <p><strong>Website:</strong> ${esc(d.websiteUrl || "-")}</p>
+        <p><strong>Package:</strong> ${esc(d.packageInterest || "-")}</p>
         <p><strong>Industry:</strong> ${esc(d.industry || "-")}</p>
         <p><strong>Budget:</strong> ${esc(d.budgetRange || "-")}</p>
         <p><strong>Heard about us:</strong> ${esc(d.heardAbout || "-")}</p>
         <p><strong>Page:</strong> ${esc(d.pagePath || "-")}</p>
         <hr />
-        <p>${esc(d.details).replace(/\n/g, "<br />")}</p>
+        <p>${esc(d.details || "-").replace(/\n/g, "<br />")}</p>
       `;
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -114,9 +178,9 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           from,
-          to: FOUNDER_EMAILS,
+          to: recipients,
           reply_to: d.email,
-          subject: `New quote request: ${d.businessName || d.name}`,
+          subject: `New ${requestName} request: ${d.businessName || d.name || d.email}`,
           html,
         }),
       });
@@ -126,7 +190,7 @@ Deno.serve(async (req) => {
         emailed = true;
       }
     } else {
-      console.warn("RESEND_API_KEY not set; lead saved but no email sent.");
+      console.warn("Lead saved but not emailed; configure RESEND_API_KEY and LEAD_TO_EMAIL.");
     }
 
     return new Response(JSON.stringify({ ok: true, emailed }), {

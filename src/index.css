@@ -4,19 +4,19 @@
 
 @layer base {
   :root {
-    /* Brand tokens (use these only) */
-    --color-white: #FFFFFF;
-    --color-slate: #1A1A1A;
-    --color-ash: #555555;
-    --color-navy: #0B1220;
-    --color-accent: #3B6EF6;
+    --color-white: #ffffff;
+    --color-slate: #1a1a1a;
+    --color-ash: #4b5563;
+    --color-navy: #0b1220;
+    --color-accent: #3b6ef6;
+    --color-accent-soft: #8fa3ff;
+    --color-border: #e5e7eb;
 
-    /* Backwards-compatible HSL variables used by Tailwind theme */
-    --white: 0 0% 100%; /* white */
-    --slate: 0 0% 10%; /* approx #1A1A1A */
-    --ash: 0 0% 33%; /* approx #555555 */
-    --navy: 217 48% 8%;
-    --accent-blue: 223 91% 60%;
+    --white: 0 0% 100%;
+    --slate: 0 0% 10%;
+    --ash: 220 13% 32%;
+    --navy: 220 42% 9%;
+    --accent-blue: 224 91% 60%;
 
     --background: var(--white);
     --foreground: var(--slate);
@@ -46,30 +46,23 @@
     --input: 0 0% 82%;
     --ring: var(--accent-blue);
 
-    --radius: 6px;
+    --radius: 8px;
+    --font-sans: "Geist", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "Geist Mono", "SFMono-Regular", Consolas, monospace;
   }
 
-  /* Self-hosted Roboto Mono (place font files in /public/fonts) */
   @font-face {
-    font-family: 'Roboto Mono';
-    font-style: normal;
-    font-weight: 400;
+    font-family: "Geist";
+    src: local("Geist"), local("Geist Neue"), local("SF Pro Display"), local("Segoe UI"), sans-serif;
     font-display: swap;
-    src: url('/fonts/RobotoMono-Regular.woff2') format('woff2'), url('/fonts/RobotoMono-Regular.woff') format('woff');
+    font-weight: 100 900;
   }
+
   @font-face {
-    font-family: 'Roboto Mono';
-    font-style: normal;
-    font-weight: 500;
+    font-family: "Geist Mono";
+    src: local("Geist Mono"), local("SFMono-Regular"), local("Consolas"), monospace;
     font-display: swap;
-    src: url('/fonts/RobotoMono-Medium.woff2') format('woff2'), url('/fonts/RobotoMono-Medium.woff') format('woff');
-  }
-  @font-face {
-    font-family: 'Roboto Mono';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('/fonts/RobotoMono-Bold.woff2') format('woff2'), url('/fonts/RobotoMono-Bold.woff') format('woff');
+    font-weight: 100 900;
   }
 }
 
@@ -82,6 +75,35 @@
     scroll-behavior: smooth;
   }
 
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.65;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-slate);
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 1.5rem + 4vw, 4.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+    line-height: 1.12;
+  }
+
+  p {
+    max-width: 62ch;
+  }
+
   .dark-section {
     --background: var(--navy);
     --foreground: 0 0% 100%;
@@ -91,15 +113,12 @@
     color: white;
   }
 
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-weight: 700;
-    letter-spacing: -0.03em;
+  .section-index,
+  .eyebrow,
+  .mono {
+    font-family: var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
 }
 

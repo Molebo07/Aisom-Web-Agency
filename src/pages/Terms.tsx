@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Terminal } from "lucide-react";
+import { siteConfig } from "@/lib/siteConfig";
 
 export default function Terms() {
   const effectiveDate = "3 July 2026";
@@ -35,10 +36,10 @@ export default function Terms() {
             (registration number 2026/234071/07), with its address at{" "}
             53 Crane Street, Tembisa, 1632. You can contact us at{" "}
             <a
-              href="mailto:sales.aisom@gmail.com"
+              href={`mailto:${siteConfig.email}`}
               className="underline hover:text-primary"
             >
-              sales.aisom@gmail.com
+              {siteConfig.email}
             </a>
             .
           </p>
@@ -147,10 +148,10 @@ export default function Terms() {
             collect, how we use it, and your rights (including access, correction, and deletion),
             see our Privacy Policy at <Placeholder>[/privacy]</Placeholder> or email{" "}
             <a
-              href="mailto:sales.aisom@gmail.com"
+              href={`mailto:${siteConfig.email}`}
               className="underline hover:text-primary"
             >
-              sales.aisom@gmail.com
+              {siteConfig.email}
             </a>
             .
           </p>
@@ -168,10 +169,10 @@ export default function Terms() {
           <p>
             Questions about these Terms? Email{" "}
             <a
-              href="mailto:sales.aisom@gmail.com"
+              href={`mailto:${siteConfig.email}`}
               className="underline hover:text-primary"
             >
-              sales.aisom@gmail.com
+              {siteConfig.email}
             </a>
             .
           </p>

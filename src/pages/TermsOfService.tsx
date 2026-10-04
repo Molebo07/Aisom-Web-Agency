@@ -1,5 +1,6 @@
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Seo } from "@/components/site/Seo";
+import { siteConfig } from "@/lib/siteConfig";
 
 export default function TermsOfService() {
   return (
@@ -57,9 +58,9 @@ export default function TermsOfService() {
         <p className="mt-2 text-ash">If any provision of these Terms is found to be unenforceable, the remaining provisions shall continue in full force and effect. These Terms, together with our Privacy Policy and, where applicable, a signed Client Services Agreement, constitute the entire agreement between you and Aisom regarding your use of our Services.</p>
 
         <h2 className="mt-6 text-[18px] text-slate">15. Contact</h2>
-        <p className="mt-2 text-ash">Aisom Systems (Pty) Ltd · Reg. 2026/234071/07<br />Email: hello@aisom.co.za · Phone: [___________] · Address: [___________], Gauteng, South Africa</p>
+        <p className="mt-2 text-ash">Aisom Systems (Pty) Ltd · Reg. {siteConfig.registration}<br />Email: <a className="underline" href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a><br />Address: {siteConfig.address.street}, {siteConfig.address.locality}, {siteConfig.address.region} {siteConfig.address.postalCode}, South Africa</p>
 
-        <p className="mt-8 text-[13px] text-ash">Last Updated: [___________]</p>
+        <p className="mt-8 text-[13px] text-ash">Last updated: 4 October 2026</p>
       </section>
     </SiteLayout>
   );

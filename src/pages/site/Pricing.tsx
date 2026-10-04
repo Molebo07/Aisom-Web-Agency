@@ -66,12 +66,12 @@ export default function Pricing() {
               <CardContent className="flex flex-1 flex-col p-7">
                 <h2 className="text-[18px] text-slate">{tier.name}</h2>
                 <p className="mt-4 text-[30px] text-slate">{tier.price}</p>
-                <p className="mt-1 text-[12px] text-ash">{tier.priceNote}, VAT not applicable</p>
+                <p className="mt-1 text-[12px] text-ash">{tier.priceNote}</p>
                 <p className="mt-5 text-[13px] leading-relaxed text-ash">{tier.summary}</p>
                 <p className="mt-5 text-[12px] text-ash">{tier.timeline}</p>
                 <div className="mt-auto pt-7">
                   <Button asChild className="w-full">
-                    <Link to="/contact">Get a quote</Link>
+                    <Link to="/contact">Ask about {tier.name}</Link>
                   </Button>
                 </div>
               </CardContent>

@@ -15,8 +15,8 @@ export const tiers: Tier[] = [
     id: "starter",
     name: "Starter Site",
     price: "R3 000",
-    priceNote: "once off",
-    timeline: "Live in 1 to 2 weeks",
+    priceNote: "[CONFIRM: excl. VAT]",
+    timeline: "Starter: Discovery 1 day, Design 2-3, Build 3-5, Review 2, Launch 1",
     who: "Sole traders and small teams with no website, or a Facebook page doing the job badly.",
     summary: "A clean one page site that tells people who you are, what you do, and how to reach you.",
     includes: [
@@ -35,8 +35,8 @@ export const tiers: Tier[] = [
     id: "business",
     name: "Business Site",
     price: "R5 000",
-    priceNote: "once off",
-    timeline: "Live in 2 to 4 weeks",
+    priceNote: "[CONFIRM: excl. VAT]",
+    timeline: "Business: Discovery 2-3, Design 3-5, Build 5-10, Review 2-3, Launch 1",
     who: "Established SMEs that need to look credible next to bigger competitors.",
     summary:
       "A full multi page website built around the pages buyers actually look for before they call you.",
@@ -56,8 +56,8 @@ export const tiers: Tier[] = [
     id: "growth",
     name: "Growth Site",
     price: "From R8 000",
-    priceNote: "quoted per project",
-    timeline: "Timeline quoted upfront",
+    priceNote: "[CONFIRM: quoted per project, excl. VAT]",
+    timeline: "[CONFIRM: quoted upfront after scoping]",
     who: "Businesses that need the site to do a job: sell, book, or connect to something else.",
     summary:
       "Everything in Business Site, plus the extra build work your operation needs.",
@@ -84,35 +84,35 @@ export const processSteps: ProcessStep[] = [
   {
     index: "01",
     name: "Discovery",
-    timeframe: "2 to 3 days",
+    timeframe: "[CONFIRM: 1-3 days]",
     what: "We ask what your business sells, who buys it, and what a good lead looks like. Then we agree on pages, price and a start date in writing.",
     you: "One 30 minute call. Send us your logo, photos and anything you already have.",
   },
   {
     index: "02",
     name: "Design",
-    timeframe: "3 to 5 days",
+    timeframe: "[CONFIRM: 2-5 days]",
     what: "You see the real home page design before anything is built. Layout, wording and structure, on desktop and mobile.",
     you: "Review the design and send one consolidated list of changes.",
   },
   {
     index: "03",
     name: "Build",
-    timeframe: "5 to 10 days",
+    timeframe: "[CONFIRM: 3-10 days]",
     what: "We build every page, connect the forms, compress the images and wire up analytics. Speed and mobile are tested as we go.",
     you: "Nothing. Send any remaining content if we are still waiting on it.",
   },
   {
     index: "04",
     name: "Review",
-    timeframe: "2 to 3 days",
+    timeframe: "[CONFIRM: 2-3 days]",
     what: "You get a private link to the finished site. We work through your feedback in the rounds included in your package.",
     you: "Click through every page on your own phone and tell us what is wrong.",
   },
   {
     index: "05",
     name: "Launch",
-    timeframe: "1 day",
+    timeframe: "[CONFIRM: 1 working day]",
     what: "We point your domain, install SSL, submit the sitemap to Google and hand over a short guide on how everything works.",
     you: "Approve the launch and settle the final payment.",
   },
@@ -125,28 +125,28 @@ export interface Faq {
 
 export const serviceFaqs: Faq[] = [
   {
+    q: "What does it cost in total (domain, hosting, design)?",
+    a: "The quoted website price covers the build and launch work. Domain registration and hosting are additional costs paid at cost, and we will confirm the exact amounts before launch. The final total depends on the package and any optional extras you approve.",
+  },
+  {
+    q: "Who owns the site once it is built?",
+    a: "You own the finished website, the content, and the domain once it is registered in your name. We do not lock you into a proprietary builder or a platform you cannot move away from.",
+  },
+  {
+    q: "What if I do not have a logo or photos?",
+    a: "That is okay. We can begin with what you have, and we will tell you what we need before launch. If stock or placeholder imagery is required, we will say so up front and keep it honest.",
+  },
+  {
+    q: "Can you move my existing site?",
+    a: "Yes, where the current site can be transferred or rebuilt cleanly. We review the structure, content and technical setup first so we can confirm whether a rebuild is the better option.",
+  },
+  {
     q: "Do you host the website?",
-    a: "Yes. Hosting is included free for the first year on every package. After that it is R150 a month, or you can move the site to your own hosting at no charge. Your domain is billed separately by the registrar, usually around R150 a year for a .co.za.",
+    a: "[CONFIRM: hosting is included for the first year, or paid at cost]. We will confirm the final hosting terms before we sign off the project.",
   },
   {
     q: "Can I edit it myself afterwards?",
-    a: "Yes, for text and images on the pages you asked us to make editable. We show you how in a short handover call and leave you a written guide. Structural changes come back to us.",
-  },
-  {
-    q: "What if I need more pages later?",
-    a: "Extra pages are R450 each on a Starter or Business Site. No contract, no monthly fee attached to it. You ask, we quote, you approve.",
-  },
-  {
-    q: "Do you write the copy?",
-    a: "We polish and structure what you give us, included in the price. If you have nothing written, full copywriting is R600 per page and we interview you to get the detail right.",
-  },
-  {
-    q: "What do you need from me to start?",
-    a: "Your logo if you have one, photos of your work or premises, your services and prices, and your contact details. If photos are the blocker, tell us. We can start without them.",
-  },
-  {
-    q: "What happens if the site breaks after launch?",
-    a: "Anything that we built and that stops working is fixed free for 30 days after launch. After that, small fixes are quoted per job or covered by a support retainer.",
+    a: "Yes, for text and images on the pages you asked us to make editable. We show you how in a short handover and leave you a written guide. Structural changes come back to us.",
   },
 ];
 

@@ -2,7 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /auth/
 Disallow: /login
-Disallow: /app
 Disallow: /app/
 Disallow: /checkout
 Disallow: /api/

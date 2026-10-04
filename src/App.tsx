@@ -15,6 +15,8 @@ import Pricing from "./pages/site/Pricing.tsx";
 import Process from "./pages/site/Process.tsx";
 import Work from "./pages/site/Work.tsx";
 import Contact from "./pages/site/Contact.tsx";
+import QuotePage from "./pages/site/Quote.tsx";
+import SnapshotPage from "./pages/site/Snapshot.tsx";
 import Placeholder from "./pages/Placeholder.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import AuthLogin from "./pages/AuthLogin.tsx";
@@ -26,6 +28,7 @@ import RefundPolicy from "./pages/RefundPolicy.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import TermsOfService from "./pages/TermsOfService.tsx";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { PrivacyChoices } from "@/components/site/PrivacyChoices";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +43,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <PrivacyChoices />
       <BrowserRouter>
         <AuthProvider>
           <ScrollToTop />
@@ -51,6 +55,8 @@ const App = () => (
             <Route path="/process" element={<Process />} />
             <Route path="/work" element={<Work />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/quote" element={<QuotePage />} />
+            <Route path="/snapshot" element={<SnapshotPage />} />
 
             {/* Auth — unchanged */}
             <Route path="/auth/login" element={<AuthLogin />} />

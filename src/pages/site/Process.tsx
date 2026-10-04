@@ -32,7 +32,9 @@ export default function Process() {
                 <p className="section-index">
                   {step.index} / 0{processSteps.length}
                 </p>
-                <p className="mt-3 text-[12px] text-ash">{step.timeframe}</p>
+                <p className="mt-3 text-[12px] text-ash">
+                  {step.timeframe.startsWith("[CONFIRM:") ? "Timing agreed before the project starts" : step.timeframe}
+                </p>
               </div>
               <div>
                 <h2 className="text-[20px] text-slate">{step.name}</h2>
@@ -49,12 +51,11 @@ export default function Process() {
         </div>
 
         <p className="mt-10 max-w-2xl text-[14px] leading-relaxed text-ash">
-          Total time from deposit to live site is one to two weeks on a{" "}
+          Before work begins, we agree the project schedule and target launch date in writing. The timing depends on the agreed scope and how quickly content and feedback are supplied. See the{" "}
           <Link to="/services" className="text-slate hover:underline">
-            Starter Site
+            package options
           </Link>{" "}
-          and two to four weeks on a Business Site, as long as we have your content. Growth Site
-          timelines are quoted upfront. Package prices are on the{" "}
+          and compare their inclusions on the{" "}
           <Link to="/pricing" className="text-slate hover:underline">
             pricing page
           </Link>
