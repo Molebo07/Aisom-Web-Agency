@@ -160,7 +160,7 @@ export const founders: Founder[] = [
   {
     name: "Molebogeng Lebea",
     role: "Founder and Lead Developer",
-    bio: "Molebogeng builds every site Aisom ships and sets the standard for how fast and how clean they are. She also leads strategy and marketing, so the person planning your site is the person writing its code.",
+    bio: "Molebogeng builds every site Aisom ships and sets the standard for how fast and how clean they are. He also leads strategy and marketing, so the person planning your site is the person writing its code.",
   },
   {
     name: "Tumelo Molusi",
