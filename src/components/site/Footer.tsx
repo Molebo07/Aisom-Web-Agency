@@ -44,16 +44,22 @@ export function Footer() {
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function onSubscribe(e: FormEvent) {
     e.preventDefault();
+    setErrorMessage("");
     const parsed = emailSchema.safeParse(email);
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
+      const message = parsed.error.issues[0].message;
+      setErrorMessage(message);
+      toast.error(message);
       return;
     }
     if (!marketingConsent) {
-      toast.error("Please agree to receive email updates.");
+      const message = "Please agree to receive email updates.";
+      setErrorMessage(message);
+      toast.error(message);
       return;
     }
     setBusy(true);
@@ -66,10 +72,17 @@ export function Footer() {
         marketingConsent: true,
       });
       setDone(true);
+      setEmail("");
+      setName("");
+      setMarketingConsent(false);
       toast.success("Your email updates opt-in has been recorded.");
     } catch (error) {
       console.error("newsletter submit error", error);
-      toast.error("That did not go through. Please try again.");
+      const message = error instanceof Error
+        ? error.message
+        : "We could not complete your subscription. Please try again.";
+      setErrorMessage(message);
+      toast.error(message);
     } finally {
       setBusy(false);
     }
@@ -123,16 +136,23 @@ export function Footer() {
             </p>
           </div>
           {done ? (
-            <p className="text-[13px] text-white md:justify-self-end">
-              Thanks. Your opt-in has been recorded.
+            <p role="status" className="text-sm text-white md:justify-self-end">
+              Thanks. Your email updates opt-in has been recorded.
             </p>
           ) : (
             <form onSubmit={onSubscribe} className="grid gap-2 sm:grid-cols-[160px_minmax(0,1fr)_auto]">
+              {errorMessage && (
+                <p role="alert" className="text-sm text-[#ffb4b4] sm:col-span-3">
+                  {errorMessage}
+                </p>
+              )}
               <label className="sr-only" htmlFor="footer-name">
                 Name (optional)
               </label>
               <Input
                 id="footer-name"
+                maxLength={120}
+                autoComplete="given-name"
                 placeholder="Name (optional)"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -144,16 +164,21 @@ export function Footer() {
               <Input
                 id="footer-email"
                 type="email"
+                maxLength={254}
+                autoComplete="email"
                 required
                 placeholder="you@business.co.za"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <label className="flex items-start gap-2 text-[12px] leading-relaxed text-white/60 sm:col-span-3">
-                <input type="checkbox" checked={marketingConsent} onChange={(e) => setMarketingConsent(e.target.checked)} className="mt-1 h-4 w-4 shrink-0" />
+              <label className="flex min-h-11 items-start gap-2 text-[12px] leading-relaxed text-white/70 sm:col-span-3">
+                <input type="checkbox" checked={marketingConsent} onChange={(e) => {
+                  setMarketingConsent(e.target.checked);
+                  setErrorMessage("");
+                }} className="mt-1 h-5 w-5 shrink-0" />
                 <span>I agree to receive email updates from Aisom. I can withdraw consent by emailing <a href={`mailto:${siteConfig.email}`} className="text-white underline">{siteConfig.email}</a>. See the <Link to="/privacy-policy" className="text-white underline">privacy policy</Link>.</span>
               </label>
-              <Button type="submit" disabled={busy} className="sm:col-start-3">
+              <Button type="submit" disabled={busy} className="min-h-11 sm:col-start-3">
                 {busy ? "Sending" : "Subscribe"}
               </Button>
             </form>

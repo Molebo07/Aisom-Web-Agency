@@ -19,6 +19,22 @@ export interface LeadPayload {
   company?: string;
 }
 
+function getSubmissionError(result: unknown) {
+  if (typeof result === "object" && result !== null && "error" in result) {
+    const error = result.error;
+    if (typeof error === "string") return error;
+    if (typeof error === "object" && error !== null) {
+      const firstError = Object.values(error).flat().find((value) => typeof value === "string");
+      if (typeof firstError === "string") return firstError;
+    }
+  }
+  return "Your request could not be saved. Please try again.";
+}
+
+function isSuccessfulSubmission(result: unknown): boolean {
+  return typeof result === "object" && result !== null && "ok" in result && result.ok === true;
+}
+
 export async function submitLead(payload: LeadPayload) {
   const endpoint = import.meta.env.VITE_SEND_LEAD_URL;
   if (endpoint) {
@@ -27,14 +43,24 @@ export async function submitLead(payload: LeadPayload) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(typeof result?.error === "string" ? result.error : "Submission failed");
+    const result: unknown = await response.json().catch(() => null);
+    if (!response.ok || !isSuccessfulSubmission(result)) {
+      throw new Error(getSubmissionError(result));
     }
     return result;
   }
 
   const { data, error } = await supabase.functions.invoke("send-lead", { body: payload });
-  if (error) throw error;
+  if (error) {
+    const context = (error as { context?: unknown }).context;
+    if (context instanceof Response) {
+      const result: unknown = await context.clone().json().catch(() => null);
+      throw new Error(getSubmissionError(result));
+    }
+    throw error;
+  }
+  if (!isSuccessfulSubmission(data)) {
+    throw new Error(getSubmissionError(data));
+  }
   return data;
 }
