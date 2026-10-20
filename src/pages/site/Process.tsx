@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { PageHeader, SiteLayout } from "@/components/site/SiteLayout";
 import { Seo, breadcrumbJsonLd } from "@/components/site/Seo";
-import { processSteps } from "@/data/site";
+import { ProcessTimeline } from "@/components/site/ProcessTimeline";
 
 const crumbs = [
   { name: "Home", path: "/" },
@@ -24,43 +24,17 @@ export default function Process() {
         lead="Most website projects stall because nobody said who owes what, and by when. Here is the whole run, start to finish, with your part written down next to ours."
       />
 
-      <section className="wrap pb-20">
-        <div className="divide-y divide-border border-y border-border">
-          {processSteps.map((step) => (
-            <article key={step.index} className="grid gap-6 py-10 md:grid-cols-[120px_1fr_1fr]">
-              <div>
-                <p className="section-index">
-                  {step.index} / 0{processSteps.length}
-                </p>
-                <p className="mt-3 text-[12px] text-ash">
-                  {step.timeframe.startsWith("[CONFIRM:") ? "Timing agreed before the project starts" : step.timeframe}
-                </p>
-              </div>
-              <div>
-                <h2 className="text-[20px] text-slate">{step.name}</h2>
-                <p className="mt-3 text-[14px] leading-relaxed text-ash">{step.what}</p>
-              </div>
-              <div className="md:border-l md:border-border md:pl-6">
-                <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-slate">
-                  Your part
-                </p>
-                <p className="mt-3 text-[14px] leading-relaxed text-ash">{step.you}</p>
-              </div>
-            </article>
-          ))}
+      <section data-theme="dark" className="dark-section bg-navy">
+        <div className="wrap py-16 md:py-24">
+          <p className="section-index text-white/60">THE PROJECT TIMELINE</p>
+          <ProcessTimeline />
+          <p className="mt-10 max-w-2xl text-sm leading-relaxed text-white/65">
+            The overall timeline depends on the agreed scope and how quickly content and feedback are supplied. We confirm the schedule in writing before work begins. See the{" "}
+            <Link to="/services" className="text-white underline underline-offset-4">package options</Link>
+            {" "}and compare their inclusions on the{" "}
+            <Link to="/pricing" className="text-white underline underline-offset-4">pricing page</Link>.
+          </p>
         </div>
-
-        <p className="mt-10 max-w-2xl text-[14px] leading-relaxed text-ash">
-          Before work begins, we agree the project schedule and target launch date in writing. The timing depends on the agreed scope and how quickly content and feedback are supplied. See the{" "}
-          <Link to="/services" className="text-slate hover:underline">
-            package options
-          </Link>{" "}
-          and compare their inclusions on the{" "}
-          <Link to="/pricing" className="text-slate hover:underline">
-            pricing page
-          </Link>
-          .
-        </p>
       </section>
     </SiteLayout>
   );

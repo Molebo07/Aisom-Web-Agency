@@ -1,22 +1,21 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "lucide-react";
-import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Seo } from "@/components/site/Seo";
 import { organizationJsonLd } from "@/lib/siteConfig";
-import { processSteps, tiers } from "@/data/site";
+import { tiers } from "@/data/site";
+import { ProcessTimeline } from "@/components/site/ProcessTimeline";
 import { Reveal } from "@/components/site/Motion";
 
 const services = [
   { index: "01", name: "Design", body: "We decide what matters first: your services, proof, pricing and the route a buyer should take on mobile." },
-  { index: "02", name: "Build", body: "Hand-built pages that stay fast on mobile data and clear enough for a first-time visitor to trust in seconds." },
-  { index: "03", name: "Launch", body: "You get a live site, a clean handover and the basics to show up in search without the usual fluff." },
+  { index: "02", name: "Build", body: "Hand-built pages designed to stay clear and usable on a phone, including on mobile data." },
+  { index: "03", name: "Launch", body: "We test the site, connect the essentials and hand it over so you know how it works." },
 ];
 
 const facts = [
-  { value: "From R3 000", label: "Fixed-price website packages" },
+  { value: "From R3 000", label: "Website packages" },
   { value: "Scope first", label: "Price and start date agreed before work begins" },
   { value: "You own it", label: "Site, content and domain" },
   { value: "Gauteng", label: "Johannesburg based, working nationally" },
@@ -30,21 +29,6 @@ const reasons = [
 ];
 
 export default function Home() {
-  const reducedMotion = useReducedMotion();
-  const [typedAddress, setTypedAddress] = useState("aisom.co.za");
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    let index = 0;
-    setTypedAddress("");
-    const timer = window.setInterval(() => {
-      index += 1;
-      setTypedAddress("aisom.co.za".slice(0, index));
-      if (index === "aisom.co.za".length) window.clearInterval(timer);
-    }, 85);
-    return () => window.clearInterval(timer);
-  }, [reducedMotion]);
-
   return (
     <SiteLayout cta={false}>
       <Seo
@@ -54,173 +38,217 @@ export default function Home() {
         jsonLd={organizationJsonLd}
       />
 
-      <section className="dark-section overflow-hidden bg-navy">
-        <div className="wrap grid min-h-[720px] items-center gap-16 py-20 lg:grid-cols-[0.94fr_1.06fr] lg:py-28">
-          <div>
-            <motion.p className="section-index text-white/50" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              WEB DESIGN, JOHANNESBURG
-            </motion.p>
-            <motion.h1 className="mt-6 max-w-3xl text-white" initial={reducedMotion ? false : { opacity: 0, y: 24 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.7 }}>
+      <section data-theme="dark" className="hero-section dark-section relative overflow-hidden bg-navy">
+        <div className="hero-art" aria-hidden="true" />
+        <div className="wrap relative grid items-center gap-12 py-16 md:py-20 lg:min-h-[680px] lg:grid-cols-12 lg:gap-8 lg:py-24">
+          <div className="lg:col-span-7">
+            <p className="section-index text-white/60">WEB DESIGN, JOHANNESBURG</p>
+            <h1 className="mt-6 max-w-3xl text-balance text-white">
               Websites that make your business look as established as it is.
-            </motion.h1>
-            <motion.p className="mt-7 max-w-xl text-[15px] leading-relaxed text-white/70 md:text-[17px]" initial={reducedMotion ? false : { opacity: 0, y: 20 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 0.22, duration: 0.6 }}>
+            </h1>
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/75 md:text-lg">
               Fixed-price websites for South African businesses. From R3 000, built mobile-first, and you own everything we build.
-            </motion.p>
-            <motion.div className="mt-9 flex flex-wrap gap-3" initial={reducedMotion ? false : { opacity: 0, y: 20 }} animate={reducedMotion ? undefined : { opacity: 1, y: 0 }} transition={{ delay: 0.32, duration: 0.6 }}>
-              <Button asChild size="lg"><Link to="/contact">Get a free quote</Link></Button>
-              <Button asChild size="lg" variant="outline" className="border-white/25 bg-transparent text-white hover:border-white hover:bg-white/5"><Link to="/snapshot">Get a free website snapshot</Link></Button>
-            </motion.div>
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button asChild size="lg" className="min-h-12">
+                <Link to="/quote">Get a free quote</Link>
+              </Button>
+              <Button asChild size="lg" variant="secondary" className="min-h-12 bg-white text-[#0A111F] hover:bg-white/90">
+                <Link to="/snapshot">Request your free website snapshot</Link>
+              </Button>
+            </div>
+            <p className="mt-4 text-sm text-white/65">
+              A free review of your current website. No obligation.
+            </p>
+            <p className="mt-5 text-sm text-white/80">
+              Written price before work begins <span aria-hidden="true">·</span> You own your site
+            </p>
           </div>
 
-          <motion.div className="relative mx-auto w-full max-w-[620px]" initial={reducedMotion ? false : { opacity: 0, scale: 0.96, y: 20 }} animate={reducedMotion ? undefined : { opacity: 1, scale: 1, y: [0, -5, 0], rotate: [0, 0.2, 0] }} transition={{ delay: 0.18, duration: 0.8, y: { delay: 1.5, duration: 7, repeat: Infinity, ease: "easeInOut" }, rotate: { delay: 1.5, duration: 7, repeat: Infinity, ease: "easeInOut" } }}>
-            <div className="overflow-hidden rounded-xl border border-white/15 bg-[#f7f9fc] shadow-[0_30px_100px_rgba(0,0,0,0.35)]">
-              <div className="flex h-11 items-center gap-2 border-b border-slate/10 bg-white px-4">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b6b]" /><span className="h-2.5 w-2.5 rounded-full bg-[#f7c948]" /><span className="h-2.5 w-2.5 rounded-full bg-[#51cf66]" />
-                <span className="ml-5 rounded-sm bg-slate/5 px-4 py-1 text-[9px] text-slate/70">{typedAddress}<span className="ml-0.5 text-accent-blue">|</span></span>
+          <div className="lg:col-span-5">
+            <div className="concept-browser">
+              <div className="flex h-12 items-center gap-2 border-b border-black/10 bg-white px-4">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#ef6a67]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#f2c14e]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#53b879]" />
+                <span className="ml-3 rounded-sm bg-black/5 px-3 py-1 font-mono text-xs text-black/60">aisom.co.za</span>
+                <span className="ml-auto font-mono text-[11px] tracking-[0.08em] text-black/55">MOBILE FIRST</span>
               </div>
-              <div className="p-6 md:p-8">
-                <div className="rounded-md border border-border bg-white p-4 shadow-sm">
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate/50">CONCEPT</p>
-                      <h3 className="mt-2 text-xl text-slate">Industrial supplier</h3>
+              <div className="concept-page">
+                <div className="flex items-center justify-between border-b border-black/10 pb-4">
+                  <span className="font-mono text-xs font-semibold tracking-[0.12em] text-[#0A111F]">INDUSTRIAL SUPPLIER</span>
+                  <span className="font-mono text-[10px] tracking-[0.1em] text-black/50">CONCEPT</span>
+                </div>
+                <div className="grid gap-6 py-7 sm:grid-cols-[1fr_0.7fr] sm:items-end">
+                  <div>
+                    <p className="font-mono text-[10px] tracking-[0.12em] text-[#405FFF]">SUPPLIES FOR THE WORK AHEAD</p>
+                    <p className="mt-3 max-w-sm text-3xl font-semibold leading-tight tracking-[-0.04em] text-[#0A111F]">
+                      Tools and supplies, made easy to find.
+                    </p>
+                    <p className="mt-3 text-sm leading-relaxed text-black/65">
+                      A clear product range and a straightforward way to ask for a quote.
+                    </p>
+                    <span className="mt-5 inline-flex min-h-11 items-center bg-[#405FFF] px-4 text-sm font-medium text-white">
+                      Request a quote
+                    </span>
+                  </div>
+                  <div className="concept-illustration" aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="grid border-t border-black/10 pt-4 sm:grid-cols-3">
+                  {["Fasteners", "Safety gear", "Hand tools"].map((item, index) => (
+                    <div key={item} className={`py-3 text-sm font-medium text-[#0A111F] ${index > 0 ? "sm:border-l sm:border-black/10 sm:pl-4" : ""}`}>
+                      {item}
                     </div>
-                    <span className="rounded-full border border-slate/10 bg-slate/5 px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-slate/70">Mobile first</span>
-                  </div>
-                  <div className="h-2 w-24 rounded-full bg-primary/20">
-                    <div className="h-full w-3/5 rounded-full bg-primary" />
-                  </div>
-                  <div className="mt-5 grid gap-3 md:grid-cols-[1.2fr_0.8fr]">
-                    <div>
-                      <div className="h-8 w-2/3 rounded bg-slate/10" />
-                      <div className="mt-3 h-3 w-full rounded bg-slate/5" />
-                      <div className="mt-2 h-3 w-5/6 rounded bg-slate/5" />
-                    </div>
-                    <div className="rounded border border-slate/10 bg-slate/5 p-3">
-                      <div className="h-3 w-10 rounded bg-slate/10" />
-                      <div className="mt-3 h-16 rounded bg-primary/10" />
-                    </div>
-                  </div>
-                  <div className="mt-5 grid gap-2 sm:grid-cols-3">
-                    <div className="h-16 rounded bg-slate/5" />
-                    <div className="h-16 rounded bg-slate/5" />
-                    <div className="h-16 rounded bg-slate/5" />
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
-            <p className="mt-4 text-right text-[11px] uppercase tracking-[0.18em] text-white/40">Concept layout / not a live client site</p>
-          </motion.div>
+            <p className="mt-3 text-right font-mono text-xs tracking-[0.1em] text-white/55">
+              CONCEPT LAYOUT · NOT A LIVE CLIENT SITE
+            </p>
+          </div>
         </div>
       </section>
 
-      <section className="border-y border-border bg-secondary">
-        <div className="wrap grid gap-8 py-10 md:grid-cols-4">
-          {facts.map((fact) => (
-            <Reveal key={fact.label}>
-              <p className="text-[22px] font-medium text-slate md:text-[26px]">{fact.value}</p>
-              <p className="mt-2 text-[12px] leading-relaxed text-ash">{fact.label}</p>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      <section className="wrap py-20">
-        <p className="section-index">WHY AISOM</p>
-        <h2 className="mt-4 max-w-2xl text-slate">A simple website should not be complicated.</h2>
-        <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {reasons.map((reason) => (
-            <div key={reason} className="rounded-md border border-border bg-background p-5 shadow-sm">
-              <Check className="h-5 w-5 text-primary" aria-hidden="true" />
-              <p className="mt-4 text-[15px] leading-relaxed text-slate">{reason}</p>
+      <section className="bg-secondary" aria-label="Aisom at a glance">
+        <div className="wrap grid grid-cols-2 md:grid-cols-4">
+          {facts.map((fact, index) => (
+            <div key={fact.label} className={`stat-item ${index % 2 === 1 ? "stat-item-even" : ""}`}>
+              <p className="font-mono text-lg font-medium tracking-[-0.04em] text-slate md:text-xl">{fact.value}</p>
+              <p className="mt-2 text-sm leading-relaxed text-ash">{fact.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="wrap py-20">
+      <section className="wrap py-16 md:py-24">
+        <p className="statement-band">
+          A <strong>written price</strong> before work begins. A site <strong>you own</strong>. The people doing the work, <strong>one message away</strong>.
+        </p>
+        <div className="mt-20 grid gap-8 md:grid-cols-[0.8fr_1.2fr] md:gap-16">
+          <div>
+            <p className="section-index">WHY AISOM</p>
+            <h2 className="mt-4 max-w-lg text-slate">A simple website should not be complicated.</h2>
+          </div>
+          <ul className="ruled-list">
+            {reasons.map((reason) => (
+              <li key={reason} className="flex items-start gap-4">
+                <Check className="mt-1 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+                <span>{reason}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="wrap py-12 md:py-20">
         <p className="section-index">WHAT WE DO</p>
         <h2 className="mt-4 max-w-2xl text-slate">Three things, done properly.</h2>
-        <div className="mt-12">
-          {services.map((service, i) => (
-            <Reveal key={service.name} delay={i * 0.08}>
-              <article className="group grid gap-5 border-t border-slate/15 py-14 md:grid-cols-[180px_minmax(0,620px)] md:gap-12 md:py-16">
-                <p aria-hidden="true" className="select-none text-[96px] font-bold leading-[0.72] tracking-[-0.1em] text-slate/7 md:text-[150px]">
-                  {service.index}
-                </p>
-                <div className="max-w-2xl md:pt-3">
-                  <h3 className="text-[28px] text-slate md:text-[40px]">{service.name}</h3>
-                  <p className="mt-4 text-[15px] leading-relaxed text-ash md:text-[16px]">{service.body}</p>
+        <div className="mt-8">
+          {services.map((service, index) => (
+            <Reveal key={service.name} delay={index * 0.08}>
+              <article className="numbered-row">
+                <p aria-hidden="true" className="numbered-row-index">{service.index}</p>
+                <div>
+                  <h3 className="text-2xl text-slate md:text-3xl">{service.name}</h3>
+                  <p className="mt-3 max-w-2xl text-base leading-relaxed text-ash">{service.body}</p>
                 </div>
               </article>
             </Reveal>
           ))}
         </div>
-        <Link to="/services" className="mt-8 inline-flex items-center gap-2 text-[13px] text-slate hover:underline">See the full service breakdown <ArrowRight className="h-3.5 w-3.5" /></Link>
+        <Link to="/services" className="mt-7 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate hover:underline">
+          See the full service breakdown <ArrowRight className="h-4 w-4" />
+        </Link>
       </section>
 
-      <section className="dark-section border-t border-white/10 bg-navy">
-        <div className="wrap py-20">
-          <p className="section-index text-white/50">HOW IT RUNS</p>
+      <section data-theme="dark" className="dark-section bg-navy">
+        <div className="wrap py-16 md:py-24">
+          <p className="section-index text-white/60">HOW IT RUNS</p>
           <h2 className="mt-4 max-w-2xl text-white">Five steps from brief to live site.</h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-5">
-            {processSteps.map((step) => (
-              <Reveal key={step.index} className="rounded-md border border-white/10 bg-white/3 p-5">
-                <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-white/55">{step.index} / 05</p>
-                <h3 className="mt-4 text-[20px] text-white">{step.name}</h3>
-                <p className="mt-2 text-[12px] text-white/55">{step.timeframe.startsWith("[CONFIRM:") ? "Timing agreed before the project starts" : step.timeframe}</p>
-              </Reveal>
-            ))}
+          <div className="mt-10">
+            <ProcessTimeline compact />
           </div>
-          <Link to="/process" className="mt-8 inline-flex items-center gap-2 text-[13px] text-white hover:text-primary hover:underline">Read the process <ArrowRight className="h-3.5 w-3.5" /></Link>
+          <Link to="/process" className="mt-8 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-white hover:underline">
+            Read the full process <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 
-      <section className="wrap py-20">
+      <section className="wrap py-16 md:py-24">
         <p className="section-index">WORK</p>
         <h2 className="mt-4 max-w-2xl text-slate">Honest proof, not fake screenshots.</h2>
-        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {[
-            "Engineering / fabrication / industrial supplier",
-            "Plumbing and electrical contractor",
-            "Accountant or consultant",
-            "Guesthouse or venue",
-          ].map((label) => (
-            <div key={label} className="rounded-md border border-border bg-secondary p-5">
-              <div className="mb-5 h-28 rounded bg-slate/5" aria-hidden="true" />
-              <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-slate/60">Concept</p>
-              <p className="mt-3 text-[15px] text-slate">{label}</p>
-            </div>
-          ))}
+        <div className="mt-8 grid gap-8 border-y border-border py-7 md:grid-cols-2">
+          <div>
+            <p className="font-medium text-slate">Concept layouts</p>
+            <p className="mt-2 text-sm leading-relaxed text-ash">The industrial supplier preview above is a concept, not a client site.</p>
+          </div>
+          <div>
+            <p className="font-medium text-slate">Client work</p>
+            <p className="mt-2 text-sm leading-relaxed text-ash">No client sites have been published yet. We will share real work when it is ready.</p>
+          </div>
         </div>
-        <Link to="/work" className="mt-8 inline-flex items-center gap-2 text-[13px] text-slate hover:underline">See our concept sites <ArrowRight className="h-3.5 w-3.5" /></Link>
+        <Link to="/work" className="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate hover:underline">
+          See how we work <ArrowRight className="h-4 w-4" />
+        </Link>
       </section>
 
       <section className="border-t border-border">
-        <div className="wrap py-20">
+        <div className="wrap py-16 md:py-24">
           <p className="section-index">PRICING</p>
           <h2 className="mt-4 max-w-2xl text-slate">You see the price before you talk to us.</h2>
-          <div className="mt-12 grid items-start gap-6 md:grid-cols-3">
+          <div className="mt-10 grid items-stretch gap-5 lg:grid-cols-3">
             {tiers.map((tier) => {
               const featured = tier.id === "business";
               return (
-                <article key={tier.id} className={`rounded-md border p-7 ${featured ? "border-primary bg-navy text-white shadow-sm" : "border-border bg-background"}`}>
-                  {featured && <p className="mb-4 text-[11px] uppercase tracking-[0.18em] text-primary">Recommended for most businesses</p>}
-                  <h3 className={`text-[18px] ${featured ? "text-white" : "text-slate"}`}>{tier.name}</h3>
-                  <p className={`mt-5 text-5xl font-bold leading-none tracking-[-0.06em] ${featured ? "text-white" : "text-slate"}`}>{tier.price}</p>
-                  <p className={`mt-2 text-[12px] ${featured ? "text-white/60" : "text-ash"}`}>{tier.priceNote}</p>
-                  <p className={`mt-4 text-[13px] leading-relaxed ${featured ? "text-white/75" : "text-ash"}`}>{tier.summary}</p>
-                  <p className={`mt-5 text-[12px] ${featured ? "text-white/60" : "text-ash"}`}>{tier.timeline}</p>
-                  <div className="mt-6">
-                    <Button asChild className="w-full">
-                      <Link to="/contact">Choose {tier.name}</Link>
-                    </Button>
-                  </div>
+                <article key={tier.id} className={`pricing-tier ${featured ? "pricing-tier-featured" : ""}`}>
+                  {featured && <p className="mb-4 font-mono text-xs font-medium uppercase tracking-[0.12em] text-[#7A93FF]">Recommended for most businesses</p>}
+                  <h3 className={`text-lg ${featured ? "text-white" : "text-slate"}`}>{tier.name}</h3>
+                  <p className={`mt-5 text-4xl font-semibold leading-none tracking-[-0.05em] ${featured ? "text-white" : "text-slate"}`}>{tier.price}</p>
+                  <p className={`mt-2 text-sm ${featured ? "text-white/65" : "text-ash"}`}>{tier.priceNote}</p>
+                  <p className={`mt-4 text-base leading-relaxed ${featured ? "text-white/75" : "text-ash"}`}>{tier.summary}</p>
+                  <p className={`mt-6 border-t pt-4 text-base font-medium ${featured ? "border-white/15 text-white" : "border-border text-slate"}`}>{tier.timeline}</p>
+                  <Button asChild className="mt-6 min-h-11 w-full" variant={featured ? "secondary" : "default"}>
+                    <Link to={`/quote?package=${tier.id}`}>Get a quote</Link>
+                  </Button>
                 </article>
               );
             })}
           </div>
-          <Link to="/pricing" className="mt-8 inline-flex items-center gap-2 text-[13px] text-slate hover:underline">Compare what is included <ArrowRight className="h-3.5 w-3.5" /></Link>
+          <Link to="/pricing" className="mt-7 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate hover:underline">
+            Compare what is included <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
+      <section data-theme="dark" className="dark-section philosophy-section bg-navy">
+        <div className="wrap py-16 md:py-24">
+          <p className="section-index text-white/60">WHAT YOU CAN EXPECT</p>
+          <div className="mt-7">
+            {[
+              "A written price before work begins.",
+              "You own your site, domain and content.",
+              "You deal directly with the people doing the work.",
+            ].map((promise) => (
+              <p key={promise} className="philosophy-statement">{promise}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section data-theme="dark" className="dark-section bg-navy">
+        <div className="wrap flex flex-col items-start gap-6 border-t border-white/15 py-14 md:flex-row md:items-center md:justify-between md:py-16">
+          <div>
+            <p className="section-index text-white/60">START WITH A CONVERSATION</p>
+            <h2 className="mt-3 max-w-2xl text-white">Tell us about your business. We’ll send a written price.</h2>
+          </div>
+          <Button asChild size="lg" className="min-h-12 shrink-0">
+            <Link to="/quote">Get a free quote</Link>
+          </Button>
         </div>
       </section>
     </SiteLayout>

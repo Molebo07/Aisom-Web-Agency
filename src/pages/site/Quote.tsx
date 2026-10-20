@@ -1,5 +1,5 @@
-import { FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { FormEvent, useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { PageHeader, SiteLayout } from "@/components/site/SiteLayout";
 import { Seo } from "@/components/site/Seo";
-import { trackGenerateLead } from "@/lib/analytics";
+import { track, trackGenerateLead } from "@/lib/analytics";
 import { submitLead } from "@/lib/submitLead";
+
+const packageNames: Record<string, string> = {
+  starter: "Starter Site",
+  business: "Business Site",
+  growth: "Growth Site",
+};
 
 const schema = z.object({
   name: z.string().trim().min(1, "Enter your name"),
@@ -23,12 +29,14 @@ const schema = z.object({
 });
 
 export default function QuotePage() {
+  const [searchParams] = useSearchParams();
+  const selectedPackage = packageNames[searchParams.get("package")?.toLowerCase() ?? ""] ?? "";
   const [form, setForm] = useState({
     name: "",
     businessName: "",
     phone: "",
     email: "",
-    packageInterest: "",
+    packageInterest: selectedPackage,
     websiteUrl: "",
     message: "",
     consent: false,
@@ -36,6 +44,15 @@ export default function QuotePage() {
   });
   const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    track("quote_start", { package_name: selectedPackage || "not_selected" });
+    if (selectedPackage) {
+      track(`package_select_${searchParams.get("package")?.toLowerCase()}`, {
+        package_name: selectedPackage,
+      });
+    }
+  }, [searchParams, selectedPackage]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -59,9 +76,10 @@ export default function QuotePage() {
         kind: "quote",
         pagePath: "/quote",
       });
+      track("quote_submit", { package_name: parsed.data.packageInterest });
       trackGenerateLead({ value: 0, form_name: "quote" });
       setDone(true);
-      toast.success("Thanks. We will be in touch within one working day.");
+      toast.success("Thanks. We have received your request.");
     } catch (error) {
       console.error("quote submit error", error);
       toast.error("That did not go through. Please try again.");
@@ -73,10 +91,10 @@ export default function QuotePage() {
   if (done) {
     return (
       <SiteLayout>
-        <Seo title="Your quote request is in | Aisom" description="Thanks. We have your quote request and will reply within one working day." path="/quote" />
+        <Seo title="Your quote request is in | Aisom" description="Thanks. We have received your quote request." path="/quote" />
         <section className="wrap py-24">
           <h1 className="text-[28px] text-slate md:text-[36px]">Thanks, {form.name || "there"}. We have your request.</h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ash">We will review your request and reply using the contact details you provided.</p>
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ash">We will review your request and contact you using the details you provided.</p>
           <div className="mt-8"><Link to="/" className="text-[13px] text-slate hover:underline">Back to the homepage</Link></div>
         </section>
       </SiteLayout>
@@ -108,10 +126,15 @@ export default function QuotePage() {
           </div>
           <div>
             <label htmlFor="quote-package" className="mb-2 block text-[12px] font-medium uppercase tracking-[0.12em] text-ash">Package interest</label>
-            <select id="quote-package" value={form.packageInterest} onChange={(e) => setForm({ ...form, packageInterest: e.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-slate" required>
+            <select id="quote-package" value={form.packageInterest} onChange={(e) => {
+              const packageInterest = e.target.value;
+              setForm({ ...form, packageInterest });
+              const packageId = Object.entries(packageNames).find(([, name]) => name === packageInterest)?.[0];
+              if (packageId) track(`package_select_${packageId}`, { package_name: packageInterest });
+            }} className="flex min-h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base text-slate" required>
               <option value="">Select a package</option>
-              <option value="Starter">Starter</option>
-              <option value="Business">Business</option>
+              <option value="Starter Site">Starter Site</option>
+              <option value="Business Site">Business Site</option>
               <option value="Growth">Growth</option>
               <option value="Not sure">Not sure</option>
             </select>

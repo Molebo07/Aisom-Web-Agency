@@ -16,7 +16,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["'Roboto Mono'", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+        sans: ["Geist", "Segoe UI", "Helvetica Neue", "Arial", "sans-serif"],
         mono: ["'Roboto Mono'", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       colors: {
@@ -59,9 +59,9 @@ export default {
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "4px",
-        sm: "2px",
+        lg: "var(--radius-md)",
+        md: "var(--radius-sm)",
+        sm: "var(--radius-sm)",
         xl: "6px",
         "2xl": "6px",
       },

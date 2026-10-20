@@ -62,16 +62,17 @@ export default function Pricing() {
       <section className="wrap pb-20">
         <div className="grid gap-6 lg:grid-cols-3">
           {tiers.map((tier) => (
-            <Card key={tier.id} className="flex flex-col rounded-md border-border shadow-none">
+            <Card key={tier.id} className={`pricing-tier pricing-tier-card ${tier.id === "business" ? "pricing-tier-featured text-white" : "bg-white"}`}>
               <CardContent className="flex flex-1 flex-col p-7">
-                <h2 className="text-[18px] text-slate">{tier.name}</h2>
-                <p className="mt-4 text-[30px] text-slate">{tier.price}</p>
-                <p className="mt-1 text-[12px] text-ash">{tier.priceNote}</p>
-                <p className="mt-5 text-[13px] leading-relaxed text-ash">{tier.summary}</p>
-                <p className="mt-5 text-[12px] text-ash">{tier.timeline}</p>
+                {tier.id === "business" && <p className="mb-4 font-mono text-xs font-medium uppercase tracking-[0.12em] text-[#7A93FF]">Recommended for most businesses</p>}
+                <h2 className={`text-lg ${tier.id === "business" ? "text-white" : "text-slate"}`}>{tier.name}</h2>
+                <p className={`mt-4 text-4xl font-semibold tracking-[-0.05em] ${tier.id === "business" ? "text-white" : "text-slate"}`}>{tier.price}</p>
+                <p className={`mt-1 text-sm ${tier.id === "business" ? "text-white/65" : "text-ash"}`}>{tier.priceNote}</p>
+                <p className={`mt-5 text-base leading-relaxed ${tier.id === "business" ? "text-white/75" : "text-ash"}`}>{tier.summary}</p>
+                <p className={`mt-6 border-t pt-4 text-base font-medium ${tier.id === "business" ? "border-white/15 text-white" : "border-border text-slate"}`}>{tier.timeline}</p>
                 <div className="mt-auto pt-7">
-                  <Button asChild className="w-full">
-                    <Link to="/contact">Ask about {tier.name}</Link>
+                  <Button asChild className="min-h-11 w-full" variant={tier.id === "business" ? "secondary" : "default"}>
+                    <Link to={`/quote?package=${tier.id}`}>Get a quote</Link>
                   </Button>
                 </div>
               </CardContent>

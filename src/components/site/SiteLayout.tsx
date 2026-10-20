@@ -1,8 +1,36 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { Breadcrumbs, Crumb } from "@/components/site/Breadcrumbs";
 import { CtaBand } from "@/components/site/CtaBand";
+import { track } from "@/lib/analytics";
+
+function ScrollDepthTracker() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    const sent = new Set<number>();
+    const thresholds = [25, 50, 75, 100];
+    const onScroll = () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (maxScroll <= 0) return;
+      const depth = (window.scrollY / maxScroll) * 100;
+      thresholds.forEach((threshold) => {
+        if (depth >= threshold && !sent.has(threshold)) {
+          sent.add(threshold);
+          track("scroll_depth", { percent: threshold, page_path: pathname });
+        }
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [pathname]);
+
+  return null;
+}
 
 interface SiteLayoutProps {
   children: ReactNode;
@@ -13,8 +41,10 @@ interface SiteLayoutProps {
 export function SiteLayout({ children, crumbs, cta }: SiteLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <Navbar />
-      <main className="flex-1">
+      <ScrollDepthTracker />
+      <main id="main-content" tabIndex={-1} className="flex-1">
         {crumbs && crumbs.length > 0 && <Breadcrumbs items={crumbs} />}
         {children}
         {cta !== false && <CtaBand {...(cta ?? {})} />}

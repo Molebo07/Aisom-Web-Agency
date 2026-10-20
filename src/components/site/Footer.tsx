@@ -23,7 +23,8 @@ const columns = [
     links: [
       { to: "/services", label: "Services" },
       { to: "/pricing", label: "Pricing" },
-      { to: "/contact", label: "Get a quote" },
+      { to: "/snapshot", label: "Free website snapshot" },
+      { to: "/quote", label: "Get a quote" },
     ],
   },
   {
@@ -75,7 +76,7 @@ export function Footer() {
   }
 
   return (
-    <footer className="dark-section border-t border-white/10 bg-navy text-white">
+    <footer data-theme="dark" className="dark-section border-t border-white/10 bg-navy text-white">
       <div className="wrap grid gap-12 py-16 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <Logo dark />
@@ -89,23 +90,11 @@ export function Footer() {
               {siteConfig.address.region}, {siteConfig.address.postalCode}
             </p>
             <p>Reg. {siteConfig.registration}</p>
-            {!siteConfig.vatNumber.startsWith("[CONFIRM:") && <p>VAT {siteConfig.vatNumber}</p>}
             <p>
-              <a className="hover:text-accent-blue hover:underline" href={`mailto:${siteConfig.email}`}>
+              <a className="hover:text-[#7A93FF] hover:underline" href={`mailto:${siteConfig.email}`}>
                 {siteConfig.email}
               </a>
             </p>
-            {siteConfig.phone && !siteConfig.phone.startsWith("[CONFIRM:") && (
-              <p>
-                <a
-                  className="hover:text-accent-blue hover:underline"
-                  href={`tel:${siteConfig.phone.replace(/[^+\d]/g, "")}`}
-                >
-                  {siteConfig.phone}
-                </a>
-              </p>
-            )}
-            {siteConfig.openingHours && !siteConfig.openingHours.startsWith("[CONFIRM:") && <p>{siteConfig.openingHours}</p>}
           </div>
         </div>
 
@@ -114,8 +103,8 @@ export function Footer() {
             <p className="section-index uppercase text-white/50">{col.title}</p>
             <ul className="mt-4 space-y-2">
               {col.links.map((link) => (
-                <li key={link.to}>
-                    <Link to={link.to} className="text-[13px] text-white/60 hover:text-white hover:underline">
+                <li key={`${link.to}-${link.label}`}>
+                  <Link to={link.to} className="inline-flex min-h-11 items-center text-[13px] text-white/60 hover:text-white hover:underline">
                     {link.label}
                   </Link>
                 </li>
@@ -130,7 +119,7 @@ export function Footer() {
           <div>
             <p className="text-[14px] font-medium text-white">Updates from Aisom</p>
             <p className="mt-1 text-[13px] text-white/60">
-                Optional practical website updates for South African business owners.
+              Optional practical website updates for South African business owners.
             </p>
           </div>
           {done ? (
@@ -174,12 +163,15 @@ export function Footer() {
 
       <div className="border-t border-white/10">
         <div className="wrap flex flex-col gap-2 py-6 text-[12px] text-white/50 md:flex-row md:items-center md:justify-between">
-          <p>
-            {siteConfig.legalName} · Reg. {siteConfig.registration} · VAT {siteConfig.vatNumber}
-          </p>
+          <p>{siteConfig.legalName} · Reg. {siteConfig.registration}</p>
           <p>© {new Date().getFullYear()} Aisom. All rights reserved.</p>
-          <button type="button" onClick={() => window.dispatchEvent(new Event("aisom:open-privacy-choices"))} className="self-start underline hover:text-white md:self-auto">Cookie settings</button>
+          <button type="button" onClick={() => window.dispatchEvent(new Event("aisom:open-privacy-choices"))} className="min-h-11 self-start underline hover:text-white md:self-auto">Cookie settings</button>
         </div>
+      </div>
+      <div className="overflow-hidden" aria-hidden="true">
+        <p className="max-w-none translate-y-[20%] text-[22vw] font-bold leading-[0.72] tracking-[-0.1em] text-white/[0.05]">
+          Aisom
+        </p>
       </div>
     </footer>
   );

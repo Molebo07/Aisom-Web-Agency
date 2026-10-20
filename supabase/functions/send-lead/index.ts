@@ -42,7 +42,7 @@ const BodySchema = z.object({
     return;
   }
 
-  if (!data.name?.trim()) {
+  if (data.kind !== "snapshot" && !data.name?.trim()) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["name"], message: "Name is required." });
   }
   if (!data.consent) {

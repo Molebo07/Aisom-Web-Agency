@@ -46,21 +46,22 @@ export default function Services() {
       <section className="wrap pb-20">
         <div className="grid gap-6 lg:grid-cols-3">
           {tiers.map((tier) => (
-            <Card key={tier.id} className="flex flex-col rounded-md border-border shadow-none">
+            <Card key={tier.id} className={`pricing-tier pricing-tier-card ${tier.id === "business" ? "pricing-tier-featured text-white" : "bg-white"}`}>
               <CardContent className="flex flex-1 flex-col p-7">
-                <h2 className="text-[18px] text-slate">{tier.name}</h2>
-                <p className="mt-4 text-[28px] text-slate">{tier.price}</p>
-                <p className="mt-1 text-[12px] text-ash">{tier.priceNote}</p>
-                <p className="mt-5 text-[13px] leading-relaxed text-ash">{tier.summary}</p>
+                {tier.id === "business" && <p className="mb-4 font-mono text-xs font-medium uppercase tracking-[0.12em] text-[#7A93FF]">Recommended for most businesses</p>}
+                <h2 className={`text-lg ${tier.id === "business" ? "text-white" : "text-slate"}`}>{tier.name}</h2>
+                <p className={`mt-4 text-4xl font-semibold tracking-[-0.05em] ${tier.id === "business" ? "text-white" : "text-slate"}`}>{tier.price}</p>
+                <p className={`mt-1 text-sm ${tier.id === "business" ? "text-white/65" : "text-ash"}`}>{tier.priceNote}</p>
+                <p className={`mt-5 text-base leading-relaxed ${tier.id === "business" ? "text-white/75" : "text-ash"}`}>{tier.summary}</p>
 
-                <p className="mt-7 text-[12px] font-medium text-slate">Who it is for</p>
-                <p className="mt-2 text-[13px] leading-relaxed text-ash">{tier.who}</p>
+                <p className={`mt-7 text-sm font-medium ${tier.id === "business" ? "text-white" : "text-slate"}`}>Who it is for</p>
+                <p className={`mt-2 text-sm leading-relaxed ${tier.id === "business" ? "text-white/70" : "text-ash"}`}>{tier.who}</p>
 
-                <p className="mt-7 text-[12px] font-medium text-slate">What you get</p>
+                <p className={`mt-7 text-sm font-medium ${tier.id === "business" ? "text-white" : "text-slate"}`}>What you get</p>
                 <ul className="mt-3 space-y-2">
                   {tier.includes.map((item) => (
-                    <li key={item} className="flex gap-2 text-[13px] leading-relaxed text-ash">
-                      <Check className="mt-[3px] h-3.5 w-3.5 shrink-0 text-slate" />
+                    <li key={item} className={`flex gap-2 text-sm leading-relaxed ${tier.id === "business" ? "text-white/75" : "text-ash"}`}>
+                      <Check className={`mt-1 h-4 w-4 shrink-0 ${tier.id === "business" ? "text-[#7A93FF]" : "text-slate"}`} />
                       {item}
                     </li>
                   ))}
@@ -68,11 +69,11 @@ export default function Services() {
 
                 {tier.excludes && (
                   <>
-                    <p className="mt-7 text-[12px] font-medium text-slate">Not included</p>
+                    <p className={`mt-7 text-sm font-medium ${tier.id === "business" ? "text-white" : "text-slate"}`}>Not included</p>
                     <ul className="mt-3 space-y-2">
                       {tier.excludes.map((item) => (
-                        <li key={item} className="flex gap-2 text-[13px] leading-relaxed text-ash">
-                          <X className="mt-[3px] h-3.5 w-3.5 shrink-0 text-ash" />
+                        <li key={item} className={`flex gap-2 text-sm leading-relaxed ${tier.id === "business" ? "text-white/65" : "text-ash"}`}>
+                          <X className="mt-1 h-4 w-4 shrink-0 text-ash" />
                           {item}
                         </li>
                       ))}
@@ -80,10 +81,10 @@ export default function Services() {
                   </>
                 )}
 
-                <p className="mt-7 text-[12px] text-ash">{tier.timeline}</p>
-                <div className="mt-7 pt-2">
-                  <Button asChild className="w-full">
-                    <Link to="/contact">Ask about {tier.name}</Link>
+                <p className={`mt-6 border-t pt-4 text-base font-medium ${tier.id === "business" ? "border-white/15 text-white" : "border-border text-slate"}`}>{tier.timeline}</p>
+                <div className="mt-auto pt-7">
+                  <Button asChild className="min-h-11 w-full" variant={tier.id === "business" ? "secondary" : "default"}>
+                    <Link to={`/quote?package=${tier.id}`}>Get a quote</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -113,10 +114,10 @@ export default function Services() {
           <Accordion type="single" collapsible className="mt-10 max-w-3xl">
             {serviceFaqs.map((faq, i) => (
               <AccordionItem key={faq.q} value={`faq-${i}`}>
-                <AccordionTrigger className="text-left text-[15px] text-slate">
+                <AccordionTrigger className="min-h-11 text-left text-base text-slate">
                   {faq.q}
                 </AccordionTrigger>
-                <AccordionContent className="text-[14px] leading-relaxed text-ash">
+                <AccordionContent className="text-base leading-relaxed text-ash">
                   {faq.a}
                 </AccordionContent>
               </AccordionItem>

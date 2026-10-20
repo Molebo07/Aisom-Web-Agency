@@ -70,7 +70,7 @@ export default function Contact() {
         <Seo title="Get a free quote" description="Thanks — we have your request." path="/contact" />
         <section className="wrap py-24">
           <h1 className="text-[26px] font-semibold text-slate">Thanks — we will be in touch</h1>
-          <p className="mt-4 text-ash">Expect a reply within one business day. If you need to follow up, email <a className="text-slate underline" href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>.</p>
+          <p className="mt-4 text-ash">We will review your request and contact you using the details you provided. You can also email <a className="text-slate underline" href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>.</p>
           <div className="mt-8">
             <Link to="/" className="text-[13px] text-slate hover:underline">Return home</Link>
           </div>
@@ -86,7 +86,7 @@ export default function Contact() {
       <section className="wrap py-20">
         <p className="section-index">CONTACT</p>
         <h1 className="mt-4 text-[26px] text-slate md:text-[34px]">Get a free quote</h1>
-        <p className="mt-4 max-w-2xl text-ash">Tell us about your business and what you need. We reply within one business day and show you a clear fixed price.</p>
+        <p className="mt-4 max-w-2xl text-ash">Tell us about your business and what you need. We will review your request before confirming scope, price and timing.</p>
 
         <form onSubmit={onSubmit} className="mt-8 grid gap-4 md:grid-cols-2">
           <div>

@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader, SiteLayout } from "@/components/site/SiteLayout";
 import { Seo, breadcrumbJsonLd } from "@/components/site/Seo";
 import { founders } from "@/data/site";
@@ -45,15 +44,17 @@ export default function About() {
       />
 
       <section className="wrap pb-20">
-        <div className="grid gap-6 md:grid-cols-3">
-          {founders.map((f) => (
-            <Card key={f.name} className="rounded-md border-border shadow-none">
-              <CardContent className="p-7">
-                <h2 className="text-[17px] text-slate">{f.name}</h2>
-                <p className="mt-1 text-[12px] uppercase tracking-[0.14em] text-ash">{f.role}</p>
-                <p className="mt-5 text-[14px] leading-relaxed text-ash">{f.bio}</p>
-              </CardContent>
-            </Card>
+        <p className="section-index">THE PEOPLE BEHIND AISOM</p>
+        <div className="mt-6 divide-y divide-border border-y border-border">
+          {founders.map((founder, index) => (
+            <article key={founder.name} className="grid gap-3 py-6 md:grid-cols-[180px_1fr] md:gap-8">
+              <div>
+                <p className="font-mono text-xs tracking-[0.12em] text-ash">0{index + 1}</p>
+                <h2 className="mt-2 text-lg text-slate">{founder.name}</h2>
+                <p className="mt-1 text-sm text-ash">{founder.role}</p>
+              </div>
+              <p className="text-base leading-relaxed text-ash">{founder.bio}</p>
+            </article>
           ))}
         </div>
       </section>
@@ -64,13 +65,15 @@ export default function About() {
           <h2 className="mt-4 max-w-2xl text-[26px] leading-tight text-slate md:text-[32px]">
             Three rules we will not bend.
           </h2>
-          <div className="mt-12 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-3">
-            {beliefs.map((b) => (
-              <div key={b.index} className="bg-background p-7">
-                <p className="section-index">{b.index} / 03</p>
-                <h3 className="mt-4 text-[16px] text-slate">{b.title}</h3>
-                <p className="mt-3 text-[14px] leading-relaxed text-ash">{b.body}</p>
-              </div>
+          <div className="mt-10 divide-y divide-border border-y border-border">
+            {beliefs.map((belief) => (
+              <article key={belief.index} className="grid gap-3 py-6 md:grid-cols-[180px_1fr] md:gap-8">
+                <div>
+                  <p className="section-index">{belief.index} / 03</p>
+                  <h3 className="mt-2 text-lg text-slate">{belief.title}</h3>
+                </div>
+                <p className="text-base leading-relaxed text-ash">{belief.body}</p>
+              </article>
             ))}
           </div>
         </div>

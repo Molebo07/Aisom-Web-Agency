@@ -15,8 +15,8 @@ export const tiers: Tier[] = [
     id: "starter",
     name: "Starter Site",
     price: "R3 000",
-    priceNote: "[CONFIRM: excl. VAT]",
-    timeline: "Starter: Discovery 1 day, Design 2-3, Build 3-5, Review 2, Launch 1",
+    priceNote: "One-off project price",
+    timeline: "Live in 1 to 2 weeks",
     who: "Sole traders and small teams with no website, or a Facebook page doing the job badly.",
     summary: "A clean one page site that tells people who you are, what you do, and how to reach you.",
     includes: [
@@ -35,8 +35,8 @@ export const tiers: Tier[] = [
     id: "business",
     name: "Business Site",
     price: "R5 000",
-    priceNote: "[CONFIRM: excl. VAT]",
-    timeline: "Business: Discovery 2-3, Design 3-5, Build 5-10, Review 2-3, Launch 1",
+    priceNote: "One-off project price",
+    timeline: "Live in 2 to 4 weeks",
     who: "Established SMEs that need to look credible next to bigger competitors.",
     summary:
       "A full multi page website built around the pages buyers actually look for before they call you.",
@@ -56,8 +56,8 @@ export const tiers: Tier[] = [
     id: "growth",
     name: "Growth Site",
     price: "From R8 000",
-    priceNote: "[CONFIRM: quoted per project, excl. VAT]",
-    timeline: "[CONFIRM: quoted upfront after scoping]",
+    priceNote: "Final price confirmed in writing after scoping",
+    timeline: "Timing agreed in the quote",
     who: "Businesses that need the site to do a job: sell, book, or connect to something else.",
     summary:
       "Everything in Business Site, plus the extra build work your operation needs.",
@@ -75,7 +75,6 @@ export const tiers: Tier[] = [
 export interface ProcessStep {
   index: string;
   name: string;
-  timeframe: string;
   what: string;
   you: string;
 }
@@ -84,35 +83,30 @@ export const processSteps: ProcessStep[] = [
   {
     index: "01",
     name: "Discovery",
-    timeframe: "[CONFIRM: 1-3 days]",
     what: "We ask what your business sells, who buys it, and what a good lead looks like. Then we agree on pages, price and a start date in writing.",
     you: "One 30 minute call. Send us your logo, photos and anything you already have.",
   },
   {
     index: "02",
     name: "Design",
-    timeframe: "[CONFIRM: 2-5 days]",
     what: "You see the real home page design before anything is built. Layout, wording and structure, on desktop and mobile.",
     you: "Review the design and send one consolidated list of changes.",
   },
   {
     index: "03",
     name: "Build",
-    timeframe: "[CONFIRM: 3-10 days]",
     what: "We build every page, connect the forms, compress the images and wire up analytics. Speed and mobile are tested as we go.",
     you: "Nothing. Send any remaining content if we are still waiting on it.",
   },
   {
     index: "04",
     name: "Review",
-    timeframe: "[CONFIRM: 2-3 days]",
     what: "You get a private link to the finished site. We work through your feedback in the rounds included in your package.",
     you: "Click through every page on your own phone and tell us what is wrong.",
   },
   {
     index: "05",
     name: "Launch",
-    timeframe: "[CONFIRM: 1 working day]",
     what: "We point your domain, install SSL, submit the sitemap to Google and hand over a short guide on how everything works.",
     you: "Approve the launch and settle the final payment.",
   },
@@ -142,7 +136,7 @@ export const serviceFaqs: Faq[] = [
   },
   {
     q: "Do you host the website?",
-    a: "[CONFIRM: hosting is included for the first year, or paid at cost]. We will confirm the final hosting terms before we sign off the project.",
+    a: "Hosting is included for the first year. After that it is R150 a month, or you can move the site to your own hosting at no charge. Domain registration is billed separately by the registrar.",
   },
   {
     q: "Can I edit it myself afterwards?",
