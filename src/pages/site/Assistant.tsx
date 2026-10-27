@@ -12,6 +12,7 @@ import { Seo, breadcrumbJsonLd } from "@/components/site/Seo";
 import { track } from "@/lib/analytics";
 
 const storageRegion = import.meta.env.VITE_ASSISTANT_STORAGE_REGION?.trim() ?? "";
+const plannedStorageRegion = storageRegion || "eu-west-2";
 const assistantDemoEnabled =
   import.meta.env.VITE_ASSISTANT_DEMO_ENABLED === "true" &&
   Boolean(storageRegion) &&
@@ -60,7 +61,7 @@ const faqs = [
     q: "Where will my data be stored, and who can see it?",
     a: assistantDemoEnabled
       ? `If you start the demo, messages are stored in Aisom's Supabase project in ${storageRegion} for up to 90 days, and are sent to OpenRouter for processing using an Azure Sweden Central model route. You can delete the transcript in the chat. See the privacy policy for details.`
-      : "No assistant conversations are being collected because the demo is disabled. The hosting region and model providers for a future service have not been selected. Early-access enquiries are handled as described in our privacy policy.",
+      : `No assistant conversations are being collected because the demo is disabled. The planned demo would store chats in Supabase in ${plannedStorageRegion} and use OpenRouter with an Azure Sweden Central model route. Early-access enquiries are handled as described in our privacy policy.`,
   },
   {
     q: "Can I switch the assistant off?",

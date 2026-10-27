@@ -3,6 +3,7 @@ import { Seo } from "@/components/site/Seo";
 import { siteConfig } from "@/lib/siteConfig";
 
 const assistantStorageRegion = import.meta.env.VITE_ASSISTANT_STORAGE_REGION?.trim() ?? "";
+const plannedAssistantStorageRegion = assistantStorageRegion || "eu-west-2";
 const assistantDemoEnabled =
   import.meta.env.VITE_ASSISTANT_DEMO_ENABLED === "true" &&
   Boolean(assistantStorageRegion) &&
@@ -56,8 +57,11 @@ export default function PrivacyPolicy() {
             Aisom Assistant is in development and the public demo is disabled. If you register
             interest, the details you submit are handled as an enquiry using the systems described
             in this Policy. No assistant conversations or WhatsApp messages are being collected.
-            Before enabling a public demo, Aisom will disclose its storage region, purposes,
-            retention period, service providers and processing locations here.
+            The planned limited demo would store messages in Supabase in {plannedAssistantStorageRegion}
+            for up to 90 days and send them to OpenRouter for processing through an Azure Sweden
+            Central route. Those providers may process information outside South Africa. These
+            arrangements are not active; Aisom will update this notice before collection begins if
+            the configuration changes.
           </p>
         )}
 
