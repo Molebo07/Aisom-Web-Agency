@@ -79,6 +79,21 @@ export default function Pricing() {
             </Card>
           ))}
         </div>
+        <div className="mt-10 border-y border-border py-7">
+          <p className="section-index">AI ASSISTANT</p>
+          <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-xl text-slate">Aisom Assistant is in early access</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ash">
+                Pricing has not been set. The assistant is still being built and is not available
+                as a live service.
+              </p>
+            </div>
+            <Link to="/assistant" className="inline-flex min-h-11 shrink-0 items-center text-sm font-medium text-slate underline underline-offset-4">
+              Learn about early access
+            </Link>
+          </div>
+        </div>
       </section>
 
       <section className="border-t border-border">

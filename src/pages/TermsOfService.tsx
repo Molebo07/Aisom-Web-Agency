@@ -18,6 +18,9 @@ export default function TermsOfService() {
         <h2 className="mt-8 text-[18px] text-slate">1. Acceptance of terms</h2>
         <p className="mt-2 text-ash">By accessing or using our Services, browsing our website, submitting an enquiry, or engaging Aisom for website design and development work, you agree to be bound by these Terms.</p>
 
+        <h2 className="mt-6 text-[18px] text-slate">Aisom Assistant early access</h2>
+        <p className="mt-2 text-ash">Aisom Assistant is in development. No live AI assistant, website chat service, WhatsApp integration or pilot service is currently offered through this website. Registering interest is not an offer, booking or guarantee of access. We have not set assistant pricing, availability, language support, response times or service levels. If the service becomes available, its scope and terms will be provided separately before use.</p>
+
         <h2 className="mt-6 text-[18px] text-slate">2. Eligibility</h2>
         <p className="mt-2 text-ash">You must be at least 18 years old, or the age of majority in your jurisdiction, and have the legal capacity to enter into binding agreements, to use our Services or enter into a contract with Aisom on behalf of a business.</p>
 
@@ -60,7 +63,7 @@ export default function TermsOfService() {
         <h2 className="mt-6 text-[18px] text-slate">15. Contact</h2>
         <p className="mt-2 text-ash">Aisom Systems (Pty) Ltd · Reg. {siteConfig.registration}<br />Email: <a className="underline" href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a><br />Address: {siteConfig.address.street}, {siteConfig.address.locality}, {siteConfig.address.region} {siteConfig.address.postalCode}, South Africa</p>
 
-        <p className="mt-8 text-[13px] text-ash">Last updated: 4 October 2026</p>
+        <p className="mt-8 text-[13px] text-ash">Last updated: 22 October 2026</p>
       </section>
     </SiteLayout>
   );

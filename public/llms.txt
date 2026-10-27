@@ -12,6 +12,7 @@ Aisom is a Johannesburg-based web design studio working with businesses that nee
 - Search-friendly page structure and metadata
 - Contact and enquiry flows for local service businesses
 - Website launch support and handover guidance
+- Aisom Assistant early access: an AI assistant concept in development, not a live service
 
 ## Location and service area
 
@@ -25,6 +26,7 @@ Aisom publishes website packages and a clear starting price for the first build.
 
 - [Home](https://aisom.co.za/): Overview of Aisom website design for Gauteng businesses.
 - [Services](https://aisom.co.za/services): Website packages and the process for a simple fixed-price build.
+- [Aisom Assistant](https://aisom.co.za/assistant): Early-access information about an assistant in development; no live assistant or WhatsApp integration is available.
 - [Pricing](https://aisom.co.za/pricing): Published pricing and package comparison.
 - [Process](https://aisom.co.za/process): How the build runs from brief to launch.
 - [Work](https://aisom.co.za/work): Honest concept work and build standards.

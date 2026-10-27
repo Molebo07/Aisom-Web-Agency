@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -16,26 +16,44 @@ const packageNames: Record<string, string> = {
   growth: "Growth Site",
 };
 
+const productInterests = ["Website", "AI assistant", "Both"] as const;
+
 const schema = z.object({
   name: z.string().trim().min(1, "Enter your name"),
   businessName: z.string().trim().max(160).optional().or(z.literal("")),
   phone: z.string().trim().min(1, "Add a phone or WhatsApp number"),
   email: z.string().trim().email("Enter a valid email address"),
-  packageInterest: z.string().trim().min(1, "Pick a package"),
+  productInterest: z.enum(productInterests),
+  packageInterest: z.string().trim().max(80).optional().or(z.literal("")),
   websiteUrl: z.string().trim().url("Enter a valid website URL").max(220).optional().or(z.literal("")),
   message: z.string().trim().max(1200).optional().or(z.literal("")),
   consent: z.literal(true, { errorMap: () => ({ message: "Please agree to the privacy notice." }) }),
   company: z.string().max(200).optional().or(z.literal("")),
+}).superRefine((data, ctx) => {
+  if (data.productInterest !== "AI assistant" && !data.packageInterest) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["packageInterest"],
+      message: "Pick a website package",
+    });
+  }
 });
 
 export default function QuotePage() {
   const [searchParams] = useSearchParams();
   const selectedPackage = packageNames[searchParams.get("package")?.toLowerCase() ?? ""] ?? "";
+  const requestedService = searchParams.get("service")?.toLowerCase();
+  const selectedProductInterest = requestedService === "assistant"
+    ? "AI assistant"
+    : requestedService === "both"
+      ? "Both"
+      : "Website";
   const [form, setForm] = useState({
     name: "",
     businessName: "",
     phone: "",
     email: "",
+    productInterest: selectedProductInterest,
     packageInterest: selectedPackage,
     websiteUrl: "",
     message: "",
@@ -44,15 +62,26 @@ export default function QuotePage() {
   });
   const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
+  const assistantStartTracked = useRef(false);
 
   useEffect(() => {
-    track("quote_start", { package_name: selectedPackage || "not_selected" });
+    track("quote_start", {
+      product_interest: selectedProductInterest,
+      package_name: selectedPackage || "not_selected",
+    });
+    if (
+      !assistantStartTracked.current &&
+      (selectedProductInterest === "AI assistant" || selectedProductInterest === "Both")
+    ) {
+      track("quote_start_assistant");
+      assistantStartTracked.current = true;
+    }
     if (selectedPackage) {
       track(`package_select_${searchParams.get("package")?.toLowerCase()}`, {
         package_name: selectedPackage,
       });
     }
-  }, [searchParams, selectedPackage]);
+  }, [searchParams, selectedPackage, selectedProductInterest]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -66,7 +95,8 @@ export default function QuotePage() {
     setBusy(true);
     try {
       const details = [
-        `Package interest: ${parsed.data.packageInterest}`,
+        `Product interest: ${parsed.data.productInterest}`,
+        parsed.data.packageInterest ? `Website package interest: ${parsed.data.packageInterest}` : "",
         `Existing website: ${parsed.data.websiteUrl || "Not provided"}`,
         parsed.data.message || "",
       ].filter(Boolean).join("\n");
@@ -76,7 +106,13 @@ export default function QuotePage() {
         kind: "quote",
         pagePath: "/quote",
       });
-      track("quote_submit", { package_name: parsed.data.packageInterest });
+      track("quote_submit", {
+        product_interest: parsed.data.productInterest,
+        package_name: parsed.data.packageInterest || "not_selected",
+      });
+      if (parsed.data.productInterest === "AI assistant" || parsed.data.productInterest === "Both") {
+        track("quote_submit_assistant");
+      }
       trackGenerateLead({ value: 0, form_name: "quote" });
       setDone(true);
       toast.success("Thanks. We have received your request.");
@@ -103,8 +139,8 @@ export default function QuotePage() {
 
   return (
     <SiteLayout>
-      <Seo title="Get a fixed-price website quote | Aisom" description="Tell us about your business and get a fixed-price quote for a website built for South African SMEs." path="/quote" />
-      <PageHeader index="QUOTE" title="Tell us about your business." lead="Share the essentials and we will review your request before confirming scope, price and timing." />
+      <Seo title="Request a Website Quote or Assistant Early Access | Aisom" description="Tell Aisom whether you are interested in a website, Aisom Assistant early access, or both." path="/quote" />
+      <PageHeader index="GET IN TOUCH" title="Tell us what you are looking for." lead="Share the essentials and we will follow up about your website enquiry or assistant interest." />
 
       <section className="wrap pb-24">
         <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
@@ -125,20 +161,51 @@ export default function QuotePage() {
             <Input id="quote-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
           </div>
           <div>
-            <label htmlFor="quote-package" className="mb-2 block text-[12px] font-medium uppercase tracking-[0.12em] text-ash">Package interest</label>
-            <select id="quote-package" value={form.packageInterest} onChange={(e) => {
-              const packageInterest = e.target.value;
-              setForm({ ...form, packageInterest });
-              const packageId = Object.entries(packageNames).find(([, name]) => name === packageInterest)?.[0];
-              if (packageId) track(`package_select_${packageId}`, { package_name: packageInterest });
-            }} className="flex min-h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base text-slate" required>
-              <option value="">Select a package</option>
-              <option value="Starter Site">Starter Site</option>
-              <option value="Business Site">Business Site</option>
-              <option value="Growth">Growth</option>
-              <option value="Not sure">Not sure</option>
+            <label htmlFor="quote-product" className="mb-2 block text-[12px] font-medium uppercase tracking-[0.12em] text-ash">What are you interested in?</label>
+            <select
+              id="quote-product"
+              value={form.productInterest}
+              onChange={(e) => {
+                const productInterest = productInterests.find((interest) => interest === e.target.value);
+                if (!productInterest) return;
+                if (
+                  !assistantStartTracked.current &&
+                  (productInterest === "AI assistant" || productInterest === "Both")
+                ) {
+                  track("quote_start_assistant");
+                  assistantStartTracked.current = true;
+                }
+                setForm({
+                  ...form,
+                  productInterest,
+                  packageInterest: productInterest === "AI assistant" ? "" : form.packageInterest,
+                });
+              }}
+              className="flex min-h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base text-slate"
+              required
+            >
+              {productInterests.map((interest) => (
+                <option key={interest} value={interest}>{interest}</option>
+              ))}
             </select>
           </div>
+          {form.productInterest !== "AI assistant" && (
+            <div>
+              <label htmlFor="quote-package" className="mb-2 block text-[12px] font-medium uppercase tracking-[0.12em] text-ash">Package interest</label>
+              <select id="quote-package" value={form.packageInterest} onChange={(e) => {
+                const packageInterest = e.target.value;
+                setForm({ ...form, packageInterest });
+                const packageId = Object.entries(packageNames).find(([, name]) => name === packageInterest)?.[0];
+                if (packageId) track(`package_select_${packageId}`, { package_name: packageInterest });
+              }} className="flex min-h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base text-slate" required>
+                <option value="">Select a package</option>
+                <option value="Starter Site">Starter Site</option>
+                <option value="Business Site">Business Site</option>
+                <option value="Growth">Growth</option>
+                <option value="Not sure">Not sure</option>
+              </select>
+            </div>
+          )}
           <div>
             <label htmlFor="quote-url" className="mb-2 block text-[12px] font-medium uppercase tracking-[0.12em] text-ash">Existing website URL</label>
             <Input id="quote-url" value={form.websiteUrl} onChange={(e) => setForm({ ...form, websiteUrl: e.target.value })} placeholder="https://" />

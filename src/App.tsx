@@ -11,6 +11,7 @@ import { ProtectedRoute } from "@/components/app/ProtectedRoute";
 import Home from "./pages/site/Home.tsx";
 import About from "./pages/site/About.tsx";
 import Services from "./pages/site/Services.tsx";
+import Assistant from "./pages/site/Assistant.tsx";
 import Pricing from "./pages/site/Pricing.tsx";
 import Process from "./pages/site/Process.tsx";
 import Work from "./pages/site/Work.tsx";
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/assistant" element={<Assistant />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/process" element={<Process />} />
             <Route path="/work" element={<Work />} />

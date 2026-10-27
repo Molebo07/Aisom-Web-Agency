@@ -105,6 +105,22 @@ export default function Services() {
         </p>
       </section>
 
+      <section className="border-y border-border bg-secondary">
+        <div className="wrap flex flex-col gap-5 py-12 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="section-index">ALSO FROM AISOM</p>
+            <h2 className="mt-3 text-2xl text-slate">An AI assistant for your business</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ash">
+              Aisom Assistant is in early access. We are exploring an assistant that could answer
+              common questions from approved business information. It is not live yet.
+            </p>
+          </div>
+          <Link to="/assistant" className="inline-flex min-h-11 shrink-0 items-center text-sm font-medium text-slate underline underline-offset-4">
+            About Aisom Assistant
+          </Link>
+        </div>
+      </section>
+
       <section className="border-t border-border bg-secondary">
         <div className="wrap py-20">
           <p className="section-index">QUESTIONS</p>

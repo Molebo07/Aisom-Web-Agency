@@ -127,6 +127,7 @@ export type Database = {
           name: string | null
           page_path: string | null
           phone: string | null
+          product_interest: "Website" | "AI assistant" | "Both" | null
           updated_at: string
         }
         Insert: {
@@ -142,6 +143,7 @@ export type Database = {
           name?: string | null
           page_path?: string | null
           phone?: string | null
+          product_interest?: "Website" | "AI assistant" | "Both" | null
           updated_at?: string
         }
         Update: {
@@ -157,6 +159,7 @@ export type Database = {
           name?: string | null
           page_path?: string | null
           phone?: string | null
+          product_interest?: "Website" | "AI assistant" | "Both" | null
           updated_at?: string
         }
         Relationships: []

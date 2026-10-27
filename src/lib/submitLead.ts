@@ -10,6 +10,7 @@ export interface LeadPayload {
   phone?: string;
   industry?: string;
   budgetRange?: string;
+  productInterest?: "Website" | "AI assistant" | "Both";
   packageInterest?: string;
   websiteUrl?: string;
   details?: string;

@@ -26,6 +26,7 @@ const BodySchema = z.object({
   phone: z.string().trim().max(40).optional().or(z.literal("")),
   industry: z.string().trim().max(80).optional().or(z.literal("")),
   budgetRange: z.string().trim().max(80).optional().or(z.literal("")),
+  productInterest: z.enum(["Website", "AI assistant", "Both"]).optional(),
   packageInterest: z.string().trim().max(80).optional().or(z.literal("")),
   websiteUrl: z.string().trim().url().max(220).optional().or(z.literal("")),
   details: z.string().trim().max(5000).optional().or(z.literal("")),
@@ -122,6 +123,7 @@ Deno.serve(async (req) => {
       phone: d.phone || null,
       industry: d.industry || null,
       budget_range: d.budgetRange || d.packageInterest || null,
+      product_interest: d.productInterest || null,
       package_interest: d.packageInterest || null,
       website_url: d.websiteUrl || null,
       details: d.details || null,
@@ -154,7 +156,11 @@ Deno.serve(async (req) => {
     let emailed = false;
 
     if (resendKey && recipients.length > 0) {
-      const requestName = d.kind === "snapshot" ? "website snapshot" : "quote";
+      const requestName = d.kind === "snapshot"
+        ? "website snapshot"
+        : d.productInterest === "AI assistant"
+          ? "AI assistant early-access"
+          : "quote";
       const html = `
         <h2>New ${requestName} request</h2>
         <p><strong>Name:</strong> ${esc(d.name || "-")}</p>
@@ -162,6 +168,7 @@ Deno.serve(async (req) => {
         <p><strong>Email:</strong> ${esc(d.email)}</p>
         <p><strong>Phone:</strong> ${esc(d.phone || "-")}</p>
         <p><strong>Website:</strong> ${esc(d.websiteUrl || "-")}</p>
+        <p><strong>Product interest:</strong> ${esc(d.productInterest || "-")}</p>
         <p><strong>Package:</strong> ${esc(d.packageInterest || "-")}</p>
         <p><strong>Industry:</strong> ${esc(d.industry || "-")}</p>
         <p><strong>Budget:</strong> ${esc(d.budgetRange || "-")}</p>
@@ -180,7 +187,7 @@ Deno.serve(async (req) => {
           from,
           to: recipients,
           reply_to: d.email,
-          subject: `New ${requestName} request: ${d.businessName || d.name || d.email}`,
+          subject: `New ${requestName} request${d.productInterest ? ` [${d.productInterest}]` : ""}: ${d.businessName || d.name || d.email}`,
           html,
         }),
       });

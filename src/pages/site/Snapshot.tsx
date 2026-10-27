@@ -91,6 +91,10 @@ export default function SnapshotPage() {
           <h1 className="text-[28px] text-slate md:text-[36px]">We have your website review request.</h1>
           <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ash">We will review your request and contact you by email about next steps.</p>
           <Button asChild className="mt-8 min-h-11"><Link to="/quote">Get a quote to improve your site</Link></Button>
+          <p className="mt-6 text-sm text-ash">
+            Interested in an assistant for customer questions?{" "}
+            <Link to="/assistant" className="font-medium text-slate underline">Read about Aisom Assistant early access</Link>.
+          </p>
           <div className="mt-8"><Link to="/" className="text-[13px] text-slate hover:underline">Back to the homepage</Link></div>
         </section>
       </SiteLayout>

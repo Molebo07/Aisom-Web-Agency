@@ -22,6 +22,7 @@ const columns = [
     title: "Offer",
     links: [
       { to: "/services", label: "Services" },
+      { to: "/assistant", label: "Assistant" },
       { to: "/pricing", label: "Pricing" },
       { to: "/snapshot", label: "Free website snapshot" },
       { to: "/quote", label: "Get a quote" },

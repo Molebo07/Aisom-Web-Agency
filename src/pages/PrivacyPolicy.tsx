@@ -19,7 +19,7 @@ export default function PrivacyPolicy() {
         <p className="mt-2 text-ash">Depending on how you interact with us, we may collect:</p>
         <ul className="mt-2 list-disc pl-6 text-ash">
           <li>Contact details you submit, such as your name, business name, email address and phone number.</li>
-          <li>Enquiry details, including package interest, existing website URL, project description and the page where you contacted us.</li>
+          <li>Enquiry details, including product or package interest, existing website URL, project description and the page where you contacted us.</li>
           <li>Your separate opt-in record if you subscribe to email updates.</li>
           <li>Business information: details you provide about your business for the purpose of building your website (services, pricing, images, logos, descriptions).</li>
           <li>Project correspondence and files you choose to send us.</li>
@@ -28,6 +28,9 @@ export default function PrivacyPolicy() {
 
         <h2 className="mt-6 text-[18px] text-slate">2. How we use your information</h2>
         <p className="mt-2 text-ash">We use personal information for purposes including responding to enquiries and preparing quotes or proposals; providing, delivering and supporting our website design and development services; processing payments and issuing invoices; communicating with you about your project, account, or support requests; sending marketing communications where you have opted in; improving our website and services through analytics; and complying with legal, tax and regulatory obligations.</p>
+
+        <h2 className="mt-6 text-[18px] text-slate">Aisom Assistant early access</h2>
+        <p className="mt-2 text-ash">Aisom Assistant is in development and is not a live customer-facing service. If you register interest, the details you submit are handled as an enquiry using the systems described in this Policy. We are not currently collecting assistant conversations or WhatsApp messages. Before any assistant service is offered, we will update this Policy with the relevant purposes, data categories, retention periods, service providers and processing locations, and provide any required notices.</p>
 
         <h2 className="mt-6 text-[18px] text-slate">3. Lawful basis for processing</h2>
         <p className="mt-2 text-ash">We process personal information on one or more of the following bases: your consent; necessity to conclude or perform a contract with you; compliance with a legal obligation; or our legitimate business interests, provided these do not override your rights and interests as a data subject.</p>
@@ -59,7 +62,7 @@ export default function PrivacyPolicy() {
         <h2 className="mt-6 text-[18px] text-slate">12. Contact & Information Officer</h2>
         <p className="mt-2 text-ash">Aisom Systems (Pty) Ltd · Reg. {siteConfig.registration}<br />Privacy enquiries: <a className="underline" href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a><br />Postal address: {siteConfig.address.street}, {siteConfig.address.locality}, {siteConfig.address.region} {siteConfig.address.postalCode}, South Africa</p>
 
-        <p className="mt-8 text-[13px] text-ash">Last updated: 4 October 2026</p>
+        <p className="mt-8 text-[13px] text-ash">Last updated: 22 October 2026</p>
       </section>
     </SiteLayout>
   );

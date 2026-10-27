@@ -179,6 +179,26 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="border-b border-border">
+        <div className="wrap flex flex-col gap-5 py-10 md:flex-row md:items-center md:justify-between md:py-12">
+          <div>
+            <p className="section-index">ALSO</p>
+            <h2 className="mt-3 max-w-2xl text-2xl text-slate md:text-3xl">
+              We are building Aisom Assistant for businesses with repeat customer questions.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ash">
+              It is in early access and is not answering customer chats yet.
+            </p>
+          </div>
+          <Link
+            to="/assistant"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 text-sm font-medium text-slate hover:underline"
+          >
+            Explore Aisom Assistant <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+
       <section className="wrap py-16 md:py-24">
         <p className="section-index">WORK</p>
         <h2 className="mt-4 max-w-2xl text-slate">Honest proof, not fake screenshots.</h2>
