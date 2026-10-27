@@ -2,6 +2,14 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { Seo } from "@/components/site/Seo";
 import { siteConfig } from "@/lib/siteConfig";
 
+const assistantStorageRegion = import.meta.env.VITE_ASSISTANT_STORAGE_REGION?.trim() ?? "";
+const assistantDemoEnabled =
+  import.meta.env.VITE_ASSISTANT_DEMO_ENABLED === "true" &&
+  Boolean(assistantStorageRegion) &&
+  Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY) &&
+  Boolean(import.meta.env.VITE_SUPABASE_URL) &&
+  Boolean(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+
 export default function PrivacyPolicy() {
   return (
     <SiteLayout>
@@ -30,13 +38,34 @@ export default function PrivacyPolicy() {
         <p className="mt-2 text-ash">We use personal information for purposes including responding to enquiries and preparing quotes or proposals; providing, delivering and supporting our website design and development services; processing payments and issuing invoices; communicating with you about your project, account, or support requests; sending marketing communications where you have opted in; improving our website and services through analytics; and complying with legal, tax and regulatory obligations.</p>
 
         <h2 className="mt-6 text-[18px] text-slate">Aisom Assistant early access</h2>
-        <p className="mt-2 text-ash">Aisom Assistant is in development and is not a live customer-facing service. If you register interest, the details you submit are handled as an enquiry using the systems described in this Policy. We are not currently collecting assistant conversations or WhatsApp messages. Before any assistant service is offered, we will update this Policy with the relevant purposes, data categories, retention periods, service providers and processing locations, and provide any required notices.</p>
+        {assistantDemoEnabled ? (
+          <p className="mt-2 text-ash">
+            A limited Aisom-only demo is available, not a customer-facing assistant service. If you
+            choose to start it, your messages and assistant replies are stored in Aisom's Supabase
+            project in {assistantStorageRegion} for up to 90 days, unless you delete the transcript
+            sooner using the chat control.             Pseudonymous rate-limit and usage records, including
+            keyed hashes of network and session identifiers, may be retained for up to 90 days.
+            Messages are sent to OpenRouter for model processing using an Azure Sweden Central
+            route. Those providers may process information outside South Africa. Do not enter
+            sensitive or confidential information. The demo does not send its chat transcript with
+            a follow-up request. Early-access enquiries and handover contact details are handled as
+            described elsewhere in this Policy.
+          </p>
+        ) : (
+          <p className="mt-2 text-ash">
+            Aisom Assistant is in development and the public demo is disabled. If you register
+            interest, the details you submit are handled as an enquiry using the systems described
+            in this Policy. No assistant conversations or WhatsApp messages are being collected.
+            Before enabling a public demo, Aisom will disclose its storage region, purposes,
+            retention period, service providers and processing locations here.
+          </p>
+        )}
 
         <h2 className="mt-6 text-[18px] text-slate">3. Lawful basis for processing</h2>
         <p className="mt-2 text-ash">We process personal information on one or more of the following bases: your consent; necessity to conclude or perform a contract with you; compliance with a legal obligation; or our legitimate business interests, provided these do not override your rights and interests as a data subject.</p>
 
         <h2 className="mt-6 text-[18px] text-slate">4. Sharing of information</h2>
-        <p className="mt-2 text-ash">We do not sell or rent personal information. Form submissions are stored using Supabase. If email notifications are enabled, enquiry details may be processed by our email provider. Optional website analytics are provided by PostHog only after you allow analytics. We may also share information with professional advisors or authorities where required by law, subject to appropriate protections.</p>
+        <p className="mt-2 text-ash">We do not sell or rent personal information. Form submissions are stored using Supabase. If email notifications are enabled, enquiry details may be processed by our email provider. Optional website analytics are provided by PostHog only after you allow analytics. If the limited assistant demo is enabled, chat messages are processed by OpenRouter and the Azure Sweden Central model route as described above. We may also share information with professional advisors or authorities where required by law, subject to appropriate protections.</p>
 
         <h2 className="mt-6 text-[18px] text-slate">5. Cookies & tracking technologies</h2>
         <p className="mt-2 text-ash">Optional PostHog analytics remain off unless you select “Allow analytics” in the privacy choices notice. Your choice is stored in this browser so it can be remembered; you can change it using Cookie settings in the footer. You may also clear site data through your browser settings.</p>
@@ -62,7 +91,7 @@ export default function PrivacyPolicy() {
         <h2 className="mt-6 text-[18px] text-slate">12. Contact & Information Officer</h2>
         <p className="mt-2 text-ash">Aisom Systems (Pty) Ltd · Reg. {siteConfig.registration}<br />Privacy enquiries: <a className="underline" href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a><br />Postal address: {siteConfig.address.street}, {siteConfig.address.locality}, {siteConfig.address.region} {siteConfig.address.postalCode}, South Africa</p>
 
-        <p className="mt-8 text-[13px] text-ash">Last updated: 22 October 2026</p>
+        <p className="mt-8 text-[13px] text-ash">Last updated: 27 October 2026</p>
       </section>
     </SiteLayout>
   );

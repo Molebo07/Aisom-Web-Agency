@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Accordion,
@@ -10,6 +10,17 @@ import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Seo, breadcrumbJsonLd } from "@/components/site/Seo";
 import { track } from "@/lib/analytics";
+
+const storageRegion = import.meta.env.VITE_ASSISTANT_STORAGE_REGION?.trim() ?? "";
+const assistantDemoEnabled =
+  import.meta.env.VITE_ASSISTANT_DEMO_ENABLED === "true" &&
+  Boolean(storageRegion) &&
+  Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY) &&
+  Boolean(import.meta.env.VITE_SUPABASE_URL) &&
+  Boolean(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+const AssistantDemo = lazy(() =>
+  import("@/components/site/AssistantDemo").then((module) => ({ default: module.AssistantDemo })),
+);
 
 const crumbs = [
   { name: "Home", path: "/" },
@@ -23,27 +34,39 @@ const faqs = [
   },
   {
     q: "What will the assistant know?",
-    a: "The intended approach is to use information a business provides and approves, such as services, opening hours and frequently asked questions. That knowledge workflow is not built yet.",
+    a: assistantDemoEnabled
+      ? "This limited demo uses a fixed set of Aisom's published website information. A workflow for businesses to add and approve their own information is not available."
+      : "The intended approach is to use information a business provides and approves, such as services, opening hours and frequently asked questions. That knowledge workflow is not built yet.",
   },
   {
     q: "What happens if it does not know an answer?",
-    a: "A safe response and handover to a person are design goals. The assistant is not live, so this behaviour has not been implemented or tested.",
+    a: assistantDemoEnabled
+      ? "The limited demo says when it does not have confirmed Aisom information and offers a route to a person. Please verify important details directly with Aisom."
+      : "A safe response and handover to a person are design goals. The assistant is not live, so this behaviour has not been implemented or tested.",
   },
   {
     q: "Can a customer talk to a person?",
-    a: "Human handover is planned, but it is not available in a working service today.",
+    a: assistantDemoEnabled
+      ? "The limited demo includes a contact form to send a follow-up request to Aisom. It is not a customer-support or emergency service."
+      : "Human handover is planned, but it is not available in a working service today.",
   },
   {
     q: "Which languages will it support?",
-    a: "No languages have been tested in a working assistant yet. English is an intended starting point, but we cannot promise language support until testing is complete.",
+    a: assistantDemoEnabled
+      ? "The limited demo is intended for English questions. Other languages have not been tested or promised."
+      : "No languages have been tested in a working assistant yet. English is an intended starting point, but we cannot promise language support until testing is complete.",
   },
   {
     q: "Where will my data be stored, and who can see it?",
-    a: "No assistant conversations are being collected because the assistant is not live. The hosting region and model providers for a future service have not been selected. Early-access enquiries are handled as described in our privacy policy.",
+    a: assistantDemoEnabled
+      ? `If you start the demo, messages are stored in Aisom's Supabase project in ${storageRegion} for up to 90 days, and are sent to OpenRouter for processing using an Azure Sweden Central model route. You can delete the transcript in the chat. See the privacy policy for details.`
+      : "No assistant conversations are being collected because the demo is disabled. The hosting region and model providers for a future service have not been selected. Early-access enquiries are handled as described in our privacy policy.",
   },
   {
     q: "Can I switch the assistant off?",
-    a: "There is no live assistant to switch off. Giving businesses control to pause a future service is a design goal, not a feature available today.",
+    a: assistantDemoEnabled
+      ? "You can end the public demo by closing the page and delete its transcript using the chat control. Business-level controls for a future customer service are not available."
+      : "There is no live assistant to switch off. Giving businesses control to pause a future service is a design goal, not a feature available today.",
   },
   {
     q: "Will it work with a website I already have?",
@@ -57,7 +80,9 @@ const serviceJsonLd = {
   name: "Aisom Assistant",
   serviceType: "AI assistant early access",
   description:
-    "Aisom is exploring an AI assistant for common customer questions. The service is in early access and is not live.",
+    assistantDemoEnabled
+      ? "Try Aisom's limited AI demo, which answers from Aisom's published website information."
+      : "Aisom is exploring an AI assistant for common customer questions. The service is in early access and is not live.",
   provider: {
     "@type": "Organization",
     name: "Aisom",
@@ -89,7 +114,11 @@ export default function Assistant() {
     <SiteLayout crumbs={crumbs} cta={false}>
       <Seo
         title="AI Assistant for Your Business — Aisom"
-        description="Aisom Assistant is in early access. Learn what we are building, what is not live yet, and register your interest."
+        description={
+          assistantDemoEnabled
+            ? "Try Aisom's limited AI demo, based on Aisom's published website information, and learn what is not part of the customer service."
+            : "Aisom Assistant is in early access. Learn what we are building, what is not live yet, and register your interest."
+        }
         path="/assistant"
         jsonLd={[breadcrumbJsonLd(crumbs), serviceJsonLd, faqJsonLd]}
       />
@@ -98,11 +127,14 @@ export default function Assistant() {
         <div className="wrap py-16 md:py-24">
           <p className="section-index text-white/60">AI ASSISTANT · EARLY ACCESS</p>
           <h1 className="mt-6 max-w-4xl text-balance text-white">
-            We are building an assistant for common customer questions.
+            {assistantDemoEnabled
+              ? "Try a limited AI demo for common Aisom questions."
+              : "We are building an assistant for common customer questions."}
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/75 md:text-lg">
-            Aisom Assistant is an early-stage project. We are exploring how a business could use
-            its own approved information to answer repeat questions and pass enquiries to a person.
+            {assistantDemoEnabled
+              ? "This limited demo answers from Aisom's published website information only. A future customer assistant could use a business's own approved information and pass enquiries to a person."
+              : "Aisom Assistant is an early-stage project. We are exploring how a business could use its own approved information to answer repeat questions and pass enquiries to a person."}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="min-h-12">
@@ -120,8 +152,9 @@ export default function Assistant() {
             </Button>
           </div>
           <p className="mt-6 max-w-2xl border-t border-white/15 pt-4 text-sm leading-relaxed text-white/65">
-            No live assistant, customer chat, WhatsApp integration or demo is available today.
-            Joining the early-access list does not guarantee a pilot place or service.
+            {assistantDemoEnabled
+              ? "This limited demo is not a customer-ready assistant or WhatsApp service. Joining the early-access list does not guarantee a pilot place or service."
+              : "No live assistant, customer chat, WhatsApp integration or demo is available today. Joining the early-access list does not guarantee a pilot place or service."}
           </p>
         </div>
       </section>
@@ -130,18 +163,26 @@ export default function Assistant() {
         <div className="wrap grid gap-4 py-8 md:grid-cols-[180px_1fr] md:items-start">
           <p className="section-index">CURRENT STATUS</p>
           <p className="max-w-3xl text-sm leading-relaxed text-slate">
-            The existing prototype uses mock data and has no AI model calls, database-backed
-            assistant, authentication or WhatsApp integration. We are not offering it as a working
-            product.
+            {assistantDemoEnabled
+              ? "A limited, Aisom-only demo is available below. The separate prototype uses mock data; neither is a customer-ready product, and no WhatsApp integration is available."
+              : "The existing prototype uses mock data and has no AI model calls, database-backed assistant, authentication or WhatsApp integration. We are not offering it as a working product."}
           </p>
         </div>
       </section>
+
+      {assistantDemoEnabled && (
+        <section className="wrap border-b border-border py-16 md:py-20">
+          <Suspense fallback={<p role="status" className="text-sm text-ash">Loading the demo…</p>}>
+            <AssistantDemo storageRegion={storageRegion} />
+          </Suspense>
+        </section>
+      )}
 
       <section className="wrap py-16 md:py-20">
         <p className="section-index">INTENDED BEHAVIOUR</p>
         <h2 className="mt-4 max-w-2xl text-slate">What we are building toward</h2>
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-ash">
-          These are product goals, not features that are available or tested today.
+          These are goals for a future customer service, not capabilities of the limited demo.
         </p>
         <div className="mt-8 grid gap-10 border-y border-border py-7 md:grid-cols-2 md:gap-14">
           <div>
@@ -209,7 +250,9 @@ export default function Assistant() {
           <div className="grid gap-2 border-b border-border py-5 sm:grid-cols-[180px_1fr]">
             <h3 className="text-base text-slate">Website</h3>
             <p className="text-sm leading-relaxed text-ash">
-              A website chat widget is being considered. It has not been built or tested.
+              {assistantDemoEnabled
+                ? "A limited demo is available on this page. A customer-ready website assistant has not been built or tested."
+                : "A website chat widget is being considered. It has not been built or tested."}
             </p>
           </div>
           <div className="grid gap-2 py-5 sm:grid-cols-[180px_1fr]">
@@ -227,9 +270,9 @@ export default function Assistant() {
           <p className="section-index">DESIGN GOALS</p>
           <h2 className="mt-4 max-w-2xl text-slate">Business owners should stay in control</h2>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-ash">
-            Approved knowledge, human handover, control over data and the ability to pause the
-            service are goals for a future product. None of these controls are available in the
-            prototype today.
+            Approved business knowledge, staff handover and business-level controls are goals for a
+            future customer product. The demo has only basic conversation deletion and is not an
+            operational assistant.
           </p>
         </div>
       </section>
