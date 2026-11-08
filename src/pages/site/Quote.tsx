@@ -16,6 +16,23 @@ const packageNames: Record<string, string> = {
   growth: "Growth Site",
 };
 
+const packageChoices = ["Starter Site", "Business Site", "Growth Site", "Not sure"] as const;
+
+function normalizePackageChoice(value: string | null) {
+  if (!value) return "";
+
+  const normalized = value.trim().toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ");
+  if (!normalized) return "";
+
+  const exactMatch = Object.values(packageNames).find((name) => name.toLowerCase() === normalized);
+  if (exactMatch) return exactMatch;
+
+  if (normalized === "not sure" || normalized === "notsure") return "Not sure";
+
+  const packageKey = Object.keys(packageNames).find((key) => key.toLowerCase() === normalized);
+  return packageNames[packageKey ?? ""] || "";
+}
+
 const productInterests = ["Website", "AI assistant", "Both"] as const;
 
 const schema = z.object({
@@ -41,7 +58,7 @@ const schema = z.object({
 
 export default function QuotePage() {
   const [searchParams] = useSearchParams();
-  const selectedPackage = packageNames[searchParams.get("package")?.toLowerCase() ?? ""] ?? "";
+  const selectedPackage = normalizePackageChoice(searchParams.get("package"));
   const requestedService = searchParams.get("service")?.toLowerCase();
   const selectedProductInterest = requestedService === "assistant"
     ? "AI assistant"
@@ -54,7 +71,7 @@ export default function QuotePage() {
     phone: "",
     email: "",
     productInterest: selectedProductInterest,
-    packageInterest: selectedPackage,
+    packageInterest: selectedProductInterest === "AI assistant" ? "" : selectedPackage,
     websiteUrl: "",
     message: "",
     consent: false,
@@ -199,10 +216,9 @@ export default function QuotePage() {
                 if (packageId) track(`package_select_${packageId}`, { package_name: packageInterest });
               }} className="flex min-h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base text-slate" required>
                 <option value="">Select a package</option>
-                <option value="Starter Site">Starter Site</option>
-                <option value="Business Site">Business Site</option>
-                <option value="Growth">Growth</option>
-                <option value="Not sure">Not sure</option>
+                {packageChoices.map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
               </select>
             </div>
           )}

@@ -29,6 +29,16 @@ function renderAssistantQuote() {
   );
 }
 
+function renderPackageQuote(packageId: string) {
+  return render(
+    <HelmetProvider>
+      <MemoryRouter initialEntries={[`/quote?package=${packageId}`]}>
+        <QuotePage />
+      </MemoryRouter>
+    </HelmetProvider>,
+  );
+}
+
 describe("assistant quote interest", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -66,5 +76,12 @@ describe("assistant quote interest", () => {
       );
     });
     expect(track).toHaveBeenCalledWith("quote_submit_assistant");
+  });
+
+  it("normalizes the package query to the canonical package label", () => {
+    renderPackageQuote("growth");
+
+    expect(screen.getByLabelText("What are you interested in?")).toHaveValue("Website");
+    expect(screen.getByLabelText("Package interest")).toHaveValue("Growth Site");
   });
 });
