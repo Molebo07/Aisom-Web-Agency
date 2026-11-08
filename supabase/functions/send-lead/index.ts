@@ -1,17 +1,30 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "npm:zod@3.23.8";
 
+const defaultAllowedOrigins = [
+  "https://aisom.co.za",
+  "https://www.aisom.co.za",
+  "https://app.aisom.co.za",
+  "https://www.app.aisom.co.za",
+  "http://localhost:5173",
+  "http://localhost:4173",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:4173",
+];
+
 const allowedOrigins = new Set(
-  (Deno.env.get("LEAD_ALLOWED_ORIGINS") ?? "https://aisom.co.za,https://www.aisom.co.za,http://localhost:5173")
+  [...defaultAllowedOrigins, ...(Deno.env.get("LEAD_ALLOWED_ORIGINS") ?? "")
     .split(",")
     .map((origin) => origin.trim())
-    .filter(Boolean),
+    .filter(Boolean)],
 );
 
 function getCorsHeaders(req: Request) {
   const origin = req.headers.get("origin") ?? "";
+  const allowOrigin = allowedOrigins.has(origin) ? origin : "https://app.aisom.co.za";
+
   return {
-    "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://aisom.co.za",
+    "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Vary": "Origin",
@@ -70,11 +83,19 @@ const esc = (s: string) =>
 
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
+  const origin = req.headers.get("origin") ?? "";
+
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed." }), {
       status: 405,
       headers: { ...corsHeaders, "Allow": "POST, OPTIONS", "Content-Type": "application/json" },
+    });
+  }
+  if (origin && !allowedOrigins.has(origin)) {
+    return new Response(JSON.stringify({ error: "Origin not allowed." }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
   if (Number(req.headers.get("content-length") ?? 0) > 20_000) {
@@ -110,10 +131,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceRoleKey) {
+      throw new Error("Missing required Supabase environment variables.");
+    }
+
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     const { error: dbError } = await supabase.from("leads").insert({
       kind: d.kind,

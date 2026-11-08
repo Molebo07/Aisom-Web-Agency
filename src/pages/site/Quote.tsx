@@ -35,6 +35,12 @@ function normalizePackageChoice(value: string | null) {
 
 const productInterests = ["Website", "AI assistant", "Both"] as const;
 
+function normalizeWebsiteUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  return /^[a-z][a-z\d+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 const schema = z.object({
   name: z.string().trim().min(1, "Enter your name"),
   businessName: z.string().trim().max(160).optional().or(z.literal("")),
@@ -102,7 +108,12 @@ export default function QuotePage() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    const parsed = schema.safeParse({ ...form, consent: form.consent });
+    const normalizedForm = {
+      ...form,
+      websiteUrl: normalizeWebsiteUrl(form.websiteUrl),
+      consent: form.consent,
+    };
+    const parsed = schema.safeParse(normalizedForm);
     if (!parsed.success) {
       const first = Object.values(parsed.error.flatten().fieldErrors)[0];
       toast.error((first && first[0]) || "Please fix the form");
@@ -119,6 +130,7 @@ export default function QuotePage() {
       ].filter(Boolean).join("\n");
       await submitLead({
         ...parsed.data,
+        websiteUrl: normalizeWebsiteUrl(parsed.data.websiteUrl || ""),
         details,
         kind: "quote",
         pagePath: "/quote",
