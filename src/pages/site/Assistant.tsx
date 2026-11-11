@@ -165,8 +165,8 @@ export default function Assistant() {
           <p className="section-index">CURRENT STATUS</p>
           <p className="max-w-3xl text-sm leading-relaxed text-slate">
             {assistantDemoEnabled
-              ? "A limited, Aisom-only demo is available below. The separate prototype uses mock data; neither is a customer-ready product, and no WhatsApp integration is available."
-              : "The existing prototype uses mock data and has no AI model calls, database-backed assistant, authentication or WhatsApp integration. We are not offering it as a working product."}
+              ? "A limited, Aisom-only demo is available below. The platform preview separately supports account access and business workspace creation; neither is a customer-ready product, and no WhatsApp integration is available."
+              : "The current platform preview supports account access and business workspace creation. It does not yet provide live AI replies, assistant configuration, customer chat or WhatsApp integration. We are not offering it as a working product."}
           </p>
         </div>
       </section>
