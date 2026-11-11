@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" fill="none">
+  <rect width="1200" height="675" fill="#F3F4F6"/>
+  <rect x="38" y="34" width="1124" height="607" rx="12" fill="#fff" stroke="#D8DCE5" stroke-width="2"/>
+  <path d="M50 46a12 12 0 0 1 12-12h1060a12 12 0 0 1 12 12v48H50V46Z" fill="#FAFAFB"/>
+  <circle cx="78" cy="68" r="8" fill="#EF6A67"/>
+  <circle cx="106" cy="68" r="8" fill="#F2C14E"/>
+  <circle cx="134" cy="68" r="8" fill="#53B879"/>
+  <rect x="184" y="55" width="260" height="25" rx="4" fill="#ECEEF2"/>
+  <text x="198" y="73" fill="#555" font-family="Arial, sans-serif" font-size="13">industrial-supplier.example</text>
+  <rect x="50" y="94" width="1100" height="547" fill="#fff"/>
+  <rect x="88" y="126" width="38" height="38" rx="6" fill="#0A111F"/>
+  <path d="M99 151v-13l8-5 8 5v13M102 142h10M103 146h8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="142" y="143" fill="#0A111F" font-family="Arial, sans-serif" font-size="19" font-weight="700">SUPPLY CO.</text>
+  <text x="142" y="160" fill="#737987" font-family="Arial, sans-serif" font-size="11" letter-spacing="1.5">INDUSTRIAL SUPPLIES</text>
+  <text x="824" y="150" fill="#343A46" font-family="Arial, sans-serif" font-size="13">Products</text>
+  <text x="909" y="150" fill="#343A46" font-family="Arial, sans-serif" font-size="13">About</text>
+  <rect x="990" y="128" width="126" height="42" rx="4" fill="#405FFF"/>
+  <text x="1014" y="154" fill="#fff" font-family="Arial, sans-serif" font-size="13" font-weight="600">Get a quote</text>
+  <path d="M88 188h1024" stroke="#E7E9ED"/>
+  <rect x="88" y="218" width="1024" height="300" rx="8" fill="#F6F7F9"/>
+  <text x="128" y="265" fill="#405FFF" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2">SUPPLIES FOR THE WORK AHEAD</text>
+  <text x="128" y="318" fill="#0A111F" font-family="Arial, sans-serif" font-size="37" font-weight="700">Tools and supplies,</text>
+  <text x="128" y="361" fill="#0A111F" font-family="Arial, sans-serif" font-size="37" font-weight="700">made easy to find.</text>
+  <text x="128" y="399" fill="#646B78" font-family="Arial, sans-serif" font-size="15">A clear product range and a simple way to ask for a quote.</text>
+  <rect x="128" y="429" width="151" height="46" rx="4" fill="#405FFF"/>
+  <text x="151" y="457" fill="#fff" font-family="Arial, sans-serif" font-size="14" font-weight="600">Request a quote</text>
+  <rect x="790" y="260" width="112" height="198" rx="6" fill="#E4E8F0"/>
+  <rect x="914" y="218" width="112" height="240" rx="6" fill="#D2D9E7"/>
+  <rect x="1038" y="294" width="46" height="164" rx="6" fill="#BFC8DA"/>
+  <path d="M754 458h352" stroke="#0A111F" stroke-opacity=".12" stroke-width="2"/>
+  <rect x="88" y="542" width="320" height="60" rx="4" fill="#F8F9FB"/>
+  <rect x="430" y="542" width="320" height="60" rx="4" fill="#F8F9FB"/>
+  <rect x="772" y="542" width="340" height="60" rx="4" fill="#F8F9FB"/>
+  <text x="112" y="578" fill="#0A111F" font-family="Arial, sans-serif" font-size="15" font-weight="600">Fasteners</text>
+  <text x="454" y="578" fill="#0A111F" font-family="Arial, sans-serif" font-size="15" font-weight="600">Safety gear</text>
+  <text x="796" y="578" fill="#0A111F" font-family="Arial, sans-serif" font-size="15" font-weight="600">Hand tools</text>
+  <rect x="974" y="108" width="142" height="26" rx="13" fill="#FFF2CC"/>
+  <text x="997" y="126" fill="#745A15" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="1">CONCEPT</text>
+</svg>
